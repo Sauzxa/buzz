@@ -4,8 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
+import '../services/auth_service.dart';
 import '../providers/user_provider.dart';
 import '../utils/algeriaWilayas.dart';
+import '../core/welcome.dart';
 import 'SignIn.dart';
 import 'mobileNumber.dart';
 
@@ -20,7 +22,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _codePostalController = TextEditingController();
+  final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
@@ -35,7 +37,7 @@ class _SignUpPageState extends State<SignUpPage> {
     _fullNameController.dispose();
     _emailController.dispose();
     _addressController.dispose();
-    _codePostalController.dispose();
+    _postalCodeController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -45,14 +47,14 @@ class _SignUpPageState extends State<SignUpPage> {
     return _fullNameController.text.isNotEmpty &&
         _emailController.text.isNotEmpty &&
         _addressController.text.isNotEmpty &&
-        _codePostalController.text.isNotEmpty &&
+        _postalCodeController.text.isNotEmpty &&
         _selectedWilaya != null &&
         _passwordController.text.isNotEmpty &&
         _confirmPasswordController.text.isNotEmpty &&
         _termsAccepted;
   }
 
-  void _onSingup() {
+  Future<void> _onSingup() async {
     if (!_isFormValid) {
       _showError('Please fill all fields and accept terms and conditions');
       return;
@@ -73,29 +75,48 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    // Save all data to provider
-    final userProvider = context.read<UserProvider>();
-    userProvider.setFullName(_fullNameController.text);
-    userProvider.setEmail(_emailController.text);
-    userProvider.setCurrentAddress(_addressController.text);
-    userProvider.setCodePostal(_codePostalController.text);
-    userProvider.setWilaya(_selectedWilaya!);
-    userProvider.setPassword(_passwordController.text);
+    // Build signup data from form fields
+    // Get phone number from UserProvider (set in previous screen)
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final phoneNumber = userProvider.user.phoneNumber;
 
-    // TODO: Navigate to next page or home
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Account created successfully!'),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    final signupData = {
+      'phoneNumber': phoneNumber,
+      'fullName': _fullNameController.text,
+      'email': _emailController.text,
+      'currentAddress': _addressController.text,
+      'postalCode': int.tryParse(_postalCodeController.text) ?? 0,
+      'wilaya': _selectedWilaya,
+      'password': _passwordController.text,
+      'role': 'CUSTOMER',
+    };
 
-    // Example navigation
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => HomePage()),
-    // );
+    try {
+      final authService = AuthService();
+      await authService.signup(signupData);
+
+      if (!mounted) return;
+
+      // Success - show message and navigate
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account created successfully!'),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      // Navigate to welcome page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const WelcomePage()),
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      // Show error message
+      _showError('Signup failed: ${e.toString()}');
+    }
   }
 
   bool _isValidEmail(String email) {
@@ -200,7 +221,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 Expanded(
                   flex: 1,
                   child: _buildInputField(
-                    controller: _codePostalController,
+                    controller: _postalCodeController,
                     label: 'Code Postal',
                     keyboardType: TextInputType.number,
                     inputFormatters: [
@@ -316,11 +337,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
             const SizedBox(height: 30),
 
-            // Sing up Button
+            // Sign up Button
             Opacity(
               opacity: _isFormValid ? 1.0 : 0.5,
               child: PrimaryButton(
-                text: 'Sing up',
+                text: 'Sign up',
                 onPressed: _isFormValid ? _onSingup : () {},
               ),
             ),

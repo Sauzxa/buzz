@@ -1,9 +1,9 @@
 class UserModel {
-  final int? phoneNumber;
+  final String? phoneNumber;
   final String? email;
   final String? fullName;
   final String? currentAddress;
-  final int? codePostal;
+  final int? postalCode;
   final String? wilaya;
   final String? password;
   final String role;
@@ -13,7 +13,7 @@ class UserModel {
     this.email,
     this.fullName,
     this.currentAddress,
-    this.codePostal,
+    this.postalCode,
     this.wilaya,
     this.password,
     this.role = 'CUSTOMER',
@@ -26,7 +26,7 @@ class UserModel {
       'email': email,
       'fullName': fullName,
       'currentAddress': currentAddress,
-      'codePostal': codePostal,
+      'postalCode': postalCode,
       'wilaya': wilaya,
       'password': password,
       'role': role,
@@ -36,24 +36,26 @@ class UserModel {
   // Create from JSON response
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      phoneNumber: json['phoneNumber'],
-      email: json['email'],
-      fullName: json['fullName'],
-      currentAddress: json['currentAddress'],
-      codePostal: json['codePostal'],
-      wilaya: json['wilaya'],
-      password: json['password'],
-      role: json['role'] ?? 'CUSTOMER',
+      phoneNumber: json['phoneNumber']?.toString(),
+      email: json['email']?.toString(),
+      fullName: json['fullName']?.toString(),
+      currentAddress: json['currentAddress']?.toString(),
+      postalCode: json['postalCode'] is int
+          ? json['postalCode']
+          : int.tryParse(json['postalCode']?.toString() ?? ''),
+      wilaya: json['wilaya']?.toString(),
+      password: json['password']?.toString(),
+      role: json['role']?.toString() ?? 'CUSTOMER',
     );
   }
 
   // Copy with method for updating specific fields
   UserModel copyWith({
-    int? phoneNumber,
+    String? phoneNumber,
     String? email,
     String? fullName,
     String? currentAddress,
-    int? codePostal,
+    int? postalCode,
     String? wilaya,
     String? password,
     String? role,
@@ -63,7 +65,7 @@ class UserModel {
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
       currentAddress: currentAddress ?? this.currentAddress,
-      codePostal: codePostal ?? this.codePostal,
+      postalCode: postalCode ?? this.postalCode,
       wilaya: wilaya ?? this.wilaya,
       password: password ?? this.password,
       role: role ?? this.role,

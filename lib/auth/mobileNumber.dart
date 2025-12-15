@@ -56,11 +56,11 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
       return;
     }
 
-    // Full phone number with country code
-    final fullPhoneNumber = '$_countryCode$phoneNumber';
+    // Local phone number with leading 0 (e.g., 0555123456)
+    final localPhoneNumber = '0$phoneNumber';
 
-    // Save phone number to provider
-    context.read<UserProvider>().setPhoneNumber(fullPhoneNumber);
+    // Save phone number to provider (local format, no country code)
+    context.read<UserProvider>().setPhoneNumber(localPhoneNumber);
 
     // Navigate to OTP verification page
     Navigator.pushReplacement(
@@ -106,15 +106,6 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
                           color: AppColors.roseColor,
                         );
                       },
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'BUZZ',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
                     ),
                   ],
                 ),

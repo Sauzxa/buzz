@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../models/User.model.dart';
+import '../models/user.model.dart';
 
 class UserProvider extends ChangeNotifier {
   UserModel _user = UserModel();
@@ -14,11 +14,11 @@ class UserProvider extends ChangeNotifier {
     return '';
   }
 
-  // Update phone number (with country code)
+  // Update phone number (local format without country code)
   void setPhoneNumber(String phoneNumber) {
-    _user = _user.copyWith(
-      phoneNumber: int.tryParse(phoneNumber.replaceAll('+', '')),
-    );
+    // Remove any non-digit characters and store as string
+    final cleanPhone = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
+    _user = _user.copyWith(phoneNumber: cleanPhone);
     notifyListeners();
   }
 
@@ -41,8 +41,8 @@ class UserProvider extends ChangeNotifier {
   }
 
   // Update code postal
-  void setCodePostal(String codePostal) {
-    _user = _user.copyWith(codePostal: int.tryParse(codePostal));
+  void setpostalCode(String postalCode) {
+    _user = _user.copyWith(postalCode: int.tryParse(postalCode));
     notifyListeners();
   }
 

@@ -1,23 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'onboarding/onb1.dart';
 import 'providers/user_provider.dart';
+import 'providers/auth_provider.dart';
 
-void main() {
-  runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
-      child: const Buzz(),
-    ),
-  );
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables (optional - will use defaults if not found)
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    print('No .env file found, using default configuration');
+  }
+
+  runApp(const Buzz());
 }
 
 class Buzz extends StatelessWidget {
   const Buzz({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: onb1(), debugShowCheckedModeBanner: false);
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
+      child: MaterialApp(home: onb1(), debugShowCheckedModeBanner: false),
+    );
   }
 }

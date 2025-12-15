@@ -7,6 +7,7 @@ import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../providers/user_provider.dart';
 import 'SignUp.dart';
+import 'mobileNumber.dart';
 
 class OTPPage extends StatefulWidget {
   const OTPPage({Key? key}) : super(key: key);
@@ -101,7 +102,7 @@ class _OTPPageState extends State<OTPPage> {
     if (_remainingSeconds > 0) return;
 
     // Resend code logic here
-    print('Resending code to: ${context.read<UserProvider>().fullPhoneNumber}');
+    print('Resending code');
 
     // Clear OTP fields
     for (var controller in _otpControllers) {
@@ -147,7 +148,10 @@ class _OTPPageState extends State<OTPPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const MobileNumberPage()),
+            );
           },
         ),
         title: Text(
@@ -183,7 +187,7 @@ class _OTPPageState extends State<OTPPage> {
               // Phone number in pink
               Text(
                 phoneNumber.isNotEmpty
-                    ? '+ ${phoneNumber}'
+                    ? '+(213) ${phoneNumber}'
                     : '(+213) 999 999 999',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
