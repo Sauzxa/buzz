@@ -62,8 +62,10 @@ flutter:
   assets:
     - assets/icons/Notification.png
     - assets/Logos/WhiteLogo.png
-    - assets/others/phoneandeverything.png
-    - assets/others/dor.png
+    - assets/others/onb2.png
+    - assets/others/onb3.png
+    - assets/others/onb4.png
+    - assets/others/onb5.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'onb4.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 
-class onb3 extends StatelessWidget {
-  const onb3({Key? key}) : super(key: key);
+class onb4 extends StatelessWidget {
+  const onb4({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +14,7 @@ class onb3 extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.orangeLight, AppColors.orangeDark],
+            colors: [AppColors.yellowLight, AppColors.orangeDark2],
           ),
         ),
         child: SafeArea(
@@ -60,7 +59,7 @@ class onb3 extends StatelessWidget {
                                 horizontal: screenWidth * 0.05,
                               ),
                               child: Image.asset(
-                                'assets/others/onb3.png',
+                                'assets/others/onb4.png',
                                 fit: BoxFit.contain,
                                 height: screenHeight * 0.4,
                               ),
@@ -93,7 +92,7 @@ class onb3 extends StatelessWidget {
                                       SizedBox(height: screenHeight * 0.02),
                                       // Main heading
                                       Text(
-                                        'Delivery service',
+                                        'High Quality Products',
                                         textAlign: TextAlign.center,
                                         style: GoogleFonts.dmSans(
                                           color: AppColors.roseColor,
@@ -110,7 +109,7 @@ class onb3 extends StatelessWidget {
                                           horizontal: screenWidth * 0.02,
                                         ),
                                         child: Text(
-                                          'We provide the best transportation service and organize your furniture properly to prevent any damage.',
+                                          'We have the best in class individuals working just for you. They are well trained and capable of handling anything you need.',
                                           textAlign: TextAlign.center,
                                           style: GoogleFonts.dmSans(
                                             color: Colors.grey[600],
@@ -128,9 +127,9 @@ class onb3 extends StatelessWidget {
                                         children: [
                                           _buildDot(active: false),
                                           const SizedBox(width: 8),
-                                          _buildDot(active: false),
-                                          const SizedBox(width: 8),
                                           _buildDot(active: true),
+                                          const SizedBox(width: 8),
+                                          _buildDot(active: false),
                                         ],
                                       ),
                                     ],
@@ -145,12 +144,7 @@ class onb3 extends StatelessWidget {
                                       text: 'Next',
                                       fontSize: screenWidth * 0.045,
                                       onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => const onb4(),
-                                          ),
-                                        );
+                                        // Navigate to main app
                                       },
                                     ),
                                   ),
