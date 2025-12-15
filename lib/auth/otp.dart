@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../providers/user_provider.dart';
+import 'SignUp.dart';
 
 class OTPPage extends StatefulWidget {
   const OTPPage({Key? key}) : super(key: key);
@@ -89,20 +90,11 @@ class _OTPPageState extends State<OTPPage> {
     // For now, accept any OTP and navigate to next page
     print('OTP entered: $otp');
 
-    // TODO: Navigate to next page (e.g., registration or home)
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('OTP verified successfully: $otp'),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
+    // Navigate to SignUp page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const SignUpPage()),
     );
-
-    // Example navigation to next page
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => NextPage()),
-    // );
   }
 
   void _onResendCode() {
