@@ -45,4 +45,6 @@ app.*.map.json
 /android/app/release
 #special files : 
 UI.txt
+# config file
+./lib/config/config.dart
 
