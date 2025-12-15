@@ -244,13 +244,6 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
 
               // Continue Button
               PrimaryButton(text: 'Continue', onPressed: _onContinue),
-
-              const Spacer(),
-
-              // Number Pad (for design reference - keyboard will handle input)
-              _buildNumberPad(),
-
-              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -265,101 +258,5 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
     if (country.contains('Tunisia')) return '🇹🇳';
     if (country.contains('USA')) return '🇺🇸';
     return '🌍';
-  }
-
-  Widget _buildNumberPad() {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Column(
-        children: [
-          _buildNumberRow(['1', '2', '3']),
-          const SizedBox(height: 12),
-          _buildNumberRow(['4', '5', '6']),
-          const SizedBox(height: 12),
-          _buildNumberRow(['7', '8', '9']),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const SizedBox(width: 80),
-              _buildNumberButton('0'),
-              SizedBox(
-                width: 80,
-                height: 60,
-                child: IconButton(
-                  onPressed: () {
-                    if (_phoneController.text.isNotEmpty) {
-                      _phoneController.text = _phoneController.text.substring(
-                        0,
-                        _phoneController.text.length - 1,
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.backspace_outlined),
-                  color: Colors.black,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNumberRow(List<String> numbers) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: numbers.map((number) => _buildNumberButton(number)).toList(),
-    );
-  }
-
-  Widget _buildNumberButton(String number) {
-    String letters = '';
-    if (number == '2') letters = 'ABC';
-    if (number == '3') letters = 'DEF';
-    if (number == '4') letters = 'GHI';
-    if (number == '5') letters = 'JKL';
-    if (number == '6') letters = 'MNO';
-    if (number == '7') letters = 'PQRS';
-    if (number == '8') letters = 'TUV';
-    if (number == '9') letters = 'WXYZ';
-
-    return SizedBox(
-      width: 80,
-      height: 60,
-      child: Material(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
-        child: InkWell(
-          onTap: () {
-            if (_phoneController.text.length < 9) {
-              _phoneController.text += number;
-            }
-          },
-          borderRadius: BorderRadius.circular(8),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                number,
-                style: GoogleFonts.dmSans(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
-              ),
-              if (letters.isNotEmpty)
-                Text(
-                  letters,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 10,
-                    color: Colors.grey[600],
-                  ),
-                ),
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }
