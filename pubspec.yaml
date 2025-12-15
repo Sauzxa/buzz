@@ -68,6 +68,7 @@ flutter:
     - assets/others/onb4.png
     - assets/others/onb5.png
     - assets/Logos/PinkLogo.png
+    - assets/icons/googleIcon.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

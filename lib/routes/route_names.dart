@@ -10,6 +10,7 @@ class RouteNames {
   static const String mobileNumber = '/mobile-number';
   static const String otpVerification = '/otp-verification';
   static const String signUp = '/sign-up';
+  static const String signIn = '/sign-in';
 
   // Add more routes as needed
   // static const String home = '/home';

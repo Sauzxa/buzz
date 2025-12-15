@@ -6,6 +6,7 @@ import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../providers/user_provider.dart';
 import '../utils/algeriaWilayas.dart';
+import 'SignIn.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -335,7 +336,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    // TODO: Navigate to login page
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignInPage(),
+                      ),
+                    );
                   },
                   child: Text(
                     'Login',
