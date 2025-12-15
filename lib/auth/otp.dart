@@ -182,7 +182,9 @@ class _OTPPageState extends State<OTPPage> {
 
               // Phone number in pink
               Text(
-                phoneNumber.isNotEmpty ? phoneNumber : '(+213) 999 999 999',
+                phoneNumber.isNotEmpty
+                    ? '+ ${phoneNumber}'
+                    : '(+213) 999 999 999',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   fontSize: 16,

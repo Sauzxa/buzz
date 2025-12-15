@@ -7,6 +7,7 @@ import '../Widgets/button.dart';
 import '../providers/user_provider.dart';
 import '../utils/algeriaWilayas.dart';
 import 'SignIn.dart';
+import 'mobileNumber.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -123,7 +124,10 @@ class _SignUpPageState extends State<SignUpPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const MobileNumberPage()),
+            );
           },
         ),
         title: Text(
