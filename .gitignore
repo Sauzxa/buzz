@@ -46,5 +46,7 @@ app.*.map.json
 #special files : 
 UI.txt
 # config files
-/lib/config/
+lib/config/
+*.config.dart
+
 
