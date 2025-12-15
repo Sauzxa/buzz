@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
+import '../Widgets/page_indicator.dart';
 
 class onb5 extends StatelessWidget {
   const onb5({Key? key}) : super(key: key);
@@ -121,17 +122,7 @@ class onb5 extends StatelessWidget {
                                       SizedBox(height: screenHeight * 0.02),
 
                                       // Pagination dots
-                                      Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          _buildDot(active: false),
-                                          const SizedBox(width: 8),
-                                          _buildDot(active: false),
-                                          const SizedBox(width: 8),
-                                          _buildDot(active: true),
-                                        ],
-                                      ),
+                                      const PageIndicator(currentIndex: 4),
                                     ],
                                   ),
 
@@ -161,17 +152,6 @@ class onb5 extends StatelessWidget {
             },
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildDot({required bool active}) {
-    return Container(
-      width: active ? 24 : 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: active ? AppColors.roseColor : Colors.grey[300],
-        borderRadius: BorderRadius.circular(4),
       ),
     );
   }

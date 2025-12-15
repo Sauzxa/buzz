@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'onb2.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
+import '../Widgets/page_indicator.dart';
 
 class onb1 extends StatelessWidget {
   const onb1({Key? key}) : super(key: key);
@@ -71,16 +72,7 @@ class onb1 extends StatelessWidget {
                       SizedBox(height: screenHeight * 0.04),
 
                       // Pagination Dots
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildDot(active: true),
-                          const SizedBox(width: 8),
-                          _buildDot(active: false),
-                          const SizedBox(width: 8),
-                          _buildDot(active: false),
-                        ],
-                      ),
+                      const WhitePageIndicator(currentIndex: 0),
 
                       SizedBox(height: screenHeight * 0.04),
 
@@ -105,17 +97,6 @@ class onb1 extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildDot({required bool active}) {
-    return Container(
-      width: active ? 24 : 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: active ? Colors.white : Colors.white.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(4),
       ),
     );
   }
