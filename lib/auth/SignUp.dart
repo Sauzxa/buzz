@@ -97,7 +97,9 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+    return RegExp(
+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+    ).hasMatch(email);
   }
 
   void _showError(String message) {
@@ -196,7 +198,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     controller: _codePostalController,
                     label: 'Code Postal',
                     keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(5),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 12),
