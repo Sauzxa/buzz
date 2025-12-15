@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
+import 'onb5.dart';
 
 class onb4 extends StatelessWidget {
   const onb4({Key? key}) : super(key: key);
@@ -144,7 +145,12 @@ class onb4 extends StatelessWidget {
                                       text: 'Next',
                                       fontSize: screenWidth * 0.045,
                                       onPressed: () {
-                                        // Navigate to main app
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => const onb5(),
+                                          ),
+                                        );
                                       },
                                     ),
                                   ),

@@ -13,8 +13,6 @@ class AppColors {
   static const Color yellowLight = Color(0xFFFFE170);
   static const Color orangeDark2 = Color(0xFFFF8A00);
   // Gradient colors for onboarding 5
-  static const Color blueSky = Color(0x7AC2EB);
-  static const Color blueSkyDark = Color(0x2299DD);
-  static const Color blueSky2 = Color(0x2299DD);
-  static const Color blueSkyDark2 = Color(0x298BC2);
+  static const Color blueSky = Color(0xFF7AC2EB);
+  static const Color blueSkyDark = Color(0xFF2299DD);
 }
