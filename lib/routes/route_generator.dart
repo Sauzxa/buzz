@@ -6,6 +6,7 @@ import '../onboarding/onb3.dart';
 import '../onboarding/onb4.dart';
 import '../onboarding/onb5.dart';
 import '../auth/mobileNumber.dart';
+import '../auth/otp.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -27,6 +28,9 @@ class RouteGenerator {
 
       case RouteNames.mobileNumber:
         return MaterialPageRoute(builder: (_) => const MobileNumberPage());
+
+      case RouteNames.otpVerification:
+        return MaterialPageRoute(builder: (_) => const OTPPage());
 
       default:
         return _errorRoute();

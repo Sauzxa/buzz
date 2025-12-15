@@ -8,8 +8,8 @@ class RouteNames {
 
   // Auth routes
   static const String mobileNumber = '/mobile-number';
+  static const String otpVerification = '/otp-verification';
 
   // Add more routes as needed
-  // static const String otpVerification = '/otp-verification';
   // static const String home = '/home';
 }

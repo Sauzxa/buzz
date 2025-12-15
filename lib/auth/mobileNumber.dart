@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
+import '../providers/user_provider.dart';
+import 'otp.dart';
 
 class MobileNumberPage extends StatefulWidget {
   const MobileNumberPage({Key? key}) : super(key: key);
@@ -56,16 +59,14 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
     // Full phone number with country code
     final fullPhoneNumber = '$_countryCode$phoneNumber';
 
-    // TODO: Navigate to next page or send verification code
-    print('Full phone number: $fullPhoneNumber');
+    // Save phone number to provider
+    context.read<UserProvider>().setPhoneNumber(fullPhoneNumber);
 
-    // Example: Navigate to OTP verification page
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => OTPVerificationPage(phoneNumber: fullPhoneNumber),
-    //   ),
-    // );
+    // Navigate to OTP verification page
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const OTPPage()),
+    );
   }
 
   void _showError(String message) {
@@ -96,7 +97,7 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                      'assets/Logos/logo.png',
+                      'assets/Logos/PinkLogo.png',
                       height: 40,
                       errorBuilder: (context, error, stackTrace) {
                         return Icon(
