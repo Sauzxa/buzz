@@ -12,7 +12,7 @@ Future<void> main() async {
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
-    print('No .env file found, using default configuration');
+    print('No .env file found, using default configuration'); //
   }
 
   runApp(const Buzz());
