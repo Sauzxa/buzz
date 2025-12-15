@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'onb3.dart';
 
 class onb2 extends StatelessWidget {
   const onb2({Key? key}) : super(key: key);
@@ -43,7 +44,7 @@ class onb2 extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: Image.asset(
-                    'lib/assets/others/phoneandeverything.png',
+                    'assets/others/phoneandeverything.png',
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -116,7 +117,12 @@ class onb2 extends StatelessWidget {
                         height: 56,
                         child: ElevatedButton(
                           onPressed: () {
-                            // Navigate to next onboarding page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const onb3(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: roseColor,

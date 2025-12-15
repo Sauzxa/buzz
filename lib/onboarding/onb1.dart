@@ -26,7 +26,7 @@ class onb1 extends StatelessWidget {
                       const Spacer(flex: 3),
                       // Logo
                       Image.asset(
-                        'lib/assets/Logos/WhiteLogo.png',
+                        'assets/Logos/WhiteLogo.png',
                         height: 120, // Adjust height as needed
                         fit: BoxFit.contain,
                       ),
