@@ -8,15 +8,17 @@ class UserProvider extends ChangeNotifier {
 
   // Get formatted full phone number with country code
   String get fullPhoneNumber {
-    if (_user.phoneNumber != null && _user.phoneNumber!.isNotEmpty) {
-      return _user.phoneNumber!;
+    if (_user.phoneNumber != null) {
+      return _user.phoneNumber.toString();
     }
     return '';
   }
 
   // Update phone number (with country code)
   void setPhoneNumber(String phoneNumber) {
-    _user = _user.copyWith(phoneNumber: phoneNumber);
+    _user = _user.copyWith(
+      phoneNumber: int.tryParse(phoneNumber.replaceAll('+', '')),
+    );
     notifyListeners();
   }
 
@@ -40,7 +42,7 @@ class UserProvider extends ChangeNotifier {
 
   // Update code postal
   void setCodePostal(String codePostal) {
-    _user = _user.copyWith(codePostal: codePostal);
+    _user = _user.copyWith(codePostal: int.tryParse(codePostal));
     notifyListeners();
   }
 
@@ -69,8 +71,7 @@ class UserProvider extends ChangeNotifier {
   }
 
   // Check if user has basic info
-  bool get hasPhoneNumber =>
-      _user.phoneNumber != null && _user.phoneNumber!.isNotEmpty;
+  bool get hasPhoneNumber => _user.phoneNumber != null;
   bool get hasEmail => _user.email != null && _user.email!.isNotEmpty;
   bool get hasFullName => _user.fullName != null && _user.fullName!.isNotEmpty;
 }

@@ -1,11 +1,12 @@
 class UserModel {
-  final String? phoneNumber;
+  final int? phoneNumber;
   final String? email;
   final String? fullName;
   final String? currentAddress;
-  final String? codePostal;
+  final int? codePostal;
   final String? wilaya;
   final String? password;
+  final String role;
 
   UserModel({
     this.phoneNumber,
@@ -15,6 +16,7 @@ class UserModel {
     this.codePostal,
     this.wilaya,
     this.password,
+    this.role = 'CUSTOMER',
   });
 
   // Convert to JSON for API requests
@@ -27,6 +29,7 @@ class UserModel {
       'codePostal': codePostal,
       'wilaya': wilaya,
       'password': password,
+      'role': role,
     };
   }
 
@@ -40,18 +43,20 @@ class UserModel {
       codePostal: json['codePostal'],
       wilaya: json['wilaya'],
       password: json['password'],
+      role: json['role'] ?? 'CUSTOMER',
     );
   }
 
   // Copy with method for updating specific fields
   UserModel copyWith({
-    String? phoneNumber,
+    int? phoneNumber,
     String? email,
     String? fullName,
     String? currentAddress,
-    String? codePostal,
+    int? codePostal,
     String? wilaya,
     String? password,
+    String? role,
   }) {
     return UserModel(
       phoneNumber: phoneNumber ?? this.phoneNumber,
@@ -61,6 +66,7 @@ class UserModel {
       codePostal: codePostal ?? this.codePostal,
       wilaya: wilaya ?? this.wilaya,
       password: password ?? this.password,
+      role: role ?? this.role,
     );
   }
 }

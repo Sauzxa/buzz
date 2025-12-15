@@ -9,6 +9,7 @@ import '../auth/mobileNumber.dart';
 import '../auth/otp.dart';
 import '../auth/SignUp.dart';
 import '../auth/SignIn.dart';
+import '../auth/forgetPassword.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -39,6 +40,9 @@ class RouteGenerator {
 
       case RouteNames.signIn:
         return MaterialPageRoute(builder: (_) => const SignInPage());
+
+      case RouteNames.forgetPassword:
+        return MaterialPageRoute(builder: (_) => const ForgetPasswordPage());
 
       default:
         return _errorRoute();

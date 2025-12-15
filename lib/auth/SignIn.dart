@@ -4,6 +4,7 @@ import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import 'mobileNumber.dart';
 import 'SignUp.dart';
+import 'forgetPassword.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -64,8 +65,10 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _onForgotPassword() {
-    // TODO: Navigate to forgot password page
-    print('Forgot Password');
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const ForgetPasswordPage()),
+    );
   }
 
   bool _isValidEmail(String email) {
