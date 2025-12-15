@@ -4,6 +4,7 @@ import 'onb4.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../Widgets/page_indicator.dart';
+import '../auth/mobileNumber.dart';
 
 class onb3 extends StatelessWidget {
   const onb3({Key? key}) : super(key: key);
@@ -11,6 +12,40 @@ class onb3 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TextButton(
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MobileNumberPage(),
+                  ),
+                );
+              },
+              child: Text(
+                'Skip',
+                style: GoogleFonts.dmSans(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -31,27 +66,6 @@ class onb3 extends StatelessWidget {
                   child: IntrinsicHeight(
                     child: Column(
                       children: [
-                        // Skip button
-                        Align(
-                          alignment: Alignment.topRight,
-                          child: Padding(
-                            padding: EdgeInsets.all(screenWidth * 0.04),
-                            child: TextButton(
-                              onPressed: () {
-                                // Navigate to main app or skip onboarding
-                              },
-                              child: Text(
-                                'Skip',
-                                style: GoogleFonts.dmSans(
-                                  color: Colors.white,
-                                  fontSize: screenWidth * 0.04,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-
                         // Upper section with illustration
                         SizedBox(
                           height: screenHeight * 0.45,
