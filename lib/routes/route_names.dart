@@ -13,6 +13,7 @@ class RouteNames {
   static const String signIn = '/sign-in';
   static const String forgetPassword = '/forget-password';
 
-  // Add more routes as needed
-  // static const String home = '/home';
+  // Core routes
+  static const String welcome = '/welcome';
+  static const String home = '/home';
 }

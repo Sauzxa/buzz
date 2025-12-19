@@ -66,13 +66,16 @@ flutter:
   assets:
     - .env
     - assets/icons/Notification.png
+    - assets/icons/4Cadr.png
     - assets/Logos/WhiteLogo.png
+    - assets/Logos/PinkLogo.png
+    - assets/icons/googleIcon.png
+    - assets/home/welcome.png
     - assets/others/onb2.png
     - assets/others/onb3.png
     - assets/others/onb4.png
     - assets/others/onb5.png
-    - assets/Logos/PinkLogo.png
-    - assets/icons/googleIcon.png
+    
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

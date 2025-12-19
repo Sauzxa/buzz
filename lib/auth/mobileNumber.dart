@@ -83,161 +83,158 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Padding(
+        child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 40),
+          children: [
+            const SizedBox(height: 40),
 
-              // Logo
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      'assets/Logos/PinkLogo.png',
-                      height: 40,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          Icons.ac_unit,
-                          size: 40,
-                          color: AppColors.roseColor,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 60),
-
-              // Welcome Text
-              Text(
-                'Welcome',
-                style: GoogleFonts.dmSans(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                'Enter your phone number to get started',
-                style: GoogleFonts.dmSans(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // Country Dropdown
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: _selectedCountry,
-                    isExpanded: true,
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    items: _countries.keys.map((String country) {
-                      return DropdownMenuItem<String>(
-                        value: country,
-                        child: Row(
-                          children: [
-                            Text(
-                              _getCountryFlag(country),
-                              style: const TextStyle(fontSize: 24),
-                            ),
-                            const SizedBox(width: 12),
-                            Text(
-                              country,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
+            // Logo
+            Center(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    'assets/Logos/PinkLogo.png',
+                    height: 40,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Icon(
+                        Icons.ac_unit,
+                        size: 40,
+                        color: AppColors.roseColor,
                       );
-                    }).toList(),
-                    onChanged: _onCountryChanged,
+                    },
                   ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 60),
+
+            // Welcome Text
+            Text(
+              'Welcome',
+              style: GoogleFonts.dmSans(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            Text(
+              'Enter your phone number to get started',
+              style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
+            ),
+
+            const SizedBox(height: 40),
+
+            // Country Dropdown
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _selectedCountry,
+                  isExpanded: true,
+                  icon: const Icon(Icons.keyboard_arrow_down),
+                  items: _countries.keys.map((String country) {
+                    return DropdownMenuItem<String>(
+                      value: country,
+                      child: Row(
+                        children: [
+                          Text(
+                            _getCountryFlag(country),
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            country,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: _onCountryChanged,
                 ),
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              // Phone Number Input
-              Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey[300]!),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  children: [
-                    Text(
-                      _countryCode,
+            // Phone Number Input
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey[300]!),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  Text(
+                    _countryCode,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _phoneController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(9),
+                      ],
                       style: GoogleFonts.dmSans(
                         fontSize: 16,
                         color: Colors.black,
-                        fontWeight: FontWeight.w500,
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        controller: _phoneController,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(9),
-                        ],
-                        style: GoogleFonts.dmSans(
+                      decoration: InputDecoration(
+                        hintText: 'Phone number',
+                        hintStyle: GoogleFonts.dmSans(
                           fontSize: 16,
-                          color: Colors.black,
+                          color: Colors.grey[400],
                         ),
-                        decoration: InputDecoration(
-                          hintText: 'Phone number',
-                          hintStyle: GoogleFonts.dmSans(
-                            fontSize: 16,
-                            color: Colors.grey[400],
-                          ),
-                          border: InputBorder.none,
-                        ),
+                        border: InputBorder.none,
                       ),
                     ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Privacy and agreements text
-              Center(
-                child: Text(
-                  'Privacy and agreements',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12,
-                    color: Colors.grey[600],
                   ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // Privacy and agreements text
+            Center(
+              child: Text(
+                'Privacy and agreements',
+                style: GoogleFonts.dmSans(
+                  fontSize: 12,
+                  color: Colors.grey[600],
                 ),
               ),
+            ),
 
-              const SizedBox(height: 20),
+            const SizedBox(height: 20),
 
-              // Continue Button
-              PrimaryButton(text: 'Continue', onPressed: _onContinue),
-            ],
-          ),
+            // Continue Button
+            PrimaryButton(text: 'Continue', onPressed: _onContinue),
+
+            const SizedBox(height: 20),
+          ],
         ),
       ),
     );
