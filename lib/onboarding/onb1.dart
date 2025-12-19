@@ -26,7 +26,7 @@ class onb1 extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: screenHeight * 0.08),
+                      SizedBox(height: screenHeight * 0.1),
                       // Logo
                       Image.asset(
                         'assets/Logos/WhiteLogo.png',
