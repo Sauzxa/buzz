@@ -99,60 +99,64 @@ class _WelcomePageState extends State<WelcomePage>
           ),
         ],
       ),
-      body: SafeArea(
-        child: GestureDetector(
-          onVerticalDragUpdate: (details) {
-            // Detect upward swipe (negative delta)
-            if (details.delta.dy < -5 && !_isAnimating) {
-              _startSwipeAnimation();
-            }
-          },
-          child: AnimatedBuilder(
-            animation: _slideAnimation,
-            builder: (context, child) {
-              return Transform.translate(
-                offset: Offset(0, _slideAnimation.value.dy * screenHeight),
-                child: child,
-              );
+      body: Padding(
+        padding: const EdgeInsets.only(top: 80.0),
+        child: SafeArea(
+          top: false,
+          child: GestureDetector(
+            onVerticalDragUpdate: (details) {
+              // Detect upward swipe (negative delta)
+              if (details.delta.dy < -5 && !_isAnimating) {
+                _startSwipeAnimation();
+              }
             },
-            child: ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-              child: Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: Colors.white,
-                child: Image.asset(
-                  'assets/home/welcome.png',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      color: AppColors.roseColor,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.pan_tool_outlined,
-                              color: Colors.white,
-                              size: 80,
-                            ),
-                            const SizedBox(height: 20),
-                            Text(
-                              'SWIPE UP',
-                              style: GoogleFonts.dmSans(
+            child: AnimatedBuilder(
+              animation: _slideAnimation,
+              builder: (context, child) {
+                return Transform.translate(
+                  offset: Offset(0, _slideAnimation.value.dy * screenHeight),
+                  child: child,
+                );
+              },
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+                child: Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  color: Colors.white,
+                  child: Image.asset(
+                    'assets/home/welcome.png',
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        color: AppColors.roseColor,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.pan_tool_outlined,
                                 color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold,
+                                size: 80,
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 20),
+                              Text(
+                                'SWIPE UP',
+                                style: GoogleFonts.dmSans(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
