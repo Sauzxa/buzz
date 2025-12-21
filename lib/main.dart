@@ -8,7 +8,7 @@ import 'providers/auth_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables (optional - will use defaults if not found)
+  // Load environment variables
   try {
     await dotenv.load(fileName: ".env");
   } catch (e) {
