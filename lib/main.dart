@@ -4,6 +4,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'onboarding/onb1.dart';
 import 'providers/user_provider.dart';
 import 'providers/auth_provider.dart';
+import 'providers/categories_provider.dart';
+import 'providers/services_provider.dart';
+import 'providers/news_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,6 +30,9 @@ class Buzz extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => CategoriesProvider()),
+        ChangeNotifierProvider(create: (_) => ServicesProvider()),
+        ChangeNotifierProvider(create: (_) => NewsProvider()),
       ],
       child: MaterialApp(home: onb1(), debugShowCheckedModeBanner: false),
     );

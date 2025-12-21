@@ -50,6 +50,9 @@ lib/config/
 *.config.dart
 # env files
 .env
-
+#Readme files
+HOMEPAGE_IMPLEMENTATION.md
+IMPLEMENTATION_SUMMARY.md
+prompt.md
 
 

@@ -97,6 +97,14 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (!mounted) return;
 
+      // Save user data to UserProvider
+      userProvider.setFullName(_fullNameController.text);
+      userProvider.setEmail(_emailController.text);
+      userProvider.setCurrentAddress(_addressController.text);
+      userProvider.setpostalCode(_postalCodeController.text);
+      userProvider.setWilaya(_selectedWilaya!);
+      userProvider.setPassword(_passwordController.text);
+
       // Success - show message and navigate
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
