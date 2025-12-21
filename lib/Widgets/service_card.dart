@@ -1,112 +1,132 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'dart:typed_data';
+import 'dart:math';
 import '../models/service_model.dart';
-import '../theme/colors.dart';
+import '../utils/image_decoder.dart';
 
-class ServiceCard extends StatelessWidget {
+class ServiceCard extends StatefulWidget {
   final ServiceModel service;
   final VoidCallback? onTap;
 
   const ServiceCard({super.key, required this.service, this.onTap});
 
   @override
+  State<ServiceCard> createState() => _ServiceCardState();
+}
+
+class _ServiceCardState extends State<ServiceCard> {
+  late Future<Uint8List?> _imageFuture;
+  final Color _randomColor =
+      Colors.primaries[Random().nextInt(Colors.primaries.length)];
+
+  @override
+  void initState() {
+    super.initState();
+    _imageFuture = ImageDecoder.decodeBase64Image(widget.service.imageUrl);
+  }
+
+  @override
+  void didUpdateWidget(covariant ServiceCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.service.imageUrl != widget.service.imageUrl) {
+      _imageFuture = ImageDecoder.decodeBase64Image(widget.service.imageUrl);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Use a default color if no specific color logic exists for services
+    // Using a consistent color or random one for fallback
+    final cardColor = _randomColor;
+
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
+        width: 200,
+        height: 120, // Same dimensions as CategoryCard
+        margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[200]!, width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
-        child: Row(
+        clipBehavior: Clip.hardEdge,
+        child: Stack(
+          fit: StackFit.expand,
           children: [
-            // Service Icon/Image
+            // Background Image
+            if (widget.service.imageUrl != null &&
+                widget.service.imageUrl!.startsWith('http'))
+              Image.network(
+                widget.service.imageUrl!,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(color: cardColor);
+                },
+              )
+            else
+              FutureBuilder<Uint8List?>(
+                future: _imageFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.hasData &&
+                      snapshot.data != null) {
+                    return Image.memory(
+                      snapshot.data!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(color: cardColor);
+                      },
+                    );
+                  }
+                  return Container(color: cardColor);
+                },
+              ),
+
+            // Gradient Overlay
             Container(
-              width: 60,
-              height: 60,
               decoration: BoxDecoration(
-                color: AppColors.roseColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: service.imageUrl != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        service.imageUrl!,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return _buildFallbackIcon();
-                        },
-                      ),
-                    )
-                  : _buildFallbackIcon(),
-            ),
-
-            const SizedBox(width: 16),
-
-            // Service Details
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    service.name,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    service.description,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (service.price != null) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      '${service.price!.toStringAsFixed(0)} DZD',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.roseColor,
-                      ),
-                    ),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.4),
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.4),
                   ],
-                ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
             ),
 
-            // Arrow Icon
-            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[400]),
+            // Text Content
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: Text(
+                  widget.service.name.toUpperCase(),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.dmSans(
+                    fontSize:
+                        20, // Slightly smaller than Category 24px as service names might be longer
+                    fontWeight: FontWeight.w900,
+                    color: Colors.white,
+                    height: 1.0,
+                    shadows: [
+                      const Shadow(
+                        offset: Offset(0, 2),
+                        blurRadius: 4.0,
+                        color: Colors.black26,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildFallbackIcon() {
-    return Icon(
-      Icons.design_services_outlined,
-      size: 30,
-      color: AppColors.roseColor,
     );
   }
 }

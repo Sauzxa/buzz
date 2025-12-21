@@ -20,13 +20,14 @@ class ServiceModel {
   factory ServiceModel.fromJson(Map<String, dynamic> json) {
     return ServiceModel(
       id: json['id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
+      name: json['serviceName']?.toString() ?? json['name']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       categoryId: json['categoryId']?.toString(),
       price: json['price'] != null
           ? double.tryParse(json['price'].toString())
           : null,
-      imageUrl: json['imageUrl']?.toString(),
+      imageUrl:
+          json['serviceImage']?.toString() ?? json['imageUrl']?.toString(),
       isActive: json['isActive'] as bool? ?? true,
     );
   }

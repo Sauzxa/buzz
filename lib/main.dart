@@ -7,6 +7,7 @@ import 'providers/auth_provider.dart';
 import 'providers/categories_provider.dart';
 import 'providers/services_provider.dart';
 import 'providers/news_provider.dart';
+import 'core/homePage.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +35,7 @@ class Buzz extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ServicesProvider()),
         ChangeNotifierProvider(create: (_) => NewsProvider()),
       ],
-      child: MaterialApp(home: onb1(), debugShowCheckedModeBanner: false),
+      child: MaterialApp(home: HomePage(), debugShowCheckedModeBanner: false),
     );
   }
 }

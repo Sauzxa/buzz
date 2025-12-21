@@ -11,6 +11,7 @@ import '../Widgets/notification_popup.dart';
 import '../Widgets/loading_fallback.dart';
 import '../Widgets/error_fallback.dart';
 import '../Widgets/category_card.dart';
+import '../Widgets/service_card.dart';
 import '../Widgets/ad_banner.dart';
 import '../utils/snackbar_helper.dart';
 
@@ -390,7 +391,7 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   SnackBarHelper.showInfoSnackBar(
                     context,
-                    'View all news coming soon!',
+                    'View all services coming soon!',
                   );
                 },
                 child: Text(
@@ -407,7 +408,7 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 12),
 
-        // Filter Chips
+        // Filter Chips (Visual only for now)
         SizedBox(
           height: 40,
           child: ListView.builder(
@@ -450,144 +451,62 @@ class _HomePageState extends State<HomePage> {
 
         const SizedBox(height: 16),
 
-        // News Cards (horizontal)
-        SizedBox(
-          height: 200,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: 3, // Mock data
-            itemBuilder: (context, index) {
-              return _buildNewsCard(index);
-            },
-          ),
+        // Services List (Horizontal)
+        Consumer<ServicesProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading) {
+              return const SizedBox(
+                height: 120, // Match card height
+                child: Center(
+                  child: LoadingFallback(message: 'Loading services...'),
+                ),
+              );
+            }
+
+            if (provider.hasError && !provider.hasData) {
+              return SizedBox(
+                height: 120,
+                child: ErrorFallback(
+                  message: provider.errorMessage ?? 'Failed to load services',
+                  onRetry: () => provider.fetchServices(),
+                ),
+              );
+            }
+
+            if (!provider.hasData) {
+              return const SizedBox(
+                height: 120,
+                child: Center(child: Text("No services available")),
+              );
+            }
+
+            // Limit to a reasonable number if needed, or show all
+            // For "News & Offers" section maybe we just show the first few?
+            final services = provider.services;
+
+            return SizedBox(
+              height: 120,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: services.length,
+                itemBuilder: (context, index) {
+                  final service = services[index];
+                  return ServiceCard(
+                    service: service,
+                    onTap: () {
+                      SnackBarHelper.showInfoSnackBar(
+                        context,
+                        'Service: ${service.name}',
+                      );
+                    },
+                  );
+                },
+              ),
+            );
+          },
         ),
       ],
-    );
-  }
-
-  Widget _buildNewsCard(int index) {
-    final colors = [
-      const Color(0xFF7C3AED), // Purple
-      const Color(0xFFEC1968), // Rose
-      const Color(0xFF7C3AED), // Purple
-    ];
-
-    return Container(
-      width: 220,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [colors[index], colors[index].withOpacity(0.8)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Stack(
-        children: [
-          // Decorative elements
-          Positioned(
-            right: -20,
-            top: -20,
-            child: Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
-            ),
-          ),
-          Positioned(
-            left: -30,
-            bottom: -30,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white.withOpacity(0.1),
-              ),
-            ),
-          ),
-
-          // Content
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.flash_on,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Limited Offer',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Logo\nDesign',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        height: 1.2,
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '40% OFF',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    Text(
-                      'On First 3 Orders',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 11,
-                        color: Colors.white.withOpacity(0.9),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
