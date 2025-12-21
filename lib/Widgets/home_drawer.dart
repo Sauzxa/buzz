@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../providers/user_provider.dart';
+import '../auth/SignIn.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -12,166 +13,187 @@ class HomeDrawer extends StatelessWidget {
     final userProvider = context.watch<UserProvider>();
 
     return Drawer(
-      child: Column(
-        children: [
-          // Header
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.roseColor,
-                  AppColors.roseColor.withOpacity(0.8),
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // User Avatar
-                CircleAvatar(
-                  radius: 35,
-                  backgroundColor: Colors.white,
-                  child: Text(
-                    userProvider.fullName.isNotEmpty
-                        ? userProvider.fullName[0].toUpperCase()
-                        : 'U',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.roseColor,
+      child: Container(
+        color: AppColors.roseColor,
+        child: Column(
+          children: [
+            // Header
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // User Avatar
+                  CircleAvatar(
+                    radius: 35,
+                    backgroundColor: Colors.white,
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/home/welcome.png',
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Text(
+                            userProvider.fullName.isNotEmpty
+                                ? userProvider.fullName[0].toUpperCase()
+                                : 'U',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.roseColor,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 16),
-                // User Name
-                Text(
-                  userProvider.fullName,
-                  style: GoogleFonts.dmSans(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                // User Email
-                if (userProvider.user.email != null)
+                  const SizedBox(height: 16),
+                  // User Name
                   Text(
-                    userProvider.user.email!,
+                    userProvider.fullName.isNotEmpty
+                        ? userProvider.fullName
+                        : 'User Name',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  // User Phone
+                  Text(
+                    userProvider.fullPhoneNumber.isNotEmpty
+                        ? userProvider.fullPhoneNumber
+                        : '+213 777 58 59 66',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: Colors.white.withOpacity(0.9),
                     ),
                   ),
-              ],
-            ),
-          ),
-
-          // Menu Items
-          Expanded(
-            child: ListView(
-              padding: EdgeInsets.zero,
-              children: [
-                _buildMenuItem(
-                  icon: Icons.home_outlined,
-                  title: 'Home',
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildMenuItem(
-                  icon: Icons.person_outline,
-                  title: 'Profile',
-                  onTap: () {
-                    // TODO: Navigate to profile
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildMenuItem(
-                  icon: Icons.shopping_bag_outlined,
-                  title: 'My Orders',
-                  onTap: () {
-                    // TODO: Navigate to orders
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildMenuItem(
-                  icon: Icons.favorite_outline,
-                  title: 'Favorites',
-                  onTap: () {
-                    // TODO: Navigate to favorites
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildMenuItem(
-                  icon: Icons.settings_outlined,
-                  title: 'Settings',
-                  onTap: () {
-                    // TODO: Navigate to settings
-                    Navigator.pop(context);
-                  },
-                ),
-                const Divider(),
-                _buildMenuItem(
-                  icon: Icons.help_outline,
-                  title: 'Help & Support',
-                  onTap: () {
-                    // TODO: Navigate to help
-                    Navigator.pop(context);
-                  },
-                ),
-                _buildMenuItem(
-                  icon: Icons.info_outline,
-                  title: 'About',
-                  onTap: () {
-                    // TODO: Navigate to about
-                    Navigator.pop(context);
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // Logout Button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: Text(
-                'Logout',
-                style: GoogleFonts.dmSans(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.red,
-                ),
+                ],
               ),
-              onTap: () {
-                // TODO: Implement logout
-                Navigator.pop(context);
-              },
             ),
-          ),
-        ],
+
+            const SizedBox(height: 10),
+
+            // Menu Items
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: [
+                  _buildMenuItem(
+                    context,
+                    icon: Icons.person_outline,
+                    title: 'My Profile',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _buildMenuItem(
+                    context,
+                    icon: Icons.call_outlined,
+                    title: 'Services',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _buildMenuItem(
+                    context,
+                    icon: Icons.bookmark_border,
+                    title: 'Saved Services',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    child: Divider(color: Colors.white24, height: 1),
+                  ),
+
+                  _buildMenuItem(
+                    context,
+                    icon: Icons.settings_outlined,
+                    title: 'Settings',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _buildMenuItem(
+                    context,
+                    icon: Icons.person_add_outlined,
+                    title: 'Invite Friends',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                  _buildMenuItem(
+                    context,
+                    icon: Icons.help_outline,
+                    title: 'Buzz Features',
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            // Logout Link
+            // To position it at the bottom or just last in list?
+            // The prompt image implies a section below.
+            // I'll put it outside ListView if I want fixed bottom,
+            // but usually it scrolls.
+            // Let's add it to the bottom of the column to stick it.
+            // But if user has small screen?
+            // "Expanded" ListView takes remaining space.
+            // So putting it after Expanded pushes it to bottom.
+            Container(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: _buildMenuItem(
+                context,
+                icon: Icons.logout, // Or specific power icon
+                title:
+                    'Logout', // Removed 'Logout' text if it's icon only? No, usually text.
+                // Actually prompt said "missing the Logout... + add logout".
+                // I will assume text "Logout".
+                onTap: () {
+                  // Navigate to SignIn, remove all routes
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const SignInPage()),
+                    (route) => false,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMenuItem({
+  Widget _buildMenuItem(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.grey[700]),
+      leading: Icon(icon, color: Colors.white, size: 24),
       title: Text(
         title,
-        style: GoogleFonts.dmSans(fontSize: 16, fontWeight: FontWeight.w500),
+        style: GoogleFonts.dmSans(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Colors.white,
+        ),
       ),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+      dense: true,
+      visualDensity: VisualDensity.compact,
     );
   }
 }
