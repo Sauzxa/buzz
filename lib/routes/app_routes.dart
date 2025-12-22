@@ -3,7 +3,7 @@ import 'route_names.dart';
 import 'route_generator.dart';
 
 class AppRoutes {
-  static String get initialRoute => RouteNames.onboarding1;
+  static String get initialRoute => RouteNames.splash;
 
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     return RouteGenerator.generateRoute(settings);

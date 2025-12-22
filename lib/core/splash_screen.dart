@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
-import '../onboarding/onb1.dart';
-import '../auth/SignIn.dart';
-import '../core/homePage.dart';
+import '../routes/route_names.dart';
+
 import '../theme/colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -18,7 +17,10 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkAuthStatus();
+    // Schedule check after the first frame to avoid "setState during build" error
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuthStatus();
+    });
   }
 
   Future<void> _checkAuthStatus() async {
@@ -35,19 +37,13 @@ class _SplashScreenState extends State<SplashScreen> {
     // Enhanced routing logic
     if (isAuthenticated) {
       // User has valid token → HomePage
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+      Navigator.of(context).pushReplacementNamed(RouteNames.home);
     } else if (authProvider.hasSeenOnboarding) {
       // No token but has seen onboarding → SignIn
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const SignInPage()));
+      Navigator.of(context).pushReplacementNamed(RouteNames.signIn);
     } else {
       // First time user → Onboarding
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const onb1()));
+      Navigator.of(context).pushReplacementNamed(RouteNames.onboarding1);
     }
   }
 

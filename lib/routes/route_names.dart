@@ -1,4 +1,7 @@
 class RouteNames {
+  // Initial route
+  static const String splash = '/';
+
   // Onboarding routes
   static const String onboarding1 = '/onboarding1';
   static const String onboarding2 = '/onboarding2';

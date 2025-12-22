@@ -4,10 +4,7 @@ import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../providers/auth_provider.dart';
-import '../core/homePage.dart';
-import 'mobileNumber.dart';
-import 'SignUp.dart';
-import 'forgetPassword.dart';
+import '../routes/route_names.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -53,10 +50,7 @@ class _SignInPageState extends State<SignInPage> {
     // Check if login was successful
     if (authProvider.isAuthenticated && authProvider.user != null) {
       // Navigate to HomePage
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
+      Navigator.pushReplacementNamed(context, RouteNames.home);
     } else {
       // Show error message
       _showError(authProvider.error ?? 'Login failed. Please try again.');
@@ -69,10 +63,7 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   void _onForgotPassword() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ForgetPasswordPage()),
-    );
+    Navigator.pushNamed(context, RouteNames.forgetPassword);
   }
 
   bool _isValidEmail(String email) {
@@ -101,10 +92,7 @@ class _SignInPageState extends State<SignInPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const SignUpPage()),
-            );
+            Navigator.pushReplacementNamed(context, RouteNames.signUp);
           },
         ),
       ),
@@ -117,20 +105,22 @@ class _SignInPageState extends State<SignInPage> {
             // Let's Sign You In Title
             Text(
               'Let\'s Sign You In',
+              textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
-                fontSize: 32,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
               ),
             ),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
 
             Text(
               'Welcome back, you\'ve\nbeen missed!',
+              textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
-                fontSize: 14,
-                color: Colors.grey[400],
+                fontSize: 16,
+                color: const Color(0xFF888888),
                 height: 1.5,
               ),
             ),
@@ -141,21 +131,25 @@ class _SignInPageState extends State<SignInPage> {
             _buildInputField(
               controller: _emailController,
               label: 'Email Address',
+              hintText: 'oussama.aba@email.com',
               keyboardType: TextInputType.emailAddress,
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Password
             _buildInputField(
               controller: _passwordController,
               label: 'Password',
+              hintText: '••••••',
               obscureText: _obscurePassword,
               suffixIcon: IconButton(
                 icon: Icon(
-                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  _obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
                   color: Colors.grey[400],
-                  size: 20,
+                  size: 22,
                 ),
                 onPressed: () {
                   setState(() {
@@ -165,7 +159,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Remember Me and Forgot Password Row
             Row(
@@ -187,6 +181,11 @@ class _SignInPageState extends State<SignInPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
                         ),
+                        side: BorderSide(
+                          color: _rememberMe
+                              ? AppColors.roseColor
+                              : Colors.grey[400]!,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -199,8 +198,9 @@ class _SignInPageState extends State<SignInPage> {
                       child: Text(
                         'Remember Me',
                         style: GoogleFonts.dmSans(
-                          fontSize: 12,
-                          color: Colors.grey[600],
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -209,51 +209,48 @@ class _SignInPageState extends State<SignInPage> {
                 GestureDetector(
                   onTap: _onForgotPassword,
                   child: Text(
-                    'Forget Password ?',
+                    'Forgot Password ?',
                     style: GoogleFonts.dmSans(
-                      fontSize: 12,
+                      fontSize: 14,
                       color: AppColors.roseColor,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
               ],
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 32),
 
             // Login Button
             PrimaryButton(text: 'Login', onPressed: _onLogin),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // OR Divider
             Row(
               children: [
-                Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Text(
-                    'OR',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      color: Colors.grey[400],
-                    ),
+                const Spacer(),
+                Text(
+                  'OR',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: const Color(0xFF888888),
                   ),
                 ),
-                Expanded(child: Divider(color: Colors.grey[300], thickness: 1)),
+                const Spacer(),
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
 
             // Continue with Google Button
             Container(
               height: 56,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: const Color(0xFFF3F5F7), // Light grey background
                 borderRadius: BorderRadius.circular(28),
-                border: Border.all(color: Colors.grey[300]!),
               ),
               child: Material(
                 color: Colors.transparent,
@@ -290,7 +287,7 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 48),
 
             // Don't have an account? Sign Up
             Row(
@@ -300,16 +297,14 @@ class _SignInPageState extends State<SignInPage> {
                   'Don\'t have an account ? ',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: const Color(0xFF888888),
                   ),
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacement(
+                    Navigator.pushReplacementNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const MobileNumberPage(),
-                      ),
+                      RouteNames.mobileNumber,
                     );
                   },
                   child: Text(
@@ -317,7 +312,7 @@ class _SignInPageState extends State<SignInPage> {
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: AppColors.roseColor,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -334,6 +329,7 @@ class _SignInPageState extends State<SignInPage> {
   Widget _buildInputField({
     required TextEditingController controller,
     required String label,
+    String? hintText,
     TextInputType? keyboardType,
     bool obscureText = false,
     Widget? suffixIcon,
@@ -341,30 +337,46 @@ class _SignInPageState extends State<SignInPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: GoogleFonts.dmSans(fontSize: 12, color: Colors.grey[400]),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
+        // Using Stack to create custom floating label effect if needed or standard InputDecoration
+        // Based on image, it looks like standard OutlineInputBorder with label behavior
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          style: GoogleFonts.dmSans(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black,
           ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.black),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              suffixIcon: suffixIcon,
+          decoration: InputDecoration(
+            labelText: label,
+            hintText: hintText,
+            floatingLabelBehavior: FloatingLabelBehavior.always,
+            hintStyle: GoogleFonts.dmSans(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
             ),
+            labelStyle: GoogleFonts.dmSans(
+              color: const Color(0xFF888888),
+              fontSize: 14,
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 24,
+              vertical: 20,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: const BorderSide(
+                color: AppColors.roseColor,
+                width: 1.5,
+              ),
+            ),
+            suffixIcon: suffixIcon,
           ),
         ),
       ],

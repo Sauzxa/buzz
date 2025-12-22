@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'onb3.dart';
+import '../routes/route_names.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../Widgets/page_indicator.dart';
-import '../auth/mobileNumber.dart';
 
 class onb2 extends StatelessWidget {
   const onb2({Key? key}) : super(key: key);
@@ -27,11 +26,9 @@ class onb2 extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.pushReplacementNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const MobileNumberPage(),
-                  ),
+                  RouteNames.mobileNumber,
                 );
               },
               child: Text(
@@ -141,11 +138,9 @@ class onb2 extends StatelessWidget {
                                     text: 'Next',
                                     fontSize: screenWidth * 0.045,
                                     onPressed: () {
-                                      Navigator.push(
+                                      Navigator.pushNamed(
                                         context,
-                                        MaterialPageRoute(
-                                          builder: (context) => const onb3(),
-                                        ),
+                                        RouteNames.onboarding3,
                                       );
                                     },
                                   ),

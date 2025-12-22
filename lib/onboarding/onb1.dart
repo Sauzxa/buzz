@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'onb2.dart';
+import '../routes/route_names.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../Widgets/page_indicator.dart';
@@ -81,12 +81,7 @@ class onb1 extends StatelessWidget {
                         text: "Next",
                         fontSize: screenWidth * 0.045,
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const onb2(),
-                            ),
-                          );
+                          Navigator.pushNamed(context, RouteNames.onboarding2);
                         },
                       ),
                       SizedBox(height: screenHeight * 0.05),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/colors.dart';
-import 'homePage.dart';
+import '../routes/route_names.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -43,10 +43,7 @@ class _WelcomePageState extends State<WelcomePage>
     });
 
     _controller.forward().then((_) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomePage()),
-      );
+      Navigator.pushReplacementNamed(context, RouteNames.home);
     });
   }
 

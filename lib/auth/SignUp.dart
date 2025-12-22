@@ -7,9 +7,7 @@ import '../Widgets/button.dart';
 import '../providers/auth_provider.dart';
 import '../providers/user_provider.dart';
 import '../utils/algeriaWilayas.dart';
-import '../core/homePage.dart';
-import 'SignIn.dart';
-import 'mobileNumber.dart';
+import '../routes/route_names.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -108,10 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
       userProvider.setPassword(_passwordController.text);
 
       // Navigate to HomePage
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
+      Navigator.pushReplacementNamed(context, RouteNames.home);
     } else {
       // Show error message
       _showError(authProvider.error ?? 'Signup failed. Please try again.');
@@ -144,10 +139,7 @@ class _SignUpPageState extends State<SignUpPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const MobileNumberPage()),
-            );
+            Navigator.pushReplacementNamed(context, RouteNames.mobileNumber);
           },
         ),
         title: Text(
@@ -360,12 +352,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SignInPage(),
-                      ),
-                    );
+                    Navigator.pushReplacementNamed(context, RouteNames.signIn);
                   },
                   child: Text(
                     'Login',

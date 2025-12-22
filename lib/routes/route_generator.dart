@@ -12,10 +12,14 @@ import '../auth/SignIn.dart';
 import '../auth/forgetPassword.dart';
 import '../core/welcome.dart';
 import '../core/homePage.dart';
+import '../core/splash_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case RouteNames.splash:
+        return MaterialPageRoute(builder: (_) => const SplashScreen());
+
       case RouteNames.onboarding1:
         return MaterialPageRoute(builder: (_) => const onb1());
 

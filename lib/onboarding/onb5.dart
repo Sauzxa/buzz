@@ -5,7 +5,7 @@ import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../Widgets/page_indicator.dart';
 import '../providers/auth_provider.dart';
-import '../auth/mobileNumber.dart';
+import '../routes/route_names.dart';
 
 class onb5 extends StatelessWidget {
   const onb5({Key? key}) : super(key: key);
@@ -33,11 +33,9 @@ class onb5 extends StatelessWidget {
 
                 if (!context.mounted) return;
 
-                Navigator.pushReplacement(
+                Navigator.pushReplacementNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const MobileNumberPage(),
-                  ),
+                  RouteNames.mobileNumber,
                 );
               },
               child: Text(
@@ -164,12 +162,9 @@ class onb5 extends StatelessWidget {
 
                                         if (!context.mounted) return;
 
-                                        Navigator.pushReplacement(
+                                        Navigator.pushReplacementNamed(
                                           context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const MobileNumberPage(),
-                                          ),
+                                          RouteNames.mobileNumber,
                                         );
                                       },
                                     ),

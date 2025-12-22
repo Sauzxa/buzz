@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
-import '../auth/SignIn.dart';
+import '../routes/route_names.dart';
 
 class HomeDrawer extends StatelessWidget {
   const HomeDrawer({super.key});
@@ -172,8 +172,8 @@ class HomeDrawer extends StatelessWidget {
                   if (!context.mounted) return;
 
                   // Navigate to SignIn (user has seen onboarding)
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => const SignInPage()),
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    RouteNames.signIn,
                     (route) => false,
                   );
                 },

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'core/splash_screen.dart';
+import 'routes/app_routes.dart';
 import 'providers/user_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/categories_provider.dart';
@@ -34,8 +34,9 @@ class Buzz extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ServicesProvider()),
         ChangeNotifierProvider(create: (_) => NewsProvider()),
       ],
-      child: const MaterialApp(
-        home: SplashScreen(),
+      child: MaterialApp(
+        initialRoute: AppRoutes.initialRoute,
+        onGenerateRoute: AppRoutes.onGenerateRoute,
         debugShowCheckedModeBanner: false,
       ),
     );

@@ -6,8 +6,7 @@ import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../providers/user_provider.dart';
-import 'SignUp.dart';
-import 'mobileNumber.dart';
+import '../routes/route_names.dart';
 
 class OTPPage extends StatefulWidget {
   const OTPPage({Key? key}) : super(key: key);
@@ -92,10 +91,7 @@ class _OTPPageState extends State<OTPPage> {
     print('OTP entered: $otp');
 
     // Navigate to SignUp page
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SignUpPage()),
-    );
+    Navigator.pushReplacementNamed(context, RouteNames.signUp);
   }
 
   void _onResendCode() {
@@ -148,10 +144,7 @@ class _OTPPageState extends State<OTPPage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const MobileNumberPage()),
-            );
+            Navigator.pushReplacementNamed(context, RouteNames.mobileNumber);
           },
         ),
         title: Text(
