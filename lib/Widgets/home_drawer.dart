@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../providers/user_provider.dart';
+import '../providers/auth_provider.dart';
 import '../auth/SignIn.dart';
 
 class HomeDrawer extends StatelessWidget {
@@ -159,8 +160,18 @@ class HomeDrawer extends StatelessWidget {
                     'Logout', // Removed 'Logout' text if it's icon only? No, usually text.
                 // Actually prompt said "missing the Logout... + add logout".
                 // I will assume text "Logout".
-                onTap: () {
-                  // Navigate to SignIn, remove all routes
+                onTap: () async {
+                  // Use AuthProvider to logout (clears token)
+                  final authProvider = context.read<AuthProvider>();
+                  await authProvider.logout();
+
+                  // Also clear user provider
+                  final userProvider = context.read<UserProvider>();
+                  userProvider.clearUser();
+
+                  if (!context.mounted) return;
+
+                  // Navigate to SignIn (user has seen onboarding)
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(builder: (context) => const SignInPage()),
                     (route) => false,

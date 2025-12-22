@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../Widgets/page_indicator.dart';
+import '../providers/auth_provider.dart';
 import '../auth/mobileNumber.dart';
 
 class onb5 extends StatelessWidget {
@@ -24,7 +26,13 @@ class onb5 extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
-              onPressed: () {
+              onPressed: () async {
+                // Mark onboarding as completed
+                final authProvider = context.read<AuthProvider>();
+                await authProvider.completeOnboarding();
+
+                if (!context.mounted) return;
+
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
@@ -148,7 +156,14 @@ class onb5 extends StatelessWidget {
                                     child: PrimaryButton(
                                       text: 'Next',
                                       fontSize: screenWidth * 0.045,
-                                      onPressed: () {
+                                      onPressed: () async {
+                                        // Mark onboarding as completed
+                                        final authProvider = context
+                                            .read<AuthProvider>();
+                                        await authProvider.completeOnboarding();
+
+                                        if (!context.mounted) return;
+
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(

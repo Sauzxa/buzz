@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
+import '../providers/auth_provider.dart';
+import '../core/homePage.dart';
 import 'mobileNumber.dart';
 import 'SignUp.dart';
 import 'forgetPassword.dart';
@@ -27,7 +30,7 @@ class _SignInPageState extends State<SignInPage> {
     super.dispose();
   }
 
-  void _onLogin() {
+  Future<void> _onLogin() async {
     final email = _emailController.text;
     final password = _passwordController.text;
 
@@ -41,22 +44,23 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
 
-    // TODO: Implement login API call
-    print('Login: $email');
+    // Use AuthProvider to login
+    final authProvider = context.read<AuthProvider>();
+    await authProvider.login(email, password);
 
-    // Example: Navigate to home page after successful login
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Login successful!'),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (!mounted) return;
 
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (context) => HomePage()),
-    // );
+    // Check if login was successful
+    if (authProvider.isAuthenticated && authProvider.user != null) {
+      // Navigate to HomePage
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
+    } else {
+      // Show error message
+      _showError(authProvider.error ?? 'Login failed. Please try again.');
+    }
   }
 
   void _onGoogleSignIn() {

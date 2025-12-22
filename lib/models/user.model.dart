@@ -7,6 +7,7 @@ class UserModel {
   final String? wilaya;
   final String? password;
   final String role;
+  final String? token; // JWT token field
 
   UserModel({
     this.phoneNumber,
@@ -17,6 +18,7 @@ class UserModel {
     this.wilaya,
     this.password,
     this.role = 'CUSTOMER',
+    this.token,
   });
 
   // Convert to JSON for API requests
@@ -30,6 +32,7 @@ class UserModel {
       'wilaya': wilaya,
       'password': password,
       'role': role,
+      'token': token,
     };
   }
 
@@ -46,6 +49,7 @@ class UserModel {
       wilaya: json['wilaya']?.toString(),
       password: json['password']?.toString(),
       role: json['role']?.toString() ?? 'CUSTOMER',
+      token: json['token']?.toString(),
     );
   }
 
@@ -59,6 +63,7 @@ class UserModel {
     String? wilaya,
     String? password,
     String? role,
+    String? token,
   }) {
     return UserModel(
       phoneNumber: phoneNumber ?? this.phoneNumber,
@@ -69,6 +74,7 @@ class UserModel {
       wilaya: wilaya ?? this.wilaya,
       password: password ?? this.password,
       role: role ?? this.role,
+      token: token ?? this.token,
     );
   }
 }

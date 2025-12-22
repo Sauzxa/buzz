@@ -4,10 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
-import '../services/auth_service.dart';
+import '../providers/auth_provider.dart';
 import '../providers/user_provider.dart';
 import '../utils/algeriaWilayas.dart';
-import '../core/welcome.dart';
+import '../core/homePage.dart';
 import 'SignIn.dart';
 import 'mobileNumber.dart';
 
@@ -78,6 +78,7 @@ class _SignUpPageState extends State<SignUpPage> {
     // Build signup data from form fields
     // Get phone number from UserProvider (set in previous screen)
     final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final phoneNumber = userProvider.user.phoneNumber;
 
     final signupData = {
@@ -91,12 +92,13 @@ class _SignUpPageState extends State<SignUpPage> {
       'role': 'CUSTOMER',
     };
 
-    try {
-      final authService = AuthService();
-      await authService.signup(signupData);
+    // Use AuthProvider to signup
+    await authProvider.signup(signupData);
 
-      if (!mounted) return;
+    if (!mounted) return;
 
+    // Check if signup was successful
+    if (authProvider.isAuthenticated && authProvider.user != null) {
       // Save user data to UserProvider
       userProvider.setFullName(_fullNameController.text);
       userProvider.setEmail(_emailController.text);
@@ -105,25 +107,14 @@ class _SignUpPageState extends State<SignUpPage> {
       userProvider.setWilaya(_selectedWilaya!);
       userProvider.setPassword(_passwordController.text);
 
-      // Success - show message and navigate
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account created successfully!'),
-          backgroundColor: Colors.green,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-
-      // Navigate to welcome page
+      // Navigate to HomePage
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const WelcomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
-    } catch (e) {
-      if (!mounted) return;
-
+    } else {
       // Show error message
-      _showError('Signup failed: ${e.toString()}');
+      _showError(authProvider.error ?? 'Signup failed. Please try again.');
     }
   }
 
