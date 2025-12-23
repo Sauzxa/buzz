@@ -14,7 +14,7 @@ class ApiEndpoints {
   static String get logout => '$apiPrefix/auth/logout';
 
   // User endpoints
-  static String getUserById(String userId) => '$apiPrefix/user/$userId';
+  static String getUserById(String userId) => '$apiPrefix/users/$userId';
 
   // Category endpoints
   static String get getAllCategories =>

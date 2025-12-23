@@ -63,6 +63,23 @@ class _SignInPageState extends State<SignInPage> {
 
     // Check if login was successful
     if (authProvider.isAuthenticated && authProvider.user != null) {
+      final userProvider = context.read<UserProvider>();
+
+      // 1. Initial populate from login response
+      userProvider.updateUser(authProvider.user!);
+
+      // 2. If ID is available, fetch full profile to ensure all fields (phone, address, etc.)
+      // are populated, as login response might be partial.
+      if (authProvider.user!.id != null) {
+        // We don't await this to delay navigation, but we could if critical.
+        // User requested "load infos", so fetching it is good practice here.
+        // Given UX, maybe fetch in background or show loading?
+        // Let's await it to be safe as per user request "not load infos... this is the probleme"
+        await userProvider.fetchUserById(authProvider.user!.id!);
+      }
+
+      if (!mounted) return;
+
       // Navigate to HomePage
       Navigator.pushReplacementNamed(context, RouteNames.home);
     } else {
@@ -149,7 +166,7 @@ class _SignInPageState extends State<SignInPage> {
               label: 'Email Address',
               hintText: userProvider.user.email?.isNotEmpty == true
                   ? userProvider.user.email
-                  : 'oussama.aba@email.com',
+                  : '',
               keyboardType: TextInputType.emailAddress,
             ),
 
@@ -162,7 +179,7 @@ class _SignInPageState extends State<SignInPage> {
               // Use stored password as hint if available (per user request)
               hintText: userProvider.user.password?.isNotEmpty == true
                   ? userProvider.user.password
-                  : '••••••',
+                  : '',
               obscureText: _obscurePassword,
               suffixIcon: IconButton(
                 icon: Icon(
@@ -244,7 +261,15 @@ class _SignInPageState extends State<SignInPage> {
             const SizedBox(height: 32),
 
             // Login Button
-            PrimaryButton(text: 'Login', onPressed: _onLogin),
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
+                return PrimaryButton(
+                  text: 'Login',
+                  isLoading: authProvider.isLoading,
+                  onPressed: _onLogin,
+                );
+              },
+            ),
 
             const SizedBox(height: 24),
 

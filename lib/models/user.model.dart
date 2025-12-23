@@ -1,4 +1,5 @@
 class UserModel {
+  final String? id; // Add ID field
   final String? phoneNumber;
   final String? email;
   final String? fullName;
@@ -10,6 +11,7 @@ class UserModel {
   final String? token; // JWT token field
 
   UserModel({
+    this.id,
     this.phoneNumber,
     this.email,
     this.fullName,
@@ -24,6 +26,7 @@ class UserModel {
   // Convert to JSON for API requests
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'phoneNumber': phoneNumber,
       'email': email,
       'fullName': fullName,
@@ -39,6 +42,8 @@ class UserModel {
   // Create from JSON response
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      // Map 'userId' (common in APIs) or 'id' to 'id' property
+      id: json['userId']?.toString() ?? json['id']?.toString(),
       phoneNumber: json['phoneNumber']?.toString(),
       email: json['email']?.toString(),
       fullName: json['fullName']?.toString(),
@@ -56,6 +61,7 @@ class UserModel {
 
   // Copy with method for updating specific fields
   UserModel copyWith({
+    String? id,
     String? phoneNumber,
     String? email,
     String? fullName,
@@ -67,6 +73,7 @@ class UserModel {
     String? token,
   }) {
     return UserModel(
+      id: id ?? this.id,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       email: email ?? this.email,
       fullName: fullName ?? this.fullName,
