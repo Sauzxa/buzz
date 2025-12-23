@@ -291,11 +291,6 @@ class _HomePageState extends State<HomePage> {
                   // News & Offers Section (horizontal with filter chips)
                   _buildNewsSection(),
 
-                  const SizedBox(height: 32),
-
-                  // Other Services Section
-                  _buildOtherServicesSection(),
-
                   const SizedBox(height: 24),
 
                   // Pubs/Ads Section
@@ -523,86 +518,6 @@ class _HomePageState extends State<HomePage> {
           },
         ),
       ],
-    );
-  }
-
-  Widget _buildOtherServicesSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Other Services',
-            style: GoogleFonts.dmSans(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        SizedBox(
-          height: 140,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: 4,
-            itemBuilder: (context, index) {
-              final services = [
-                'Logo Design',
-                'Packaging',
-                'Wrapping',
-                'Printing',
-              ];
-              final icons = [
-                Icons.design_services,
-                Icons.inventory_2_outlined,
-                Icons.card_giftcard,
-                Icons.print,
-              ];
-
-              return _buildOtherServiceItem(services[index], icons[index]);
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOtherServiceItem(String title, IconData icon) {
-    return Container(
-      width: 100,
-      margin: const EdgeInsets.only(right: 12),
-      child: Column(
-        children: [
-          Container(
-            width: 100,
-            height: 100,
-            decoration: BoxDecoration(
-              color: AppColors.roseColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: AppColors.roseColor.withOpacity(0.2),
-                width: 1,
-              ),
-            ),
-            child: Icon(icon, size: 40, color: AppColors.roseColor),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.dmSans(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
     );
   }
 
