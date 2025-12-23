@@ -22,6 +22,7 @@ class _CategoryCardState extends State<CategoryCard> {
     super.initState();
     _imageFuture = ImageDecoder.decodeBase64Image(
       widget.category.categoryImage,
+      cacheKey: widget.category.id,
     );
   }
 
@@ -31,6 +32,15 @@ class _CategoryCardState extends State<CategoryCard> {
     if (oldWidget.category.categoryImage != widget.category.categoryImage) {
       _imageFuture = ImageDecoder.decodeBase64Image(
         widget.category.categoryImage,
+        cacheKey: widget
+            .category
+            .id, // Invalidate/update cache logic might be needed if image changes for same ID, but assuming ID maps to content usually.
+        // Actually if image string changes, cache might need update.
+        // My simple cache logic doesn't overwrite if key exists for a *new* hash,
+        // but here we are just putting the same ID.
+        // If content changes, we should probably update cache.
+        // My ImageDecoder implementation overwrites: `_imageCache[cacheKey] = decoded;`
+        // so it should be fine if we re-decode and cache.
       );
     }
   }

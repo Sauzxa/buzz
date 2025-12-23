@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../providers/auth_provider.dart';
+import '../providers/user_provider.dart';
 import '../routes/route_names.dart';
 
 class SignInPage extends StatefulWidget {
@@ -19,6 +20,19 @@ class _SignInPageState extends State<SignInPage> {
 
   bool _obscurePassword = true;
   bool _rememberMe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill controllers if data is available in UserProvider (optional UX improvement)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final userProvider = context.read<UserProvider>();
+      if (userProvider.user.email != null &&
+          userProvider.user.email!.isNotEmpty) {
+        _emailController.text = userProvider.user.email!;
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -84,6 +98,8 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -131,7 +147,9 @@ class _SignInPageState extends State<SignInPage> {
             _buildInputField(
               controller: _emailController,
               label: 'Email Address',
-              hintText: 'oussama.aba@email.com',
+              hintText: userProvider.user.email?.isNotEmpty == true
+                  ? userProvider.user.email
+                  : 'oussama.aba@email.com',
               keyboardType: TextInputType.emailAddress,
             ),
 
@@ -141,7 +159,10 @@ class _SignInPageState extends State<SignInPage> {
             _buildInputField(
               controller: _passwordController,
               label: 'Password',
-              hintText: '••••••',
+              // Use stored password as hint if available (per user request)
+              hintText: userProvider.user.password?.isNotEmpty == true
+                  ? userProvider.user.password
+                  : '••••••',
               obscureText: _obscurePassword,
               suffixIcon: IconButton(
                 icon: Icon(
@@ -302,10 +323,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(
-                      context,
-                      RouteNames.mobileNumber,
-                    );
+                    Navigator.pushReplacementNamed(context, RouteNames.signUp);
                   },
                   child: Text(
                     'Sign Up',

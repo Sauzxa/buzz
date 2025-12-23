@@ -105,8 +105,8 @@ class _SignUpPageState extends State<SignUpPage> {
       userProvider.setWilaya(_selectedWilaya!);
       userProvider.setPassword(_passwordController.text);
 
-      // Navigate to HomePage
-      Navigator.pushReplacementNamed(context, RouteNames.home);
+      // Navigate to Welcome Page after signup
+      Navigator.pushReplacementNamed(context, RouteNames.welcome);
     } else {
       // Show error message
       _showError(authProvider.error ?? 'Signup failed. Please try again.');
@@ -329,12 +329,17 @@ class _SignUpPageState extends State<SignUpPage> {
             const SizedBox(height: 30),
 
             // Sign up Button
-            Opacity(
-              opacity: _isFormValid ? 1.0 : 0.5,
-              child: PrimaryButton(
-                text: 'Sign up',
-                onPressed: _isFormValid ? _onSingup : () {},
-              ),
+            Consumer<AuthProvider>(
+              builder: (context, authProvider, child) {
+                return Opacity(
+                  opacity: _isFormValid ? 1.0 : 0.5,
+                  child: PrimaryButton(
+                    text: 'Sign up',
+                    isLoading: authProvider.isLoading,
+                    onPressed: _isFormValid ? _onSingup : () {},
+                  ),
+                );
+              },
             ),
 
             const SizedBox(height: 20),

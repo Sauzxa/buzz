@@ -23,14 +23,20 @@ class _ServiceCardState extends State<ServiceCard> {
   @override
   void initState() {
     super.initState();
-    _imageFuture = ImageDecoder.decodeBase64Image(widget.service.imageUrl);
+    _imageFuture = ImageDecoder.decodeBase64Image(
+      widget.service.imageUrl,
+      cacheKey: widget.service.id,
+    );
   }
 
   @override
   void didUpdateWidget(covariant ServiceCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.service.imageUrl != widget.service.imageUrl) {
-      _imageFuture = ImageDecoder.decodeBase64Image(widget.service.imageUrl);
+      _imageFuture = ImageDecoder.decodeBase64Image(
+        widget.service.imageUrl,
+        cacheKey: widget.service.id,
+      );
     }
   }
 

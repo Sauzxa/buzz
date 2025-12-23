@@ -8,10 +8,10 @@ import '../providers/services_provider.dart';
 import '../providers/news_provider.dart';
 import '../Widgets/home_drawer.dart';
 import '../Widgets/notification_popup.dart';
-import '../Widgets/loading_fallback.dart';
 import '../Widgets/error_fallback.dart';
 import '../Widgets/category_card.dart';
 import '../Widgets/service_card.dart';
+import '../Widgets/skeleton_loader.dart';
 import '../Widgets/ad_banner.dart';
 import '../utils/snackbar_helper.dart';
 
@@ -315,10 +315,18 @@ class _HomePageState extends State<HomePage> {
     return Consumer<CategoriesProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading) {
-          return const SizedBox(
+          return SizedBox(
             height: 150,
-            child: Center(
-              child: LoadingFallback(message: 'Loading categories...'),
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: 4,
+              itemBuilder: (context, index) {
+                return const Padding(
+                  padding: EdgeInsets.only(right: 12),
+                  child: SkeletonLoader(width: 200, height: 120),
+                );
+              },
             ),
           );
         }
@@ -455,10 +463,18 @@ class _HomePageState extends State<HomePage> {
         Consumer<ServicesProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading) {
-              return const SizedBox(
-                height: 120, // Match card height
-                child: Center(
-                  child: LoadingFallback(message: 'Loading services...'),
+              return SizedBox(
+                height: 120,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: 4,
+                  itemBuilder: (context, index) {
+                    return const Padding(
+                      padding: EdgeInsets.only(right: 12),
+                      child: SkeletonLoader(width: 200, height: 120),
+                    );
+                  },
                 ),
               );
             }

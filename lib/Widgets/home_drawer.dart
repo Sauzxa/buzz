@@ -161,12 +161,14 @@ class HomeDrawer extends StatelessWidget {
                 // Actually prompt said "missing the Logout... + add logout".
                 // I will assume text "Logout".
                 onTap: () async {
-                  // Use AuthProvider to logout (clears token)
+                  // Capture providers before async operation
                   final authProvider = context.read<AuthProvider>();
+                  final userProvider = context.read<UserProvider>();
+
+                  // Use AuthProvider to logout (clears token)
                   await authProvider.logout();
 
-                  // Also clear user provider
-                  final userProvider = context.read<UserProvider>();
+                  // Clear user provider
                   userProvider.clearUser();
 
                   if (!context.mounted) return;

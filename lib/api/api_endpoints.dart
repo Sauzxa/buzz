@@ -9,7 +9,9 @@ class ApiEndpoints {
   static const String apiPrefix = '/api';
 
   // Authentication endpoints
-  static String get singup => '$apiPrefix/users/create-test';
+  static String get signup => '$apiPrefix/auth/register';
+  static String get login => '$apiPrefix/auth/login';
+  static String get logout => '$apiPrefix/auth/logout';
 
   // User endpoints
   static String getUserById(String userId) => '$apiPrefix/user/$userId';

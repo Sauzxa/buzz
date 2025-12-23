@@ -105,6 +105,9 @@ class AuthProvider with ChangeNotifier {
   /// Logout - clear token and user data
   Future<void> logout() async {
     try {
+      // Call server logout
+      await _authService.logout();
+
       // Clear auth data (preserves onboarding flag)
       await _storageService.clearAuthData();
 

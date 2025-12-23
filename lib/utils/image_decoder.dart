@@ -3,13 +3,33 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 
 class ImageDecoder {
+  // Simple in-memory cache for decoded images
+  static final Map<String, Uint8List> _imageCache = {};
+
   /// Decode base64 string to Uint8List asynchronously using a background isolate
-  static Future<Uint8List?> decodeBase64Image(String? base64String) async {
+  /// Optional [cacheKey] to cache the result (e.g., category ID)
+  static Future<Uint8List?> decodeBase64Image(
+    String? base64String, {
+    String? cacheKey,
+  }) async {
     if (base64String == null || base64String.isEmpty) {
       return null;
     }
+
+    // Check cache if key provided
+    if (cacheKey != null && _imageCache.containsKey(cacheKey)) {
+      return _imageCache[cacheKey];
+    }
+
     try {
-      return await compute(_decodeIso, base64String);
+      final decoded = await compute(_decodeIso, base64String);
+
+      // Cache result if key provided
+      if (cacheKey != null && decoded != null) {
+        _imageCache[cacheKey] = decoded;
+      }
+
+      return decoded;
     } catch (e) {
       print('Error decoding base64 image async: $e');
       return null;

@@ -49,7 +49,8 @@ class UserModel {
       wilaya: json['wilaya']?.toString(),
       password: json['password']?.toString(),
       role: json['role']?.toString() ?? 'CUSTOMER',
-      token: json['token']?.toString(),
+      // Map 'accessToken' from API to 'token' property
+      token: json['accessToken']?.toString() ?? json['token']?.toString(),
     );
   }
 
