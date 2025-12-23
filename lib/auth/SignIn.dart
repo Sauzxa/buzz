@@ -348,7 +348,10 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacementNamed(context, RouteNames.signUp);
+                    Navigator.pushReplacementNamed(
+                      context,
+                      RouteNames.mobileNumber,
+                    );
                   },
                   child: Text(
                     'Sign Up',

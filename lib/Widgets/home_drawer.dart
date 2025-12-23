@@ -152,33 +152,75 @@ class HomeDrawer extends StatelessWidget {
             // "Expanded" ListView takes remaining space.
             // So putting it after Expanded pushes it to bottom.
             Container(
-              padding: const EdgeInsets.only(bottom: 40),
-              child: _buildMenuItem(
-                context,
-                icon: Icons.logout, // Or specific power icon
-                title:
-                    'Logout', // Removed 'Logout' text if it's icon only? No, usually text.
-                // Actually prompt said "missing the Logout... + add logout".
-                // I will assume text "Logout".
-                onTap: () async {
-                  // Capture providers before async operation
-                  final authProvider = context.read<AuthProvider>();
-                  final userProvider = context.read<UserProvider>();
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(30),
+                  child: Consumer<AuthProvider>(
+                    builder: (context, authProvider, child) {
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(30),
+                        onTap: authProvider.isLoading
+                            ? null
+                            : () async {
+                                final userProvider = context
+                                    .read<UserProvider>();
+                                await authProvider.logout();
+                                userProvider.clearUser();
 
-                  // Use AuthProvider to logout (clears token)
-                  await authProvider.logout();
+                                if (!context.mounted) return;
 
-                  // Clear user provider
-                  userProvider.clearUser();
-
-                  if (!context.mounted) return;
-
-                  // Navigate to SignIn (user has seen onboarding)
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    RouteNames.signIn,
-                    (route) => false,
-                  );
-                },
+                                Navigator.of(context).pushNamedAndRemoveUntil(
+                                  RouteNames.signIn,
+                                  (route) => false,
+                                );
+                              },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
+                          child: authProvider.isLoading
+                              ? const Center(
+                                  child: SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: AppColors.roseColor,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  ),
+                                )
+                              : Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.logout,
+                                      color: AppColors.roseColor,
+                                      size: 24,
+                                    ),
+                                    const SizedBox(
+                                      width: 16,
+                                    ), // Gap between icon and text
+                                    Text(
+                                      'Logout',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.roseColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ],
