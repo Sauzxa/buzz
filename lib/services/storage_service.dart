@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../models/user.model.dart';
 
 class StorageService {
   // Singleton pattern
@@ -13,6 +15,7 @@ class StorageService {
   // Storage keys
   static const String _tokenKey = 'auth_token';
   static const String _userIdKey = 'user_id';
+  static const String _userDataKey = 'user_data';
   static const String _hasSeenOnboardingKey = 'has_seen_onboarding';
 
   /// Save JWT token to secure storage
@@ -112,11 +115,48 @@ class StorageService {
     }
   }
 
+  /// Save complete user data to secure storage as JSON
+  Future<void> saveUserData(UserModel user) async {
+    try {
+      final userJson = jsonEncode(user.toJson());
+      await _storage.write(key: _userDataKey, value: userJson);
+    } catch (e) {
+      print('Error saving user data: $e');
+      rethrow;
+    }
+  }
+
+  /// Get user data from secure storage
+  Future<UserModel?> getUserData() async {
+    try {
+      final userJson = await _storage.read(key: _userDataKey);
+      if (userJson != null && userJson.isNotEmpty) {
+        final userData = jsonDecode(userJson) as Map<String, dynamic>;
+        return UserModel.fromJson(userData);
+      }
+      return null;
+    } catch (e) {
+      print('Error reading user data: $e');
+      return null;
+    }
+  }
+
+  /// Delete user data from secure storage
+  Future<void> deleteUserData() async {
+    try {
+      await _storage.delete(key: _userDataKey);
+    } catch (e) {
+      print('Error deleting user data: $e');
+      rethrow;
+    }
+  }
+
   /// Clear auth data only (logout) - preserves onboarding flag
   Future<void> clearAuthData() async {
     try {
       await deleteToken();
       await deleteUserId();
+      await deleteUserData();
       // Note: Does NOT clear hasSeenOnboarding
     } catch (e) {
       print('Error clearing auth data: $e');

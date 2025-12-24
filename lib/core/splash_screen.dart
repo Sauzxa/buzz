@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
+import '../providers/user_provider.dart';
 import '../routes/route_names.dart';
 
 import '../theme/colors.dart';
@@ -36,7 +37,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Enhanced routing logic
     if (isAuthenticated) {
-      // User has valid token → HomePage
+      // User has valid token → Populate UserProvider and navigate to HomePage
+      if (authProvider.user != null) {
+        final userProvider = context.read<UserProvider>();
+        userProvider.updateUser(authProvider.user!);
+      }
       Navigator.of(context).pushReplacementNamed(RouteNames.home);
     } else if (authProvider.hasSeenOnboarding) {
       // No token but has seen onboarding → SignIn

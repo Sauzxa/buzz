@@ -97,13 +97,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
     // Check if signup was successful
     if (authProvider.isAuthenticated && authProvider.user != null) {
-      // Save user data to UserProvider
-      userProvider.setFullName(_fullNameController.text);
-      userProvider.setEmail(_emailController.text);
-      userProvider.setCurrentAddress(_addressController.text);
-      userProvider.setpostalCode(_postalCodeController.text);
-      userProvider.setWilaya(_selectedWilaya!);
-      userProvider.setPassword(_passwordController.text);
+      // Update UserProvider with complete user object from signup response
+      userProvider.updateUser(authProvider.user!);
 
       // Navigate to Welcome Page after signup
       Navigator.pushReplacementNamed(context, RouteNames.welcome);

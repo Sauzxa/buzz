@@ -65,16 +65,13 @@ class _SignInPageState extends State<SignInPage> {
     if (authProvider.isAuthenticated && authProvider.user != null) {
       final userProvider = context.read<UserProvider>();
 
-      // 1. Initial populate from login response
+      // Update UserProvider with user data from login response
       userProvider.updateUser(authProvider.user!);
 
-      // 2. If ID is available, fetch full profile to ensure all fields (phone, address, etc.)
-      // are populated, as login response might be partial.
+      // Fetch complete profile if userId is available
+      // Login response has: userId, email, fullName, role, tokens
+      // But missing: phoneNumber, currentAddress, postalCode, wilaya
       if (authProvider.user!.id != null) {
-        // We don't await this to delay navigation, but we could if critical.
-        // User requested "load infos", so fetching it is good practice here.
-        // Given UX, maybe fetch in background or show loading?
-        // Let's await it to be safe as per user request "not load infos... this is the probleme"
         await userProvider.fetchUserById(authProvider.user!.id!);
       }
 

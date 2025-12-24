@@ -34,6 +34,12 @@ class AuthProvider with ChangeNotifier {
         await _storageService.saveToken(_user!.token!);
         _apiClient.setAuthToken(_user!.token!);
         _isAuthenticated = true;
+
+        // Save user ID and complete user data
+        if (_user?.id != null) {
+          await _storageService.saveUserId(_user!.id!);
+        }
+        await _storageService.saveUserData(_user!);
       }
     } catch (e) {
       _error = 'Login failed: ${e.toString()}';
@@ -56,6 +62,12 @@ class AuthProvider with ChangeNotifier {
         await _storageService.saveToken(_user!.token!);
         _apiClient.setAuthToken(_user!.token!);
         _isAuthenticated = true;
+
+        // Save user ID and complete user data
+        if (_user?.id != null) {
+          await _storageService.saveUserId(_user!.id!);
+        }
+        await _storageService.saveUserData(_user!);
       }
     } catch (e) {
       _error = 'Signup failed: ${e.toString()}';
@@ -76,15 +88,25 @@ class AuthProvider with ChangeNotifier {
       final token = await _storageService.getToken();
 
       if (token != null && token.isNotEmpty) {
-        // Set token in API client
-        _apiClient.setAuthToken(token);
+        // Try to get stored user data
+        final userData = await _storageService.getUserData();
 
-        // Create minimal user model with token
-        // In production, you might want to fetch user profile here
-        _user = UserModel(token: token);
-        _isAuthenticated = true;
-        _setLoading(false);
-        return true;
+        if (userData != null) {
+          // Use stored user data
+          _user = userData;
+          _apiClient.setAuthToken(token);
+          _isAuthenticated = true;
+          _setLoading(false);
+          return true;
+        } else {
+          // Fallback: token exists but no user data
+          // This shouldn't happen in normal flow, but handle gracefully
+          _apiClient.setAuthToken(token);
+          _user = UserModel(token: token);
+          _isAuthenticated = true;
+          _setLoading(false);
+          return true;
+        }
       }
     } catch (e) {
       print('Auto-login error: $e');
