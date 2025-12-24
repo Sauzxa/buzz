@@ -8,13 +8,13 @@ import '../providers/services_provider.dart';
 import '../providers/news_provider.dart';
 import '../Widgets/home_drawer.dart';
 import '../Widgets/notification_popup.dart';
-import '../Widgets/error_fallback.dart';
 import '../Widgets/category_card.dart';
 import '../Widgets/service_card.dart';
 import '../Widgets/custom_bottom_nav_bar.dart';
 import '../Widgets/skeleton_loader.dart';
 import '../Widgets/ad_banner.dart';
 import '../utils/snackbar_helper.dart';
+import '../utils/static_categories.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -347,28 +347,19 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        if (provider.hasError && !provider.hasData) {
-          return SizedBox(
-            height: 150,
-            child: ErrorFallback(
-              message: provider.errorMessage ?? 'Failed to load categories',
-              onRetry: () => provider.fetchCategories(),
-            ),
-          );
-        }
-
-        if (!provider.hasData) {
-          return const SizedBox.shrink();
-        }
+        // Use static categories if error or no API data
+        final categoriesToShow = provider.hasData
+            ? provider.categories
+            : staticCategories;
 
         return SizedBox(
           height: 150,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: provider.categories.length,
+            itemCount: categoriesToShow.length,
             itemBuilder: (context, index) {
-              final category = provider.categories[index];
+              final category = categoriesToShow[index];
               return CategoryCard(
                 category: category,
                 onTap: () {
@@ -495,21 +486,9 @@ class _HomePageState extends State<HomePage> {
               );
             }
 
-            if (provider.hasError && !provider.hasData) {
-              return SizedBox(
-                height: 120,
-                child: ErrorFallback(
-                  message: provider.errorMessage ?? 'Failed to load services',
-                  onRetry: () => provider.fetchServices(),
-                ),
-              );
-            }
-
+            // Show nothing if error or no data
             if (!provider.hasData) {
-              return const SizedBox(
-                height: 120,
-                child: Center(child: Text("No services available")),
-              );
+              return const SizedBox.shrink();
             }
 
             // Limit to a reasonable number if needed, or show all

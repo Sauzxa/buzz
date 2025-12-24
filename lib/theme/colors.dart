@@ -15,4 +15,8 @@ class AppColors {
   // Gradient colors for onboarding 5
   static const Color blueSky = Color(0xFF7AC2EB);
   static const Color blueSkyDark = Color(0xFF2299DD);
+  // category colors
+  static const Color GraphicDesing = Color(0xFF07A061);
+  static const Color Printing = Color(0xFF9747FF);
+  static const Color AudioVisual = Color(0xFFD80027);
 }
