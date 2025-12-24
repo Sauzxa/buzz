@@ -11,6 +11,7 @@ import '../Widgets/notification_popup.dart';
 import '../Widgets/error_fallback.dart';
 import '../Widgets/category_card.dart';
 import '../Widgets/service_card.dart';
+import '../Widgets/custom_bottom_nav_bar.dart';
 import '../Widgets/skeleton_loader.dart';
 import '../Widgets/ad_banner.dart';
 import '../utils/snackbar_helper.dart';
@@ -23,6 +24,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +33,19 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchData();
     });
+  }
+
+  void _onBottomNavTapped(int index) {
+    if (index == 0) {
+      setState(() {
+        _selectedIndex = 0;
+      });
+    } else {
+      SnackBarHelper.showInfoSnackBar(
+        context,
+        'Feature available in the future',
+      );
+    }
   }
 
   Future<void> _fetchData() async {
@@ -78,7 +94,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      extendBody: true,
       drawer: const HomeDrawer(),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _selectedIndex,
+        onTap: _onBottomNavTapped,
+      ),
       body: RefreshIndicator(
         onRefresh: _fetchData,
         color: AppColors.roseColor,
