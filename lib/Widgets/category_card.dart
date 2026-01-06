@@ -1,49 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:typed_data';
 import '../models/category_model.dart';
-import '../utils/image_decoder.dart';
 
-class CategoryCard extends StatefulWidget {
+class CategoryCard extends StatelessWidget {
   final CategoryModel category;
   final VoidCallback? onTap;
 
   const CategoryCard({super.key, required this.category, this.onTap});
-
-  @override
-  State<CategoryCard> createState() => _CategoryCardState();
-}
-
-class _CategoryCardState extends State<CategoryCard> {
-  late Future<Uint8List?> _imageFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _imageFuture = ImageDecoder.decodeBase64Image(
-      widget.category.categoryImage,
-      cacheKey: widget.category.id,
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant CategoryCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.category.categoryImage != widget.category.categoryImage) {
-      _imageFuture = ImageDecoder.decodeBase64Image(
-        widget.category.categoryImage,
-        cacheKey: widget
-            .category
-            .id, // Invalidate/update cache logic might be needed if image changes for same ID, but assuming ID maps to content usually.
-        // Actually if image string changes, cache might need update.
-        // My simple cache logic doesn't overwrite if key exists for a *new* hash,
-        // but here we are just putting the same ID.
-        // If content changes, we should probably update cache.
-        // My ImageDecoder implementation overwrites: `_imageCache[cacheKey] = decoded;`
-        // so it should be fine if we re-decode and cache.
-      );
-    }
-  }
 
   Color _parseColor(String colorString) {
     try {
@@ -64,10 +27,10 @@ class _CategoryCardState extends State<CategoryCard> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryColor = _parseColor(widget.category.categoryColor);
+    final categoryColor = _parseColor(category.categoryColor);
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Container(
         width: 200, // Wider rectangular shape
         height: 120, // Specific height for the card
@@ -81,23 +44,22 @@ class _CategoryCardState extends State<CategoryCard> {
           fit: StackFit.expand,
           children: [
             // Background Image
-            FutureBuilder<Uint8List?>(
-              future: _imageFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done &&
-                    snapshot.hasData &&
-                    snapshot.data != null) {
-                  return Image.memory(
-                    snapshot.data!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(color: categoryColor);
-                    },
-                  );
-                }
-                return Container(color: categoryColor);
-              },
-            ),
+            if (category.categoryImage.isNotEmpty)
+              Image.network(
+                category.categoryImage,
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  // Show color background while loading
+                  return Container(color: categoryColor);
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  // Show color background on error
+                  return Container(color: categoryColor);
+                },
+              )
+            else
+              Container(color: categoryColor),
 
             // Gradient Overlay (optional, to ensure text readability)
             Container(
@@ -119,7 +81,7 @@ class _CategoryCardState extends State<CategoryCard> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Text(
-                  widget.category.categoryName.toUpperCase(),
+                  category.categoryName.toUpperCase(),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,

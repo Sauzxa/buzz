@@ -3,7 +3,7 @@ class CategoryModel {
   final String categoryName;
   final String description;
   final String categoryColor;
-  final String categoryImage; // base64 encoded
+  final String categoryImage; // Image URL from third-party service
   final List<dynamic>? services;
 
   CategoryModel({

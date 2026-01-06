@@ -1,53 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:typed_data';
 import 'dart:math';
 import '../models/service_model.dart';
-import '../utils/image_decoder.dart';
 
-class ServiceCard extends StatefulWidget {
+class ServiceCard extends StatelessWidget {
   final ServiceModel service;
   final VoidCallback? onTap;
 
   const ServiceCard({super.key, required this.service, this.onTap});
 
   @override
-  State<ServiceCard> createState() => _ServiceCardState();
-}
-
-class _ServiceCardState extends State<ServiceCard> {
-  late Future<Uint8List?> _imageFuture;
-  final Color _randomColor =
-      Colors.primaries[Random().nextInt(Colors.primaries.length)];
-
-  @override
-  void initState() {
-    super.initState();
-    _imageFuture = ImageDecoder.decodeBase64Image(
-      widget.service.imageUrl,
-      cacheKey: widget.service.id,
-    );
-  }
-
-  @override
-  void didUpdateWidget(covariant ServiceCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.service.imageUrl != widget.service.imageUrl) {
-      _imageFuture = ImageDecoder.decodeBase64Image(
-        widget.service.imageUrl,
-        cacheKey: widget.service.id,
-      );
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Use a default color if no specific color logic exists for services
-    // Using a consistent color or random one for fallback
-    final cardColor = _randomColor;
+    // Use a random color for fallback
+    final cardColor =
+        Colors.primaries[Random().nextInt(Colors.primaries.length)];
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Container(
         width: 200,
         height: 120, // Same dimensions as CategoryCard
@@ -61,33 +30,22 @@ class _ServiceCardState extends State<ServiceCard> {
           fit: StackFit.expand,
           children: [
             // Background Image
-            if (widget.service.imageUrl != null &&
-                widget.service.imageUrl!.startsWith('http'))
+            if (service.imageUrl != null && service.imageUrl!.isNotEmpty)
               Image.network(
-                widget.service.imageUrl!,
+                service.imageUrl!,
                 fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  // Show color background while loading
+                  return Container(color: cardColor);
+                },
                 errorBuilder: (context, error, stackTrace) {
+                  // Show color background on error
                   return Container(color: cardColor);
                 },
               )
             else
-              FutureBuilder<Uint8List?>(
-                future: _imageFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.hasData &&
-                      snapshot.data != null) {
-                    return Image.memory(
-                      snapshot.data!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(color: cardColor);
-                      },
-                    );
-                  }
-                  return Container(color: cardColor);
-                },
-              ),
+              Container(color: cardColor),
 
             // Gradient Overlay
             Container(
@@ -109,7 +67,7 @@ class _ServiceCardState extends State<ServiceCard> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: Text(
-                  widget.service.name.toUpperCase(),
+                  service.name.toUpperCase(),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
