@@ -77,7 +77,8 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  /// Check for stored token and auto-login
+  /// Check for stored token and auto-login with backend validation
+  /// This validates the token with the backend and fetches fresh user data
   Future<bool> tryAutoLogin() async {
     _setLoading(true);
 
@@ -86,31 +87,30 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final token = await _storageService.getToken();
+      final userId = await _storageService.getUserId();
 
-      if (token != null && token.isNotEmpty) {
-        // Try to get stored user data
-        final userData = await _storageService.getUserData();
+      if (token != null && token.isNotEmpty && userId != null) {
+        // Set token in API client for the validation request
+        _apiClient.setAuthToken(token);
 
-        if (userData != null) {
-          // Use stored user data
-          _user = userData;
-          _apiClient.setAuthToken(token);
-          _isAuthenticated = true;
-          _setLoading(false);
-          return true;
-        } else {
-          // Fallback: token exists but no user data
-          // This shouldn't happen in normal flow, but handle gracefully
-          _apiClient.setAuthToken(token);
-          _user = UserModel(token: token);
-          _isAuthenticated = true;
-          _setLoading(false);
-          return true;
-        }
+        // Validate token and fetch fresh user data from backend
+        _user = await _authService.validateTokenAndFetchUser(userId);
+
+        // Token is valid, update storage with fresh data
+        await _storageService.saveUserData(_user!);
+        _isAuthenticated = true;
+        _setLoading(false);
+        return true;
       }
     } catch (e) {
-      print('Auto-login error: $e');
-      _error = 'Auto-login failed';
+      print('Auto-login failed: $e');
+
+      // Token is invalid/expired, clear auth data
+      await _storageService.clearAuthData();
+      _apiClient.clearAuthToken();
+      _user = null;
+      _isAuthenticated = false;
+      _error = null;
     }
 
     _setLoading(false);

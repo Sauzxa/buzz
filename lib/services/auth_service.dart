@@ -43,6 +43,25 @@ class AuthService {
     }
   }
 
+  /// Validate token and fetch fresh user data from backend
+  /// This is used during auto-login to ensure the token is still valid
+  /// and to get the latest user profile data
+  Future<UserModel> validateTokenAndFetchUser(String userId) async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.getUserById(userId));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return UserModel.fromJson(response.data);
+      } else if (response.statusCode == 401) {
+        throw Exception('Token expired or invalid');
+      } else {
+        throw Exception('Failed to validate user: ${response.statusCode}');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<UserModel> signup(Map<String, dynamic> data) async {
     try {
       final response = await _apiClient.post(ApiEndpoints.signup, data: data);
