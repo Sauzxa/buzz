@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:math';
 import '../models/service_model.dart';
+import '../theme/colors.dart';
 
 class ServiceCard extends StatelessWidget {
   final ServiceModel service;
@@ -11,80 +11,75 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Use a random color for fallback
-    final cardColor =
-        Colors.primaries[Random().nextInt(Colors.primaries.length)];
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 200,
-        height: 120, // Same dimensions as CategoryCard
-        margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
-          color: cardColor,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         clipBehavior: Clip.hardEdge,
-        child: Stack(
-          fit: StackFit.expand,
+        child: Column(
           children: [
-            // Background Image
-            if (service.imageUrl != null && service.imageUrl!.isNotEmpty)
-              Image.network(
-                service.imageUrl!,
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  // Show color background while loading
-                  return Container(color: cardColor);
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  // Show color background on error
-                  return Container(color: cardColor);
-                },
-              )
-            else
-              Container(color: cardColor),
-
-            // Gradient Overlay
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.black.withOpacity(0.4),
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.4),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+            // Service Image
+            Expanded(
+              child: Container(
+                width: double.infinity,
+                color: Colors.grey[100],
+                child: service.imageUrl != null && service.imageUrl!.isNotEmpty
+                    ? Image.network(
+                        service.imageUrl!,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, loadingProgress) {
+                          if (loadingProgress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                        loadingProgress.expectedTotalBytes!
+                                  : null,
+                              strokeWidth: 2,
+                              color: AppColors.greenColor,
+                            ),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(
+                            Icons.image_outlined,
+                            size: 40,
+                            color: Colors.grey[400],
+                          );
+                        },
+                      )
+                    : Icon(
+                        Icons.design_services_outlined,
+                        size: 40,
+                        color: Colors.grey[400],
+                      ),
               ),
             ),
 
-            // Text Content
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                child: Text(
-                  service.name.toUpperCase(),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.dmSans(
-                    fontSize:
-                        20, // Slightly smaller than Category 24px as service names might be longer
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    height: 1.0,
-                    shadows: [
-                      const Shadow(
-                        offset: Offset(0, 2),
-                        blurRadius: 4.0,
-                        color: Colors.black26,
-                      ),
-                    ],
-                  ),
+            // Service Name Label (Green Badge)
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              decoration: const BoxDecoration(color: AppColors.greenColor),
+              child: Text(
+                service.name,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.dmSans(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
                 ),
               ),
             ),

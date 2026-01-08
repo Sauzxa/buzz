@@ -15,6 +15,7 @@ import '../Widgets/skeleton_loader.dart';
 import '../Widgets/ad_banner.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/static_categories.dart';
+import '../pages/categories/category_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -363,9 +364,11 @@ class _HomePageState extends State<HomePage> {
               return CategoryCard(
                 category: category,
                 onTap: () {
-                  SnackBarHelper.showInfoSnackBar(
+                  Navigator.push(
                     context,
-                    'Category: ${category.categoryName}',
+                    MaterialPageRoute(
+                      builder: (_) => CategoryPage(category: category),
+                    ),
                   );
                 },
               );
@@ -503,14 +506,17 @@ class _HomePageState extends State<HomePage> {
                 itemCount: services.length,
                 itemBuilder: (context, index) {
                   final service = services[index];
-                  return ServiceCard(
-                    service: service,
-                    onTap: () {
-                      SnackBarHelper.showInfoSnackBar(
-                        context,
-                        'Service: ${service.name}',
-                      );
-                    },
+                  return SizedBox(
+                    width: 200,
+                    child: ServiceCard(
+                      service: service,
+                      onTap: () {
+                        SnackBarHelper.showInfoSnackBar(
+                          context,
+                          'Service: ${service.name}',
+                        );
+                      },
+                    ),
                   );
                 },
               ),

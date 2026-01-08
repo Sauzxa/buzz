@@ -4,6 +4,9 @@ class AppColors {
   // Primary colors
   static const Color roseColor = Color(0xFFEC1968);
   static const Color lightBlueColor = Color(0xFF8DC9E8);
+  static const Color greenColor = Color(
+    0xFF4FBF67,
+  ); // Primary green color from design
 
   // Gradient colors for onboarding 3
   static const Color orangeLight = Color(0xFFFFC876);

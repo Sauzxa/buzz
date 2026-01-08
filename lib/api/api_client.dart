@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../config/config.dart';
 import 'api_endpoints.dart';
@@ -21,6 +22,8 @@ class ApiClient {
           // Accept all status codes to handle them manually
           return status != null && status < 600;
         },
+        // Use custom transformer to handle malformed JSON
+        responseType: ResponseType.plain, // Get response as string first
       ),
     );
 
@@ -39,6 +42,17 @@ class ApiClient {
               'RESPONSE[${response.statusCode}] => ${response.requestOptions.path}',
             );
           }
+
+          // Parse JSON response
+          if (response.data is String && response.data.toString().isNotEmpty) {
+            try {
+              response.data = jsonDecode(response.data as String);
+            } catch (e) {
+              print('❌ [API_CLIENT] JSON parse error: $e');
+              print('❌ [API_CLIENT] Raw response: ${response.data}');
+            }
+          }
+
           return handler.next(response);
         },
         onError: (error, handler) {
@@ -46,12 +60,20 @@ class ApiClient {
             print(
               'ERROR[${error.response?.statusCode}] => ${error.requestOptions.path}',
             );
+            print('Error type: ${error.type}');
+            print('Error message: ${error.message}');
+            if (error.response != null) {
+              print('Error response data: ${error.response?.data}');
+            }
           }
           return handler.next(error);
         },
       ),
     );
   }
+
+  // Getter for current headers (for debugging)
+  Map<String, dynamic> get currentHeaders => _dio.options.headers;
 
   // GET request
   Future<Response> get(
@@ -67,6 +89,13 @@ class ApiClient {
       );
       return response;
     } on DioException catch (e) {
+      // Enhanced logging for debugging
+      print('🔴 [API_CLIENT] DioException caught for: $endpoint');
+      print('🔴 [API_CLIENT] Error type: ${e.type}');
+      print('🔴 [API_CLIENT] Error message: ${e.message}');
+      print('🔴 [API_CLIENT] Response status: ${e.response?.statusCode}');
+      print('🔴 [API_CLIENT] Response data: ${e.response?.data}');
+      print('🔴 [API_CLIENT] Response headers: ${e.response?.headers}');
       throw _handleError(e);
     }
   }
