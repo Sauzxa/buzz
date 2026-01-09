@@ -31,17 +31,15 @@ class ApiClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
-          if (AppConfig.enableLogging) {
-            print('REQUEST[${options.method}] => ${options.path}');
-          }
+          // Force logging for debugging
+          print('REQUEST[${options.method}] => ${options.path}');
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          if (AppConfig.enableLogging) {
-            print(
-              'RESPONSE[${response.statusCode}] => ${response.requestOptions.path}',
-            );
-          }
+          // Force logging for debugging
+          print(
+            'RESPONSE[${response.statusCode}] => ${response.requestOptions.path}',
+          );
 
           // Parse JSON response
           if (response.data is String && response.data.toString().isNotEmpty) {
@@ -56,15 +54,14 @@ class ApiClient {
           return handler.next(response);
         },
         onError: (error, handler) {
-          if (AppConfig.enableLogging) {
-            print(
-              'ERROR[${error.response?.statusCode}] => ${error.requestOptions.path}',
-            );
-            print('Error type: ${error.type}');
-            print('Error message: ${error.message}');
-            if (error.response != null) {
-              print('Error response data: ${error.response?.data}');
-            }
+          // Force logging for debugging
+          print(
+            'ERROR[${error.response?.statusCode}] => ${error.requestOptions.path}',
+          );
+          print('Error type: ${error.type}');
+          print('Error message: ${error.message}');
+          if (error.response != null) {
+            print('Error response data: ${error.response?.data}');
           }
           return handler.next(error);
         },

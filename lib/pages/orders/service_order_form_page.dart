@@ -6,6 +6,7 @@ import '../../Widgets/button.dart';
 import '../../Widgets/dynamic_form_builder.dart';
 import '../../Widgets/file_upload_widget.dart';
 import '../../theme/colors.dart';
+import '../../services/order_service.dart';
 import 'order_success_page.dart';
 
 class ServiceOrderFormPage extends StatefulWidget {
@@ -21,6 +22,7 @@ class ServiceOrderFormPage extends StatefulWidget {
 class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
   final Map<String, dynamic> _formData = {};
   final List<File> _uploadedFiles = [];
+  final OrderService _orderService = OrderService();
   bool _isSubmitting = false;
 
   void _onFieldChanged(String fieldId, dynamic value) {
@@ -121,19 +123,14 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
     });
 
     try {
-      // TODO: Implement actual API call to submit order
-      // For now, simulate network delay
-      await Future.delayed(const Duration(seconds: 2));
+      // Call API to submit order
+      await _orderService.createOrder(
+        serviceId: widget.service.id,
+        formData: _formData,
+        files: _uploadedFiles,
+      );
 
-      // Prepare order data
-      final orderData = {
-        'serviceId': widget.service.id,
-        'formData': _formData,
-        'files': _uploadedFiles.map((f) => f.path).toList(),
-        'timestamp': DateTime.now().toIso8601String(),
-      };
-
-      print('Order submitted: $orderData');
+      print('Order submitted successfully');
 
       // Navigate to success page
       if (mounted) {
@@ -146,7 +143,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to submit order: ${e.toString()}'),
+            content: Text('Failed to submit order: $e'),
             backgroundColor: Colors.red,
           ),
         );

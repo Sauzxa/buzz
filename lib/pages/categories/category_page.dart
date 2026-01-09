@@ -2,170 +2,205 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/category_model.dart';
 import '../services/services_by_category_page.dart';
+import '../../Widgets/custom_bottom_nav_bar.dart';
+import '../../Widgets/home_drawer.dart';
+import '../../Widgets/notification_popup.dart';
+import '../../theme/colors.dart';
 
 class CategoryPage extends StatelessWidget {
   final CategoryModel category;
 
   const CategoryPage({Key? key, required this.category}) : super(key: key);
 
+  void _showNotificationPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => const NotificationPopup(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
+      drawer: const HomeDrawer(),
+      // Add Bottom Navigation Bar to match design
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: 0, // Default to Home for visual consistency
+        onTap: (index) {
+          // For now, we just pop back to home if home is clicked, or show snackbar
+          if (index == 0) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          }
+        },
+      ),
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          // Full-screen background image
-          Positioned.fill(
-            child: category.categoryImage.isNotEmpty
-                ? Image.network(
-                    category.categoryImage,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[900],
-                        child: Icon(
-                          Icons.category_outlined,
-                          size: 100,
-                          color: Colors.grey[700],
-                        ),
-                      );
-                    },
-                  )
-                : Container(
-                    color: Colors.grey[900],
+          // 1. Full-screen background image
+          if (category.categoryImage.isNotEmpty)
+            Image.network(
+              category.categoryImage,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Colors.grey[900],
+                  child: const Center(
                     child: Icon(
                       Icons.category_outlined,
                       size: 100,
-                      color: Colors.grey[700],
+                      color: Colors.white24,
                     ),
                   ),
-          ),
+                );
+              },
+            )
+          else
+            Container(color: Colors.grey[900]),
 
-          // Gradient overlay for text readability
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.3),
-                    Colors.black.withOpacity(0.7),
-                  ],
-                  stops: const [0.0, 0.5, 1.0],
-                ),
-              ),
-            ),
-          ),
-
-          // Top bar with back button
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Back button
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                  // Notification icon (optional)
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
-                      shape: BoxShape.circle,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.notifications_outlined,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        // TODO: Implement notifications
-                      },
-                    ),
-                  ),
+          // 2. Dark Gradient Overlay for readability
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.3), // Top darkening for header
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.6), // Bottom darkening for text
+                  Colors.black.withOpacity(0.9),
                 ],
+                stops: const [0.0, 0.4, 0.7, 1.0],
               ),
             ),
           ),
 
-          // Bottom content with text and button
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Category description/tagline
-                    Text(
-                      category.description,
-                      style: GoogleFonts.playfairDisplay(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        height: 1.1,
-                        letterSpacing: -0.5,
+          // 3. Content Area
+          SafeArea(
+            child: Column(
+              children: [
+                // Header (Menu, Logo, Notification)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Menu Button
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(
+                            Icons.grid_view,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 32),
-
-                    // Continue button
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ServicesByCategoryPage(
-                                categoryId: category.id,
-                                categoryName: category.categoryName,
-                              ),
+                      // Logo
+                      Image.asset(
+                        'assets/Logos/WhiteLogo.png',
+                        height: 35,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Text(
+                            'BUZZ',
+                            style: GoogleFonts.dmSans(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
                             ),
                           );
                         },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4FBF67),
-                          foregroundColor: Colors.white,
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(28),
-                          ),
+                      ),
+
+                      // Notification Button
+                      IconButton(
+                        icon: const Icon(
+                          Icons.notifications_outlined,
+                          color: Colors.white,
+                          size: 28,
                         ),
-                        child: Text(
-                          'Continue',
-                          style: GoogleFonts.dmSans(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
+                        onPressed: () => _showNotificationPopup(context),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Spacer(), // Pushes content to the bottom
+                // Bottom Content
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 24.0,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min, // Wrap content
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align text to start
+                    children: [
+                      // "Create, Don't hate!" Text
+                      Text(
+                        // If category has specific styling description, use it, else default
+                        category.description.isNotEmpty
+                            ? category.description
+                            : "Create,\nDon't hate!",
+                        style: GoogleFonts.playfairDisplay(
+                          // Serif font for elegance
+                          fontSize: 48,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          height: 1.1,
+                        ),
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // "Continue" Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ServicesByCategoryPage(
+                                  categoryId: category.id,
+                                  categoryName: category.categoryName,
+                                ),
+                              ),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(
+                              0xFF4FBF67,
+                            ), // Green color
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                          ),
+                          child: Text(
+                            'Continue',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 20), // Extra space below button
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
           ),
         ],

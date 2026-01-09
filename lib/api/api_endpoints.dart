@@ -23,6 +23,11 @@ class ApiEndpoints {
   // Service endpoints
   static String get getAllServices => '$apiPrefix/services/all';
 
+  // Order endpoints
+  static String get createOrder => '$apiPrefix/orders';
+  static String uploadOrderFile(String orderId) =>
+      '$apiPrefix/orders/$orderId/files';
+
   // News endpoints
   static String get getNews => '$apiPrefix/news';
 
