@@ -119,7 +119,8 @@ class HomeDrawer extends StatelessWidget {
                     icon: Icons.settings_outlined,
                     title: 'Settings',
                     onTap: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context); // Close drawer
+                      Navigator.pushNamed(context, RouteNames.settings);
                     },
                   ),
                   _buildMenuItem(

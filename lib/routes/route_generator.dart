@@ -12,6 +12,8 @@ import '../auth/SignIn.dart';
 import '../auth/forgetPassword.dart';
 import '../core/welcome.dart';
 import '../core/homePage.dart';
+import '../pages/chat/support_chat_page.dart';
+import '../pages/settings/settings_page.dart';
 import '../core/splash_screen.dart';
 
 class RouteGenerator {
@@ -55,6 +57,12 @@ class RouteGenerator {
 
       case RouteNames.home:
         return MaterialPageRoute(builder: (_) => const HomePage());
+
+      case RouteNames.chat:
+        return MaterialPageRoute(builder: (_) => const SupportChatPage());
+
+      case RouteNames.settings:
+        return MaterialPageRoute(builder: (_) => const SettingsPage());
 
       default:
         return _errorRoute();

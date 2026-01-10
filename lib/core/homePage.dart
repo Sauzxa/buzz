@@ -16,6 +16,7 @@ import '../Widgets/ad_banner.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/static_categories.dart';
 import '../pages/categories/category_page.dart';
+import '../routes/route_names.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,6 +42,8 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _selectedIndex = 0;
       });
+    } else if (index == 4) {
+      Navigator.pushNamed(context, RouteNames.chat);
     } else {
       SnackBarHelper.showInfoSnackBar(
         context,

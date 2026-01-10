@@ -5,7 +5,7 @@ import '../services/services_by_category_page.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/home_drawer.dart';
 import '../../Widgets/notification_popup.dart';
-import '../../theme/colors.dart';
+import '../../routes/route_names.dart';
 
 class CategoryPage extends StatelessWidget {
   final CategoryModel category;
@@ -31,6 +31,8 @@ class CategoryPage extends StatelessWidget {
           // For now, we just pop back to home if home is clicked, or show snackbar
           if (index == 0) {
             Navigator.of(context).popUntil((route) => route.isFirst);
+          } else if (index == 4) {
+            Navigator.pushNamed(context, RouteNames.chat);
           }
         },
       ),
