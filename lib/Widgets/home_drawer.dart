@@ -5,9 +5,69 @@ import '../theme/colors.dart';
 import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
 import '../routes/route_names.dart';
+import '../utils/fade_route.dart';
+import '../auth/SignIn.dart';
 
-class HomeDrawer extends StatelessWidget {
+class HomeDrawer extends StatefulWidget {
   const HomeDrawer({super.key});
+
+  @override
+  State<HomeDrawer> createState() => _HomeDrawerState();
+}
+
+class _HomeDrawerState extends State<HomeDrawer> {
+  bool _isLoggingOut = false; // Local loading state for entire logout flow
+
+  Future<void> _handleLogout() async {
+    if (_isLoggingOut) return; // Prevent multiple taps
+
+    // Start local loading state
+    setState(() {
+      _isLoggingOut = true;
+    });
+
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final userProvider = context.read<UserProvider>();
+
+      // Logout from backend
+      await authProvider.logout();
+
+      // Clear local user data
+      userProvider.clearUser();
+
+      if (!mounted) return;
+
+      // Add a brief delay to show the loading state completed
+      // This gives better visual feedback that the logout was successful
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      if (!mounted) return;
+
+      // Navigate to SignIn page with enhanced fade+scale transition
+      // Loading state will remain visible during the animation
+      Navigator.of(context).pushAndRemoveUntil(
+        FadeRoute(page: const SignInPage()),
+        (route) => false,
+      );
+
+      // Note: We don't set _isLoggingOut to false here because the page
+      // is being replaced. The loading spinner will fade out with the drawer.
+    } catch (e) {
+      // Handle any unexpected errors
+      if (mounted) {
+        setState(() {
+          _isLoggingOut = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Logout failed. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -143,15 +203,7 @@ class HomeDrawer extends StatelessWidget {
               ),
             ),
 
-            // Logout Link
-            // To position it at the bottom or just last in list?
-            // The prompt image implies a section below.
-            // I'll put it outside ListView if I want fixed bottom,
-            // but usually it scrolls.
-            // Let's add it to the bottom of the column to stick it.
-            // But if user has small screen?
-            // "Expanded" ListView takes remaining space.
-            // So putting it after Expanded pushes it to bottom.
+            // Logout Button
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
               child: Container(
@@ -162,64 +214,44 @@ class HomeDrawer extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(30),
-                  child: Consumer<AuthProvider>(
-                    builder: (context, authProvider, child) {
-                      return InkWell(
-                        borderRadius: BorderRadius.circular(30),
-                        onTap: authProvider.isLoading
-                            ? null
-                            : () async {
-                                final userProvider = context
-                                    .read<UserProvider>();
-                                await authProvider.logout();
-                                userProvider.clearUser();
-
-                                if (!context.mounted) return;
-
-                                Navigator.of(context).pushNamedAndRemoveUntil(
-                                  RouteNames.signIn,
-                                  (route) => false,
-                                );
-                              },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          child: authProvider.isLoading
-                              ? const Center(
-                                  child: SizedBox(
-                                    height: 24,
-                                    width: 24,
-                                    child: CircularProgressIndicator(
-                                      color: AppColors.roseColor,
-                                      strokeWidth: 2.5,
-                                    ),
-                                  ),
-                                )
-                              : Row(
-                                  children: [
-                                    const Icon(
-                                      Icons.logout,
-                                      color: AppColors.roseColor,
-                                      size: 24,
-                                    ),
-                                    const SizedBox(
-                                      width: 16,
-                                    ), // Gap between icon and text
-                                    Text(
-                                      'Logout',
-                                      style: GoogleFonts.dmSans(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.roseColor,
-                                      ),
-                                    ),
-                                  ],
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(30),
+                    onTap: _isLoggingOut ? null : _handleLogout,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      child: _isLoggingOut
+                          ? const Center(
+                              child: SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: AppColors.roseColor,
+                                  strokeWidth: 2.5,
                                 ),
-                        ),
-                      );
-                    },
+                              ),
+                            )
+                          : Row(
+                              children: [
+                                const Icon(
+                                  Icons.logout,
+                                  color: AppColors.roseColor,
+                                  size: 24,
+                                ),
+                                const SizedBox(width: 16),
+                                Text(
+                                  'Logout',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.roseColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
                   ),
                 ),
               ),
