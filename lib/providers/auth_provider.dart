@@ -42,7 +42,38 @@ class AuthProvider with ChangeNotifier {
         await _storageService.saveUserData(_user!);
       }
     } catch (e) {
-      _error = 'Login failed: ${e.toString()}';
+      // Extract clean error message
+      String errorMessage = e.toString();
+
+      // Remove "Exception: " prefix if present
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+
+      // Check if it's an authentication error (wrong credentials)
+      if (errorMessage.contains('401') ||
+          errorMessage.contains('Unauthorized') ||
+          errorMessage.contains('Invalid credentials') ||
+          errorMessage.contains('Bad credentials') ||
+          errorMessage.toLowerCase().contains('wrong')) {
+        _error = 'Wrong email or password';
+      }
+      // Check if it's a server error
+      else if (errorMessage.contains('500') ||
+          errorMessage.contains('Server error')) {
+        _error = 'Server error. Please try again later.';
+      }
+      // Check if it's a network error
+      else if (errorMessage.contains('Connection') ||
+          errorMessage.contains('internet') ||
+          errorMessage.contains('timeout')) {
+        _error = 'Connection error. Please check your internet.';
+      }
+      // Default to the cleaned error message
+      else {
+        _error = errorMessage;
+      }
+
       _isAuthenticated = false;
     } finally {
       _setLoading(false);

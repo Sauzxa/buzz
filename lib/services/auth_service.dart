@@ -19,15 +19,31 @@ class AuthService {
         );
       }
 
-      // Check for client errors from response data if status is 200 but contains error
-      // or if status code is 4xx (handled by dio exception usually, but safe to check)
+      // Check for authentication errors (401, 403)
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        // Try to extract error message from backend
+        String message = 'Wrong email or password';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
 
+      // Check for other client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        String message = 'Login failed';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Success response (2xx)
       if (response.statusCode == 200 || response.statusCode == 201) {
         return UserModel.fromJson(response.data);
       } else {
-        // Try to extract error message
-        final message = response.data['message'] ?? 'Login failed';
-        throw Exception(message);
+        // Unexpected status code
+        throw Exception('Unexpected error occurred');
       }
     } catch (e) {
       rethrow;

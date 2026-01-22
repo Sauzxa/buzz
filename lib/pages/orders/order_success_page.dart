@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../Widgets/button.dart';
 import '../../theme/colors.dart';
+import '../../routes/route_names.dart';
 
 class OrderSuccessPage extends StatelessWidget {
   const OrderSuccessPage({Key? key}) : super(key: key);
@@ -100,7 +101,10 @@ class OrderSuccessPage extends StatelessWidget {
                     text: 'Go to Homepage',
                     onPressed: () {
                       // Navigate to home and remove all previous routes
-                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        RouteNames.home,
+                        (route) => false,
+                      );
                     },
                   ),
                   const SizedBox(height: 12),
