@@ -6,6 +6,8 @@ import '../Widgets/button.dart';
 import '../providers/auth_provider.dart';
 import '../providers/user_provider.dart';
 import '../routes/route_names.dart';
+import '../core/homePage.dart';
+import '../utils/fade_route.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class _SignInPageState extends State<SignInPage> {
 
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  bool _isLoggingIn = false; // Local loading state for entire login flow
 
   @override
   void initState() {
@@ -55,33 +58,61 @@ class _SignInPageState extends State<SignInPage> {
       return;
     }
 
-    // Use AuthProvider to login
-    final authProvider = context.read<AuthProvider>();
-    await authProvider.login(email, password);
+    // Start local loading state
+    setState(() {
+      _isLoggingIn = true;
+    });
 
-    if (!mounted) return;
-
-    // Check if login was successful
-    if (authProvider.isAuthenticated && authProvider.user != null) {
-      final userProvider = context.read<UserProvider>();
-
-      // Update UserProvider with user data from login response
-      userProvider.updateUser(authProvider.user!);
-
-      // Fetch complete profile if userId is available
-      // Login response has: userId, email, fullName, role, tokens
-      // But missing: phoneNumber, currentAddress, postalCode, wilaya
-      if (authProvider.user!.id != null) {
-        await userProvider.fetchUserById(authProvider.user!.id!);
-      }
+    try {
+      // Use AuthProvider to login
+      final authProvider = context.read<AuthProvider>();
+      await authProvider.login(email, password);
 
       if (!mounted) return;
 
-      // Navigate to HomePage
-      Navigator.pushReplacementNamed(context, RouteNames.home);
-    } else {
-      // Show error message
-      _showError(authProvider.error ?? 'Login failed. Please try again.');
+      // Check if login was successful
+      if (authProvider.isAuthenticated && authProvider.user != null) {
+        final userProvider = context.read<UserProvider>();
+
+        // Update UserProvider with user data from login response
+        userProvider.updateUser(authProvider.user!);
+
+        // Fetch complete profile if userId is available
+        // Login response has: userId, email, fullName, role, tokens
+        // But missing: phoneNumber, currentAddress, postalCode, wilaya
+        if (authProvider.user!.id != null) {
+          await userProvider.fetchUserById(authProvider.user!.id!);
+        }
+
+        if (!mounted) return;
+
+        // Add a brief delay to show the loading state completed
+        // This gives better visual feedback that the login was successful
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (!mounted) return;
+
+        // Navigate to HomePage with enhanced fade+scale transition
+        // Loading state will remain visible during the animation
+        Navigator.pushReplacement(context, FadeRoute(page: const HomePage()));
+
+        // Note: We don't set _isLoggingIn to false here because the page
+        // is being replaced. The loading button will fade out with the page.
+      } else {
+        // Login failed - stop loading and show error
+        setState(() {
+          _isLoggingIn = false;
+        });
+        _showError(authProvider.error ?? 'Login failed. Please try again.');
+      }
+    } catch (e) {
+      // Handle any unexpected errors
+      if (mounted) {
+        setState(() {
+          _isLoggingIn = false;
+        });
+        _showError('An unexpected error occurred. Please try again.');
+      }
     }
   }
 
@@ -258,14 +289,10 @@ class _SignInPageState extends State<SignInPage> {
             const SizedBox(height: 32),
 
             // Login Button
-            Consumer<AuthProvider>(
-              builder: (context, authProvider, child) {
-                return PrimaryButton(
-                  text: 'Login',
-                  isLoading: authProvider.isLoading,
-                  onPressed: _onLogin,
-                );
-              },
+            PrimaryButton(
+              text: 'Login',
+              isLoading: _isLoggingIn, // Use local state for entire flow
+              onPressed: _onLogin,
             ),
 
             const SizedBox(height: 24),
