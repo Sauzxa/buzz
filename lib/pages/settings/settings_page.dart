@@ -44,7 +44,7 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
           Column(
             children: [
-              // Pink Header with Profile Section
+              // Pink Header - Only Top Bar
               SafeArea(
                 bottom: false,
                 child: Container(
@@ -53,136 +53,49 @@ class _SettingsPageState extends State<SettingsPage> {
                     horizontal: 20,
                     vertical: 20,
                   ),
-                  child: Column(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Top Bar (Back button, Title, Notification icon)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Builder(
-                            builder: (context) => IconButton(
-                              icon: const Icon(
-                                Icons.grid_view,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                              onPressed: () {
-                                Scaffold.of(context).openDrawer();
-                              },
-                              padding: EdgeInsets.zero,
-                              constraints: const BoxConstraints(),
-                            ),
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(
+                            Icons.grid_view,
+                            color: Colors.white,
+                            size: 28,
                           ),
-                          Text(
-                            'Edit Profile',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.notifications_outlined,
-                              color: Colors.white,
-                              size: 28,
-                            ),
-                            onPressed: () {
-                              // TODO: Navigate to notifications
-                            },
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
-                        ],
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
                       ),
-
-                      const SizedBox(height: 30),
-
-                      // Profile Section
-                      Column(
-                        children: [
-                          // Profile Picture
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundColor: Colors.yellow.shade700,
-                            child: Icon(
-                              Icons.person,
-                              size: 50,
-                              color: Colors.white,
-                            ),
-                          ),
-
-                          const SizedBox(height: 12),
-
-                          // User Name
-                          Text(
-                            userProvider.fullName.isNotEmpty
-                                ? userProvider.fullName
-                                : 'User Name',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          // User Email
-                          Text(
-                            userProvider.user.email ?? 'user@example.com',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 14,
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Edit Button
-                          OutlinedButton(
-                            onPressed: () {
-                              // TODO: Navigate to edit_user_account.dart
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Edit profile page coming soon!',
-                                  ),
-                                ),
-                              );
-                            },
-                            style: OutlinedButton.styleFrom(
-                              side: const BorderSide(
-                                color: Colors.white,
-                                width: 1.5,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 8,
-                              ),
-                            ),
-                            child: Text(
-                              'Edit',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 05),
-                        ],
+                      Text(
+                        'Edit Profile',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.notifications_outlined,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                        onPressed: () {
+                          // TODO: Navigate to notifications
+                        },
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
                       ),
                     ],
                   ),
                 ),
               ),
 
-              // White Content Body
+              // White Content Body with Profile Section
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -199,8 +112,91 @@ class _SettingsPageState extends State<SettingsPage> {
                       topRight: Radius.circular(30),
                     ),
                     child: ListView(
-                      padding: const EdgeInsets.only(top: 30, bottom: 100),
+                      padding: const EdgeInsets.only(bottom: 100),
                       children: [
+                        // Profile Section (on white background)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 30,
+                          ),
+                          child: Column(
+                            children: [
+                              // Profile Picture
+                              CircleAvatar(
+                                radius: 40,
+                                backgroundColor: Colors.yellow.shade700,
+                                child: Icon(
+                                  Icons.person,
+                                  size: 40,
+                                  color: Colors.white,
+                                ),
+                              ),
+
+                              const SizedBox(height: 8),
+
+                              // User Name
+                              Text(
+                                userProvider.fullName.isNotEmpty
+                                    ? userProvider.fullName
+                                    : 'User Name',
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+
+                              const SizedBox(height: 2),
+
+                              // User Email
+                              Text(
+                                userProvider.user.email ?? 'user@example.com',
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  color: AppColors.roseColor,
+                                ),
+                              ),
+
+                              const SizedBox(height: 12),
+
+                              // Edit Button
+                              OutlinedButton(
+                                onPressed: () {
+                                  // TODO: Navigate to edit_user_account.dart
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Edit profile page coming soon!',
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  side: BorderSide(
+                                    color: AppColors.roseColor,
+                                    width: 1.5,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 32,
+                                    vertical: 8,
+                                  ),
+                                ),
+                                child: Text(
+                                  'Edit',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.roseColor,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         // GENERAL Section
                         _buildSectionHeader('GENERAL'),
                         SettingsTile(
