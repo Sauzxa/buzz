@@ -14,11 +14,14 @@ class LongPressServiceWrapper extends StatefulWidget {
   final ServiceModel service;
   final double borderRadius;
 
+  final VoidCallback? onTap;
+
   const LongPressServiceWrapper({
     super.key,
     required this.child,
     required this.service,
     this.borderRadius = 16.0,
+    this.onTap,
   });
 
   @override
@@ -58,6 +61,7 @@ class _LongPressServiceWrapperState extends State<LongPressServiceWrapper> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: widget.onTap,
       onLongPress: () => _showOverlay(context),
       onLongPressMoveUpdate: (details) {
         // Optional: Dismiss if moved too far, but Instagram keeps it open usually until release

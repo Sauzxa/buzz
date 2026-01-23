@@ -533,18 +533,18 @@ class _HomePageState extends State<HomePage> {
                     width: 200,
                     child: LongPressServiceWrapper(
                       service: service,
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ServiceChoosingPage(service: service),
+                          ),
+                        );
+                      },
                       child: ServiceCard(
                         service: service,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  ServiceChoosingPage(service: service),
-                            ),
-                          );
-                        },
-                        // onLongPress is handled by the wrapper now
+                        // onTap is handled by wrapper
                       ),
                     ),
                   );

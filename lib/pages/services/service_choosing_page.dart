@@ -2,232 +2,219 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/service_model.dart';
 import '../../Widgets/button.dart';
-import '../../Widgets/skeleton_loader.dart';
 import '../../theme/colors.dart';
 import '../orders/service_order_form_page.dart';
+import '../../Widgets/custom_bottom_nav_bar.dart';
+import '../../Widgets/home_drawer.dart';
+import '../../Widgets/notification_popup.dart';
+import '../../routes/route_names.dart';
 
-class ServiceChoosingPage extends StatefulWidget {
+class ServiceChoosingPage extends StatelessWidget {
   final ServiceModel service;
 
   const ServiceChoosingPage({Key? key, required this.service})
     : super(key: key);
 
-  @override
-  State<ServiceChoosingPage> createState() => _ServiceChoosingPageState();
-}
+  void _showNotificationPopup(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => const NotificationPopup(),
+    );
+  }
 
-class _ServiceChoosingPageState extends State<ServiceChoosingPage> {
-  bool _imageLoaded = false;
+  Color _getServiceColor() {
+    if (service.color == null || service.color!.isEmpty) {
+      return AppColors.greenColor;
+    }
+    try {
+      final hexCode = service.color!.replaceAll('#', '');
+      return Color(int.parse('FF$hexCode', radix: 16));
+    } catch (_) {
+      return AppColors.greenColor;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          widget.service.name,
-          style: GoogleFonts.dmSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Service Image with Skeleton Loader
-            SizedBox(
-              height: 250,
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  // Skeleton loader (shows while loading)
-                  if (!_imageLoaded)
-                    const Positioned.fill(
-                      child: SkeletonLoader(
-                        width: double.infinity,
-                        height: 250,
-                      ),
-                    ),
+    // Determine image to show
+    final String? imageToShow = service.mainImage?.isNotEmpty == true
+        ? service.mainImage
+        : service.imageUrl;
 
-                  // Actual image
-                  if (widget.service.mainImage != null)
-                    Positioned.fill(
-                      child: Image.network(
-                        widget.service.mainImage!,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) {
-                            // Image loaded
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted) {
-                                setState(() => _imageLoaded = true);
-                              }
-                            });
-                            return child;
-                          }
-                          return const SizedBox.shrink();
-                        },
-                        errorBuilder: (_, __, ___) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (mounted) {
-                              setState(() => _imageLoaded = true);
-                            }
-                          });
-                          return Container(
-                            color: Colors.grey[200],
-                            child: Icon(
-                              Icons.image,
-                              size: 80,
-                              color: Colors.grey[400],
-                            ),
-                          );
-                        },
+    return Scaffold(
+      backgroundColor: Colors.black,
+      drawer: const HomeDrawer(),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 0) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          } else if (index == 4) {
+            Navigator.pushNamed(context, RouteNames.chat);
+          }
+        },
+      ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 1. Full Screen Background Image
+          if (imageToShow != null)
+            Image.network(
+              imageToShow,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Colors.grey[900],
+                  child: const Icon(
+                    Icons.design_services_outlined,
+                    size: 80,
+                    color: Colors.white24,
+                  ),
+                );
+              },
+            )
+          else
+            Container(color: Colors.grey[900]),
+
+          // 2. Dark Overlay for Contrast (Top and Bottom)
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.6),
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.6),
+                ],
+                stops: const [0.0, 0.4, 0.8],
+              ),
+            ),
+          ),
+
+          // 3. Content
+          SafeArea(
+            child: Column(
+              children: [
+                // Header (Menu, Logo, Notification)
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Menu
+                      Builder(
+                        builder: (context) => IconButton(
+                          icon: const Icon(
+                            Icons.grid_view,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          onPressed: () => Scaffold.of(context).openDrawer(),
+                        ),
                       ),
-                    )
-                  else if (widget.service.imageUrl != null)
-                    Positioned.fill(
-                      child: Image.network(
-                        widget.service.imageUrl!,
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) {
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted) {
-                                setState(() => _imageLoaded = true);
-                              }
-                            });
-                            return child;
-                          }
-                          return const SizedBox.shrink();
-                        },
-                        errorBuilder: (_, __, ___) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            if (mounted) {
-                              setState(() => _imageLoaded = true);
-                            }
-                          });
-                          return Container(
-                            color: Colors.grey[200],
-                            child: Icon(
-                              Icons.image,
-                              size: 80,
-                              color: Colors.grey[400],
-                            ),
-                          );
-                        },
+
+                      // Logo
+                      Image.asset(
+                        'assets/Logos/WhiteLogo.png',
+                        height: 35,
+                        errorBuilder: (_, __, ___) => Text(
+                          'BUZZ',
+                          style: GoogleFonts.dmSans(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 24,
+                          ),
+                        ),
                       ),
-                    )
-                  else
-                    Positioned.fill(
-                      child: Container(
-                        color: Colors.grey[200],
-                        child: Icon(
-                          Icons.image,
-                          size: 80,
-                          color: Colors.grey[400],
+
+                      // Notification
+                      IconButton(
+                        icon: const Icon(
+                          Icons.notifications_outlined,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                        onPressed: () => _showNotificationPopup(context),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Centered Service Name with Colored Background
+                Expanded(
+                  child: Center(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 20,
+                      ),
+                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      decoration: BoxDecoration(
+                        color: _getServiceColor().withOpacity(
+                          0.9,
+                        ), // Slightly transparent
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        service.name,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          letterSpacing: 0.5,
                         ),
                       ),
                     ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Service Name
-                  Text(
-                    widget.service.name,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
                   ),
-
-                  const SizedBox(height: 8),
-
-                  // Price
-                  if (widget.service.price != null)
-                    Text(
-                      'Starting at ${widget.service.price!.toStringAsFixed(0)} DZD',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.roseColor,
-                      ),
-                    ),
-
-                  const SizedBox(height: 16),
-
-                  // Description
-                  Text(
-                    'About this service',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.service.description,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                      height: 1.5,
-                    ),
-                  ),
-
-                  const SizedBox(height: 32),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: PrimaryButton(
-            text: 'Get Started',
-            onPressed: () {
-              if (widget.service.formFields == null ||
-                  widget.service.formFields!.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'No order form available for this service yet',
-                    ),
-                    backgroundColor: Colors.orange,
-                  ),
-                );
-                return;
-              }
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => ServiceOrderFormPage(service: widget.service),
                 ),
-              );
-            },
+
+                // Bottom Action Button
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: PrimaryButton(
+                    text: 'Get Started',
+                    onPressed: () {
+                      if (service.formFields == null ||
+                          service.formFields!.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'No order form available for this service yet',
+                            ),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                        return;
+                      }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              ServiceOrderFormPage(service: service),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 10), // Spacing from bottom
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

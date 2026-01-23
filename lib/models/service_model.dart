@@ -10,6 +10,7 @@ class ServiceModel {
   final String? imageUrl;
   final String? mainImage;
   final bool? isActive;
+  final String? color;
   final List<FormFieldModel>? formFields;
 
   ServiceModel({
@@ -22,6 +23,7 @@ class ServiceModel {
     this.imageUrl,
     this.mainImage,
     this.isActive,
+    this.color,
     this.formFields,
   });
 
@@ -107,6 +109,10 @@ class ServiceModel {
       mainImage: json['mainImage']?.toString(),
       isActive: json['isActive'] as bool? ?? true,
       formFields: fields,
+      color:
+          json['color']?.toString() ??
+          json['backgroundColor']
+              ?.toString(), // Support both naming conventions
     );
   }
 
@@ -121,6 +127,7 @@ class ServiceModel {
       'imageUrl': imageUrl,
       'mainImage': mainImage,
       'isActive': isActive,
+      'color': color,
     };
   }
 }
