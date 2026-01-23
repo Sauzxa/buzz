@@ -8,6 +8,7 @@ import '../../Widgets/home_drawer.dart';
 import '../../providers/user_provider.dart';
 import 'widgets/settings_tile.dart';
 import 'widgets/notification_toggle_tile.dart';
+import 'contact_page.dart';
 import 'profile/edit_profile_settings.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -266,10 +267,10 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: 'Contact Us',
                           subtitle: 'For more information',
                           onTap: () {
-                            // TODO: Navigate to contact us page
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Contact page coming soon!'),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ContactPage(),
                               ),
                             );
                           },

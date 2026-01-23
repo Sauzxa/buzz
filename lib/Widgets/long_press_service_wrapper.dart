@@ -163,12 +163,17 @@ class _PreviewOverlayState extends State<_PreviewOverlay>
         screenHeight - (widget.originalOffset.dy + widget.originalSize.height);
     final showMenuBelow = bottomSpace > 150; // Needs roughly 100px for menu
 
+    // Calculate menu position logic
+    final double cardHeight = widget.originalSize.height;
+    // We add a bit of margin for the scale effect (1.05x)
+    // 5% of height / 2 = 2.5% downwards expansion.
+    // For a 200px card, that's 5px. 16px margin is safe.
+
     return Stack(
       children: [
         // 1. Blurred Background (Captures taps to dismiss)
         GestureDetector(
           onTap: widget.onDismiss,
-          // Handle drag end to dismiss
           onPanEnd: (_) => widget.onDismiss(),
           child: AnimatedBuilder(
             animation: _opacityAnimation,
@@ -188,7 +193,7 @@ class _PreviewOverlayState extends State<_PreviewOverlay>
           ),
         ),
 
-        // 2. Focused Item & Menu
+        // 2. The Focused Item (Card)
         Positioned(
           left: widget.originalOffset.dx,
           top: widget.originalOffset.dy,
@@ -196,80 +201,73 @@ class _PreviewOverlayState extends State<_PreviewOverlay>
           height: widget.originalSize.height,
           child: ScaleTransition(
             scale: _scaleAnimation,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                // The Widget Itself
-                // We wrap it in a Material to ensure it looks correct
-                Container(
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: widget.child,
+            ),
+          ),
+        ),
+
+        // 3. The Action Menu (Moved out to be a sibling)
+        Positioned(
+          top: showMenuBelow
+              ? widget.originalOffset.dy + cardHeight + 20
+              : null,
+          bottom: showMenuBelow
+              ? null
+              : (screenHeight - widget.originalOffset.dy) + 20,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: FadeTransition(
+              opacity: _opacityAnimation,
+              child: GestureDetector(
+                onTap: () => _handleSave(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 20,
-                        spreadRadius: 2,
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
                     ],
                   ),
-                  child: widget.child,
-                ),
-
-                // The Action Menu
-                Positioned(
-                  top: showMenuBelow ? widget.originalSize.height + 16 : null,
-                  bottom: showMenuBelow
-                      ? null
-                      : widget.originalSize.height + 16,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: FadeTransition(
-                      opacity: _opacityAnimation,
-                      child: GestureDetector(
-                        onTap: () => _handleSave(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                isSaved
-                                    ? Icons.bookmark
-                                    : Icons.bookmark_border,
-                                color: AppColors.roseColor,
-                                size: 24,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                isSaved ? 'Unsave' : 'Save',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
-                          ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isSaved ? Icons.bookmark : Icons.bookmark_border,
+                        color: AppColors.roseColor,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        isSaved ? 'Unsave' : 'Save',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         ),
