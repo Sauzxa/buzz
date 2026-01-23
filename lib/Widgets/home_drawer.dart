@@ -9,6 +9,7 @@ import '../utils/fade_route.dart';
 import '../pages/settings/general_settings.dart';
 import '../pages/services/saved_services.dart';
 import '../auth/SignIn.dart';
+import '../pages/settings/user_settings_page.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({super.key});
@@ -165,6 +166,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     title: 'My Profile',
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SettingsPage()),
+                      );
                     },
                   ),
                   _buildMenuItem(
