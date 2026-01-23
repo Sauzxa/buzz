@@ -23,7 +23,9 @@ class OrderCard extends StatelessWidget {
     final String status = order['status'] ?? 'PENDING';
     final bool canUpload =
         status == 'PRICED' || status == 'AWAITING_PAYMENT_VALIDATION';
-    final Color categoryColor = _getCategoryColor(order['category'] ?? '');
+    final Color categoryColor = _getCategoryColor(
+      order['serviceCategory'] ?? '',
+    );
 
     return Dismissible(
       key: Key(order['id'].toString()),
@@ -63,7 +65,9 @@ class OrderCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        (order['category'] ?? 'Order').toString().toUpperCase(),
+                        (order['serviceCategory'] ?? 'Service')
+                            .toString()
+                            .toUpperCase(),
                         style: GoogleFonts.dmSans(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -87,21 +91,46 @@ class OrderCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'COMMANDE N ${_getOrderNumber(order['orderNumber'])}',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            order['title'] ??
+                                'COMMANDE N ${_getOrderNumber(order['orderNumber'])}',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (order['serviceName'] != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              order['serviceName'],
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ],
                       ),
                     ),
                     if (order['totalPrice'] != null)
-                      Text(
-                        '${order['totalPrice']} DA',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          '${order['totalPrice']} DA',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
                         ),
                       ),
                   ],
@@ -121,7 +150,7 @@ class OrderCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      _formatDate(order['deadline'] ?? order['createdAt']),
+                      _formatDate(order['deadline']),
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

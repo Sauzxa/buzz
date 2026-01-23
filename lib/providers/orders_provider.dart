@@ -68,4 +68,14 @@ class OrdersProvider extends ChangeNotifier {
       fetchArchivedOrders(customerId),
     ]);
   }
+
+  /// Get full order details by ID
+  Future<Map<String, dynamic>> getOrderDetails(String orderId) async {
+    try {
+      return await _orderService.getOrderById(orderId);
+    } catch (e) {
+      print('Error fetching order details: $e');
+      rethrow;
+    }
+  }
 }
