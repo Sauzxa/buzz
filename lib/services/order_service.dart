@@ -19,15 +19,40 @@ class OrderService {
         'serviceId': int.parse(serviceId),
       };
 
-      // Normalize formData keys to lowercase first letter (camelCase) to match backend DTO
-      // e.g. "Title" -> "title", "Objectives" -> "objectives"
+      // Field name mappings for plural -> singular conversions
+      const Map<String, String> fieldMappings = {
+        'wantedFormats': 'wantedFormat',
+        // Add more mappings here if needed
+      };
+
+      // Fields that contain enum values (need to be uppercase)
+      const Set<String> enumFields = {
+        'wantedFormat',
+        'projectFormat',
+        'projectFormats',
+        'paperFormat',
+        'productFormat',
+        'designType',
+        'printType',
+        'support',
+      };
+
+      // Normalize formData keys to camelCase to match backend DTO
+      // Handles: "Title" -> "title", "target_audience" -> "targetAudience", "tone-Style" -> "toneStyle"
       formData.forEach((key, value) {
         if (value != null) {
-          String normalizedKey = key;
-          if (key.isNotEmpty) {
-            normalizedKey = key[0].toLowerCase() + key.substring(1);
+          String normalizedKey = _toCamelCase(key);
+
+          // Apply field name mappings (e.g., plural -> singular)
+          normalizedKey = fieldMappings[normalizedKey] ?? normalizedKey;
+
+          // Convert enum values to uppercase (backend expects UPPERCASE enums)
+          dynamic normalizedValue = value;
+          if (enumFields.contains(normalizedKey) && value is String) {
+            normalizedValue = value.toUpperCase();
           }
-          orderData[normalizedKey] = value;
+
+          orderData[normalizedKey] = normalizedValue;
         }
       });
 
@@ -108,5 +133,29 @@ class OrderService {
         );
       }
     }
+  }
+
+  /// Helper method to convert strings to camelCase
+  /// Handles: "Title" -> "title", "target_audience" -> "targetAudience", "tone-Style" -> "toneStyle"
+  String _toCamelCase(String input) {
+    if (input.isEmpty) return input;
+
+    // Replace underscores and hyphens with spaces, then split
+    String normalized = input.replaceAll('_', ' ').replaceAll('-', ' ');
+    List<String> words = normalized.split(' ');
+
+    if (words.isEmpty) return input;
+
+    // First word: lowercase
+    String result = words[0][0].toLowerCase() + words[0].substring(1);
+
+    // Remaining words: capitalize first letter
+    for (int i = 1; i < words.length; i++) {
+      if (words[i].isNotEmpty) {
+        result += words[i][0].toUpperCase() + words[i].substring(1);
+      }
+    }
+
+    return result;
   }
 }
