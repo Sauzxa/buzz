@@ -6,6 +6,7 @@ import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
 import '../routes/route_names.dart';
 import '../utils/fade_route.dart';
+import '../pages/settings/general_settings.dart';
 import '../auth/SignIn.dart';
 
 class HomeDrawer extends StatefulWidget {
@@ -193,7 +194,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     title: 'Settings',
                     onTap: () {
                       Navigator.pop(context); // Close drawer
-                      Navigator.pushNamed(context, RouteNames.settings);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const GeneralSettingsPage(),
+                        ),
+                      );
                     },
                   ),
                   _buildMenuItem(
