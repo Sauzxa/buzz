@@ -8,6 +8,7 @@ import '../../Widgets/home_drawer.dart';
 import '../../providers/user_provider.dart';
 import 'widgets/settings_tile.dart';
 import 'widgets/notification_toggle_tile.dart';
+import 'profile/edit_profile_settings.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -126,11 +127,28 @@ class _SettingsPageState extends State<SettingsPage> {
                               CircleAvatar(
                                 radius: 40,
                                 backgroundColor: Colors.yellow.shade700,
-                                child: Icon(
-                                  Icons.person,
-                                  size: 40,
-                                  color: Colors.white,
-                                ),
+                                backgroundImage:
+                                    (userProvider.user.profilePicture != null &&
+                                        userProvider
+                                            .user
+                                            .profilePicture!
+                                            .isNotEmpty)
+                                    ? NetworkImage(
+                                        userProvider.user.profilePicture!,
+                                      )
+                                    : null,
+                                child:
+                                    (userProvider.user.profilePicture == null ||
+                                        userProvider
+                                            .user
+                                            .profilePicture!
+                                            .isEmpty)
+                                    ? const Icon(
+                                        Icons.person,
+                                        size: 40,
+                                        color: Colors.white,
+                                      )
+                                    : null,
                               ),
 
                               const SizedBox(height: 8),
@@ -163,12 +181,11 @@ class _SettingsPageState extends State<SettingsPage> {
                               // Edit Button
                               OutlinedButton(
                                 onPressed: () {
-                                  // TODO: Navigate to edit_user_account.dart
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                        'Edit profile page coming soon!',
-                                      ),
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const EditProfileSettings(),
                                     ),
                                   );
                                 },

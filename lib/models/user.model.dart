@@ -9,6 +9,7 @@ class UserModel {
   final String? password;
   final String role;
   final String? token; // JWT token field
+  final String? profilePicture; // Added profile picture field
 
   UserModel({
     this.id,
@@ -21,6 +22,7 @@ class UserModel {
     this.password,
     this.role = 'CUSTOMER',
     this.token,
+    this.profilePicture,
   });
 
   // Convert to JSON for API requests
@@ -36,13 +38,13 @@ class UserModel {
       'password': password,
       'role': role,
       'token': token,
+      'profilePicture': profilePicture,
     };
   }
 
   // Create from JSON response
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      // Map 'userId' (common in APIs) or 'id' to 'id' property
       id: json['userId']?.toString() ?? json['id']?.toString(),
       phoneNumber: json['phoneNumber']?.toString(),
       email: json['email']?.toString(),
@@ -54,8 +56,10 @@ class UserModel {
       wilaya: json['wilaya']?.toString(),
       password: json['password']?.toString(),
       role: json['role']?.toString() ?? 'CUSTOMER',
-      // Map 'accessToken' from API to 'token' property
       token: json['accessToken']?.toString() ?? json['token']?.toString(),
+      profilePicture:
+          json['profilePicture']?.toString() ??
+          json['image']?.toString(), // Handle both possible keys
     );
   }
 
@@ -71,6 +75,7 @@ class UserModel {
     String? password,
     String? role,
     String? token,
+    String? profilePicture,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -83,6 +88,7 @@ class UserModel {
       password: password ?? this.password,
       role: role ?? this.role,
       token: token ?? this.token,
+      profilePicture: profilePicture ?? this.profilePicture,
     );
   }
 }

@@ -90,24 +90,37 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     radius: 35,
                     backgroundColor: Colors.white,
                     child: ClipOval(
-                      child: Image.asset(
-                        'assets/home/welcome.png',
-                        width: 70,
-                        height: 70,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Text(
-                            userProvider.fullName.isNotEmpty
-                                ? userProvider.fullName[0].toUpperCase()
-                                : 'U',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.roseColor,
+                      child:
+                          userProvider.user.profilePicture != null &&
+                              userProvider.user.profilePicture!.isNotEmpty
+                          ? Image.network(
+                              userProvider.user.profilePicture!,
+                              width: 70,
+                              height: 70,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Text(
+                                  userProvider.fullName.isNotEmpty
+                                      ? userProvider.fullName[0].toUpperCase()
+                                      : 'U',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.roseColor,
+                                  ),
+                                );
+                              },
+                            )
+                          : Text(
+                              userProvider.fullName.isNotEmpty
+                                  ? userProvider.fullName[0].toUpperCase()
+                                  : 'U',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.roseColor,
+                              ),
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ),
                   const SizedBox(height: 16),

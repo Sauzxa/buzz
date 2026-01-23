@@ -1,4 +1,7 @@
+import 'dart:convert';
+import 'package:http_parser/http_parser.dart';
 import 'package:flutter/foundation.dart';
+import 'package:dio/dio.dart';
 import '../models/user.model.dart';
 import '../api/api_client.dart';
 import '../api/api_endpoints.dart';
@@ -109,4 +112,89 @@ class UserProvider extends ChangeNotifier {
   bool get hasPhoneNumber => _user.phoneNumber != null;
   bool get hasEmail => _user.email != null && _user.email!.isNotEmpty;
   bool get hasFullName => _user.fullName != null && _user.fullName!.isNotEmpty;
+
+  /// Update user profile including optional image
+  Future<bool> updateUserProfile({
+    required Map<String, dynamic> data,
+    dynamic imageFile, // File from dart:io
+  }) async {
+    print('--- updateUserProfile STARTED ---');
+    print('Data received: $data');
+    print('Image file provided: ${imageFile != null}');
+
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final formData = FormData();
+
+      // Add User Data as 'request' part (JSON)
+      // Backend expects @RequestPart("request") UserUpdateDto
+      final jsonString = jsonEncode(data);
+      print('Encoding "request" part JSON: $jsonString');
+
+      formData.files.add(
+        MapEntry(
+          'request',
+          MultipartFile.fromString(
+            jsonString,
+            contentType: MediaType.parse('application/json'),
+          ),
+        ),
+      );
+
+      // Add Profile Image as 'profileImage' part
+      // Backend expects @RequestPart("profileImage") MultipartFile
+      if (imageFile != null) {
+        String fileName = imageFile.path.split('/').last;
+        print('Adding "profileImage" part: $fileName');
+
+        formData.files.add(
+          MapEntry(
+            'profileImage',
+            await MultipartFile.fromFile(
+              imageFile.path,
+              filename: fileName,
+              contentType: MediaType.parse('image/${fileName.split('.').last}'),
+            ),
+          ),
+        );
+      }
+
+      final userId = _user.id;
+      if (userId == null) throw Exception('User ID is null');
+
+      final url = ApiEndpoints.updateUser(userId);
+      print('Sending PUT request to: $url');
+
+      final response = await _apiClient.put(url, data: formData);
+
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Status Message: ${response.statusMessage}');
+      print('Response Data: ${response.data}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // Refresh user data to get updated PFP url etc
+        await fetchUserById(userId);
+        print('--- updateUserProfile SUCCESS ---');
+        return true;
+      } else {
+        _errorMessage = 'Update failed: ${response.statusMessage}';
+        print('--- updateUserProfile FAILED: $_errorMessage ---');
+        return false;
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('DioException: ${e.message}');
+        print('DioException response: ${e.response}');
+      }
+      _errorMessage = 'Update error: ${e.toString()}';
+      print('--- updateUserProfile EXCEPTION: $_errorMessage ---');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }

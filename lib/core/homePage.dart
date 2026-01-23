@@ -16,6 +16,8 @@ import '../Widgets/ad_banner.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/static_categories.dart';
 import '../pages/categories/category_page.dart';
+import '../pages/services/service_choosing_page.dart';
+import '../pages/settings/profile/edit_profile_settings.dart';
 import '../routes/route_names.dart';
 
 class HomePage extends StatefulWidget {
@@ -42,6 +44,12 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _selectedIndex = 0;
       });
+    } else if (index == 3) {
+      // Profile/Settings button - Navigate to Edit Profile
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const EditProfileSettings()),
+      );
     } else if (index == 4) {
       Navigator.pushNamed(context, RouteNames.chat);
     } else {
@@ -514,9 +522,12 @@ class _HomePageState extends State<HomePage> {
                     child: ServiceCard(
                       service: service,
                       onTap: () {
-                        SnackBarHelper.showInfoSnackBar(
+                        Navigator.push(
                           context,
-                          'Service: ${service.name}',
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                ServiceChoosingPage(service: service),
+                          ),
                         );
                       },
                     ),
