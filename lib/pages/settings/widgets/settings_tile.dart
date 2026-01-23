@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class SettingsTile extends StatelessWidget {
   final IconData icon;
   final String title;
+  final String? subtitle;
   final VoidCallback onTap;
   final bool isDestructive;
 
@@ -11,6 +12,7 @@ class SettingsTile extends StatelessWidget {
     Key? key,
     required this.icon,
     required this.title,
+    this.subtitle,
     required this.onTap,
     this.isDestructive = false,
   }) : super(key: key);
@@ -19,21 +21,28 @@ class SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: onTap,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
-      leading: Container(
-        width: 40,
-        height: 40,
-        decoration: BoxDecoration(color: Colors.black, shape: BoxShape.circle),
-        child: Icon(icon, color: Colors.white, size: 20),
-      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      leading: Icon(icon, size: 24, color: Colors.black87),
       title: Text(
         title,
         style: GoogleFonts.dmSans(
           fontSize: 16,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
           color: Colors.black,
         ),
       ),
+      subtitle: subtitle != null
+          ? Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                subtitle!,
+                style: GoogleFonts.dmSans(
+                  fontSize: 12,
+                  color: const Color(0xFF8B8B97),
+                ),
+              ),
+            )
+          : null,
       trailing: const Icon(
         Icons.arrow_forward_ios,
         size: 16,

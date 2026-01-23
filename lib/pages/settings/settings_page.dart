@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
 import '../../Widgets/home_drawer.dart';
+import '../../providers/user_provider.dart';
 import 'widgets/settings_tile.dart';
+import 'widgets/notification_toggle_tile.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -14,6 +17,10 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  // Notification toggle states
+  bool _pushNotifications = true;
+  bool _promotionalNotifications = true;
+
   void _onBottomNavTapped(int index) {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, RouteNames.home);
@@ -28,57 +35,148 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = context.watch<UserProvider>();
+
     return Scaffold(
-      backgroundColor: AppColors.roseColor, // Header background
+      backgroundColor: AppColors.roseColor,
       drawer: const HomeDrawer(),
       body: Stack(
         children: [
           Column(
             children: [
-              // Header
+              // Pink Header with Profile Section
               SafeArea(
                 bottom: false,
-                child: Padding(
+                child: Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 20,
                   ),
                   child: Column(
                     children: [
+                      // Top Bar (Back button, Title, Notification icon)
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Builder(
+                            builder: (context) => IconButton(
+                              icon: const Icon(
+                                Icons.grid_view,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                              onPressed: () {
+                                Scaffold.of(context).openDrawer();
+                              },
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                            ),
+                          ),
+                          Text(
+                            'Edit Profile',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                           IconButton(
                             icon: const Icon(
-                              Icons.arrow_back,
+                              Icons.notifications_outlined,
                               color: Colors.white,
                               size: 28,
                             ),
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () {
+                              // TODO: Navigate to notifications
+                            },
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      Row(
+
+                      const SizedBox(height: 30),
+
+                      // Profile Section
+                      Column(
                         children: [
-                          const Icon(
-                            Icons.settings_outlined,
-                            color: Colors.white,
-                            size: 28,
+                          // Profile Picture
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundColor: Colors.yellow.shade700,
+                            child: Icon(
+                              Icons.person,
+                              size: 50,
+                              color: Colors.white,
+                            ),
                           ),
-                          const SizedBox(width: 12),
+
+                          const SizedBox(height: 12),
+
+                          // User Name
                           Text(
-                            'Settings',
+                            userProvider.fullName.isNotEmpty
+                                ? userProvider.fullName
+                                : 'User Name',
                             style: GoogleFonts.dmSans(
-                              fontSize: 28,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                           ),
+
+                          const SizedBox(height: 4),
+
+                          // User Email
+                          Text(
+                            userProvider.user.email ?? 'user@example.com',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.9),
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Edit Button
+                          OutlinedButton(
+                            onPressed: () {
+                              // TODO: Navigate to edit_user_account.dart
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Edit profile page coming soon!',
+                                  ),
+                                ),
+                              );
+                            },
+                            style: OutlinedButton.styleFrom(
+                              side: const BorderSide(
+                                color: Colors.white,
+                                width: 1.5,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 32,
+                                vertical: 8,
+                              ),
+                            ),
+                            child: Text(
+                              'Edit',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 05),
                         ],
                       ),
-                      const SizedBox(height: 20),
                     ],
                   ),
                 ),
@@ -100,63 +198,70 @@ class _SettingsPageState extends State<SettingsPage> {
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
-                    child: SingleChildScrollView(
+                    child: ListView(
                       padding: const EdgeInsets.only(top: 30, bottom: 100),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // GENERAL Section
-                          _buildSectionHeader('GENERAL'),
-                          SettingsTile(
-                            icon: Icons.person_outline,
-                            title: 'Account',
-                            onTap: () {},
-                          ),
-                          SettingsTile(
-                            icon: Icons.notifications_outlined,
-                            title: 'Notifications',
-                            onTap: () {},
-                          ),
-                          SettingsTile(
-                            icon: Icons.card_giftcard,
-                            title: 'Coupons',
-                            onTap: () {},
-                          ),
-                          SettingsTile(
-                            icon: Icons.logout,
-                            title: 'Logout',
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Logout functionality available in Drawer',
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          SettingsTile(
-                            icon: Icons.delete_outline,
-                            title: 'Delete account',
-                            onTap: () {},
-                          ),
+                      children: [
+                        // GENERAL Section
+                        _buildSectionHeader('GENERAL'),
+                        SettingsTile(
+                          icon: Icons.card_giftcard,
+                          title: 'Refer to Friends',
+                          subtitle: 'Get 10-5 / for referring friends',
+                          onTap: () {
+                            // TODO: Navigate to referral page
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Referral page coming soon!'),
+                              ),
+                            );
+                          },
+                        ),
 
-                          const SizedBox(height: 24),
+                        const SizedBox(height: 24),
 
-                          // FEEDBACK Section
-                          _buildSectionHeader('FEEDBACK'),
-                          SettingsTile(
-                            icon: Icons.info_outline,
-                            title: 'Report a bug',
-                            onTap: () {},
-                          ),
-                          SettingsTile(
-                            icon: Icons.send_outlined,
-                            title: 'Send Feedback',
-                            onTap: () {},
-                          ),
-                        ],
-                      ),
+                        // NOTIFICATIONS Section
+                        _buildSectionHeader('NOTIFICATIONS'),
+                        NotificationToggleTile(
+                          icon: Icons.notifications_outlined,
+                          title: 'Push Notifications',
+                          subtitle: 'For daily update and others',
+                          value: _pushNotifications,
+                          onChanged: (value) {
+                            setState(() {
+                              _pushNotifications = value;
+                            });
+                          },
+                        ),
+                        NotificationToggleTile(
+                          icon: Icons.notifications_active_outlined,
+                          title: 'Promotional Notifications',
+                          subtitle: 'New Campaign & Offers',
+                          value: _promotionalNotifications,
+                          onChanged: (value) {
+                            setState(() {
+                              _promotionalNotifications = value;
+                            });
+                          },
+                        ),
+
+                        const SizedBox(height: 24),
+
+                        // MORE Section
+                        _buildSectionHeader('MORE'),
+                        SettingsTile(
+                          icon: Icons.headset_mic_outlined,
+                          title: 'Contact Us',
+                          subtitle: 'For more information',
+                          onTap: () {
+                            // TODO: Navigate to contact us page
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Contact page coming soon!'),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -170,8 +275,7 @@ class _SettingsPageState extends State<SettingsPage> {
             right: 0,
             bottom: 0,
             child: CustomBottomNavBar(
-              currentIndex:
-                  3, // Highlighting Profile/Person as context for Settings
+              currentIndex: 3,
               onTap: _onBottomNavTapped,
             ),
           ),
@@ -183,20 +287,13 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget _buildSectionHeader(String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: GoogleFonts.dmSans(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF8B8B97), // Greyish color from design
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Divider(height: 1, color: Color(0xFFEEEEEE)),
-        ],
+      child: Text(
+        title,
+        style: GoogleFonts.dmSans(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: AppColors.roseColor,
+        ),
       ),
     );
   }
