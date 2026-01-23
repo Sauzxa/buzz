@@ -135,6 +135,84 @@ class OrderService {
     }
   }
 
+  /// Get active orders for a customer
+  Future<List<dynamic>> getActiveOrders(String customerId) async {
+    try {
+      final response = await _apiClient.get(
+        ApiEndpoints.getActiveOrdersByCustomer(customerId),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data is Map<String, dynamic> && data.containsKey('content')) {
+          return data['content'] as List<dynamic>;
+        }
+        return [];
+      } else {
+        throw Exception('Failed to load active orders: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching active orders: $e');
+      rethrow;
+    }
+  }
+
+  /// Get archived orders for a customer
+  Future<List<dynamic>> getArchivedOrders(String customerId) async {
+    try {
+      final response = await _apiClient.get(
+        ApiEndpoints.getArchivedOrdersByCustomer(customerId),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data is Map<String, dynamic> && data.containsKey('content')) {
+          return data['content'] as List<dynamic>;
+        }
+        return [];
+      } else {
+        throw Exception(
+          'Failed to load archived orders: ${response.statusCode}',
+        );
+      }
+    } catch (e) {
+      print('Error fetching archived orders: $e');
+      rethrow;
+    }
+  }
+
+  /// Get order by ID
+  Future<Map<String, dynamic>> getOrderById(String orderId) async {
+    try {
+      final response = await _apiClient.get(ApiEndpoints.getOrderById(orderId));
+
+      if (response.statusCode == 200) {
+        return response.data as Map<String, dynamic>;
+      } else {
+        throw Exception('Failed to load order details: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching order details: $e');
+      rethrow;
+    }
+  }
+
+  /// Cancel an order
+  Future<void> cancelOrder(String orderId) async {
+    try {
+      final response = await _apiClient.delete(
+        ApiEndpoints.cancelOrder(orderId),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to cancel order: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error cancelling order: $e');
+      rethrow;
+    }
+  }
+
   /// Helper method to convert strings to camelCase
   /// Handles: "Title" -> "title", "target_audience" -> "targetAudience", "tone-Style" -> "toneStyle"
   String _toCamelCase(String input) {

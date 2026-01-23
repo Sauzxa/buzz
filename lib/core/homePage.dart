@@ -46,6 +46,15 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         _selectedIndex = 0;
       });
+    } else if (index == 1) {
+      // Search - For now stay on home but maybe focus search?
+      // Or if separate page exists: Navigator.pushNamed(context, RouteNames.search);
+      setState(() {
+        _selectedIndex = 1;
+      });
+      // Optional: focus search field
+    } else if (index == 2) {
+      Navigator.pushNamed(context, RouteNames.orderManagement);
     } else if (index == 3) {
       // Profile/Settings button - Navigate to Edit Profile
       Navigator.push(

@@ -29,6 +29,18 @@ class ApiEndpoints {
   static String get createOrder => '$apiPrefix/orders';
   static String uploadOrderFile(String orderId) =>
       '$apiPrefix/orders/$orderId/files';
+  static String getActiveOrdersByCustomer(String customerId) =>
+      '$apiPrefix/orders/customer/$customerId/active';
+  static String getArchivedOrdersByCustomer(String customerId) =>
+      '$apiPrefix/orders/customer/$customerId/archived';
+  static String getOrderById(String orderId) => '$apiPrefix/orders/$orderId';
+  static String cancelOrder(String orderId) => '$apiPrefix/orders/$orderId';
+
+  // Invoice endpoints
+  static String getInvoiceByOrderId(String orderId) =>
+      '$apiPrefix/invoices/order/$orderId';
+  static String uploadPaymentProof(String invoiceId) =>
+      '$apiPrefix/invoices/$invoiceId/upload-proof';
 
   // News endpoints
   static String get getNews => '$apiPrefix/news';

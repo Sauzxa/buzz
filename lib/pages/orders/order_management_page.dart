@@ -1,0 +1,299 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
+import '../../providers/orders_provider.dart';
+import '../../providers/user_provider.dart';
+import '../../Widgets/order_drawer.dart';
+import '../../Widgets/order_card.dart';
+import '../../routes/route_names.dart';
+import '../../theme/colors.dart';
+
+class OrderManagementPage extends StatefulWidget {
+  const OrderManagementPage({Key? key}) : super(key: key);
+
+  @override
+  State<OrderManagementPage> createState() => _OrderManagementPageState();
+}
+
+class _OrderManagementPageState extends State<OrderManagementPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        _fetchOrders();
+      }
+    });
+  }
+
+  Future<void> _fetchOrders() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userId = userProvider.user.id?.toString();
+
+    if (userId == null || userId.isEmpty) {
+      print(
+        '⚠️ [ORDER_MANAGEMENT] User ID is null or empty, cannot fetch orders',
+      );
+      return;
+    }
+
+    await Provider.of<OrdersProvider>(
+      context,
+      listen: false,
+    ).fetchActiveOrders(userId);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userId = userProvider.user.id?.toString();
+
+    return Scaffold(
+      key: _scaffoldKey,
+      backgroundColor: Colors.grey[50], // Light background
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () =>
+              Navigator.pushReplacementNamed(context, RouteNames.home),
+        ),
+        title: Text(
+          'My orders',
+          style: GoogleFonts.dmSans(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.menu, color: Colors.black),
+            onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+          ),
+        ],
+      ),
+      endDrawer: const OrderDrawer(currentRoute: RouteNames.orderManagement),
+      body: userId == null || userId.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.person_off_outlined,
+                    size: 64,
+                    color: Colors.grey[400],
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'User not logged in',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Please log in to view your orders',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.grey[500],
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : Consumer<OrdersProvider>(
+              builder: (context, ordersProvider, child) {
+                if (ordersProvider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (ordersProvider.error != null) {
+                  return Center(child: Text('Error: ${ordersProvider.error}'));
+                }
+
+                final orders = ordersProvider.activeOrders;
+
+                if (orders.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.shopping_bag_outlined,
+                          size: 64,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No active orders',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    // Swipe hint
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.swipe, size: 16, color: Colors.grey[400]),
+                          const SizedBox(width: 8),
+                          Text(
+                            'swipe on an item to delete',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Orders List
+                    Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: orders.length,
+                        itemBuilder: (context, index) {
+                          final order = orders[index];
+                          return OrderCard(
+                            order: order,
+                            onTap: () {
+                              // Navigate to details
+                              Navigator.pushNamed(
+                                context,
+                                RouteNames.orderDetails,
+                                arguments: order,
+                              );
+                            },
+                            onUploadReceipt: () {
+                              // Only navigate if upload is allowed (status check in Card, but logic here too)
+                              Navigator.pushNamed(
+                                context,
+                                RouteNames.paymentUpload,
+                                arguments: order,
+                              );
+                            },
+                            confirmDismiss: (direction) async {
+                              // Show confirmation dialog
+                              return await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext dialogContext) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        title: Text(
+                                          'Cancel Order',
+                                          style: GoogleFonts.dmSans(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        content: Text(
+                                          'Are you sure you want to cancel this order?',
+                                          style: GoogleFonts.dmSans(),
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(
+                                                dialogContext,
+                                              ).pop(false);
+                                            },
+                                            child: Text(
+                                              'No',
+                                              style: GoogleFonts.dmSans(
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(
+                                                dialogContext,
+                                              ).pop(true);
+                                            },
+                                            child: Text(
+                                              'Yes, Cancel',
+                                              style: GoogleFonts.dmSans(
+                                                color: Colors.red,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  ) ??
+                                  false;
+                            },
+                            onDismissed: (direction) async {
+                              // Capture ScaffoldMessenger before async operations
+                              final messenger = ScaffoldMessenger.of(context);
+                              final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false,
+                              );
+                              final userId = userProvider.user.id?.toString();
+
+                              if (userId != null && userId.isNotEmpty) {
+                                final success = await ordersProvider
+                                    .cancelOrder(
+                                      order['id'].toString(),
+                                      userId,
+                                    );
+
+                                if (success) {
+                                  messenger.showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Order cancelled successfully',
+                                      ),
+                                      backgroundColor: AppColors.greenColor,
+                                    ),
+                                  );
+                                } else {
+                                  messenger.showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Failed to cancel order'),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              } else {
+                                messenger.showSnackBar(
+                                  const SnackBar(
+                                    content: Text('User not logged in'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+    );
+  }
+}

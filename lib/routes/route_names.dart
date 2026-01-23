@@ -21,4 +21,12 @@ class RouteNames {
   static const String home = '/home';
   static const String chat = '/chat';
   static const String settings = '/settings';
+
+  // Order management routes
+  static const String orderManagement = '/order-management';
+  static const String orderHistory = '/order-history';
+  static const String orderTracking = '/order-tracking';
+  static const String orderDetails = '/order-details';
+  static const String paymentUpload = '/payment-upload';
+  static const String paymentInfo = '/payment-info';
 }
