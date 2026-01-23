@@ -7,6 +7,7 @@ import 'providers/auth_provider.dart';
 import 'providers/categories_provider.dart';
 import 'providers/services_provider.dart';
 import 'providers/news_provider.dart';
+import 'providers/saved_services_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +34,7 @@ class Buzz extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => CategoriesProvider()),
         ChangeNotifierProvider(create: (_) => ServicesProvider()),
         ChangeNotifierProvider(create: (_) => NewsProvider()),
+        ChangeNotifierProvider(create: (_) => SavedServicesProvider()),
       ],
       child: MaterialApp(
         initialRoute: AppRoutes.initialRoute,

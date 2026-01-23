@@ -6,10 +6,12 @@ import '../providers/user_provider.dart';
 import '../providers/categories_provider.dart';
 import '../providers/services_provider.dart';
 import '../providers/news_provider.dart';
+import '../providers/saved_services_provider.dart';
 import '../Widgets/home_drawer.dart';
 import '../Widgets/notification_popup.dart';
 import '../Widgets/category_card.dart';
 import '../Widgets/service_card.dart';
+import '../Widgets/long_press_service_wrapper.dart';
 import '../Widgets/custom_bottom_nav_bar.dart';
 import '../Widgets/skeleton_loader.dart';
 import '../Widgets/ad_banner.dart';
@@ -64,13 +66,23 @@ class _HomePageState extends State<HomePage> {
     final categoriesProvider = context.read<CategoriesProvider>();
     final servicesProvider = context.read<ServicesProvider>();
     final newsProvider = context.read<NewsProvider>();
+    final userProvider = context.read<UserProvider>();
+    final savedServicesProvider = context.read<SavedServicesProvider>();
 
     // Fetch all data
-    await Future.wait([
+    final futures = <Future>[
       categoriesProvider.fetchCategories(),
       servicesProvider.fetchServices(),
       newsProvider.fetchNews(),
-    ]);
+    ];
+
+    if (userProvider.user.id != null) {
+      futures.add(
+        savedServicesProvider.loadSavedServices(userProvider.user.id!),
+      );
+    }
+
+    await Future.wait(futures);
 
     // Show error if any provider has an error
     if (mounted) {
@@ -519,17 +531,21 @@ class _HomePageState extends State<HomePage> {
                   final service = services[index];
                   return SizedBox(
                     width: 200,
-                    child: ServiceCard(
+                    child: LongPressServiceWrapper(
                       service: service,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                ServiceChoosingPage(service: service),
-                          ),
-                        );
-                      },
+                      child: ServiceCard(
+                        service: service,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ServiceChoosingPage(service: service),
+                            ),
+                          );
+                        },
+                        // onLongPress is handled by the wrapper now
+                      ),
                     ),
                   );
                 },

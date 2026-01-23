@@ -6,13 +6,20 @@ import '../theme/colors.dart';
 class ServiceCard extends StatelessWidget {
   final ServiceModel service;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
 
-  const ServiceCard({super.key, required this.service, this.onTap});
+  const ServiceCard({
+    super.key,
+    required this.service,
+    this.onTap,
+    this.onLongPress,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

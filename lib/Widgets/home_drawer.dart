@@ -4,9 +4,10 @@ import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
-import '../routes/route_names.dart';
+
 import '../utils/fade_route.dart';
 import '../pages/settings/general_settings.dart';
+import '../pages/services/saved_services.dart';
 import '../auth/SignIn.dart';
 
 class HomeDrawer extends StatefulWidget {
@@ -180,6 +181,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     title: 'Saved Services',
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SavedServicesPage(),
+                        ),
+                      );
                     },
                   ),
 

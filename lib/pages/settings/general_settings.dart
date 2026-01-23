@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+
 import '../../theme/colors.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
