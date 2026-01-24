@@ -564,7 +564,7 @@ class _HomePageState extends State<HomePage> {
             } else {
               // Get category ID from category name, then filter by ID
               final categoriesProvider = context.read<CategoriesProvider>();
-              
+
               final category = categoriesProvider.categories.firstWhere(
                 (cat) =>
                     cat.categoryName.toLowerCase() ==
@@ -643,23 +643,132 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildAdsSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          AdBanner(
-            title: 'apex tech',
-            subtitle: 'Powered by innovation',
-            backgroundColor: AppColors.roseColor,
-            onTap: () {
-              SnackBarHelper.showInfoSnackBar(
-                context,
-                'Learn more about apex tech',
-              );
-            },
-          ),
-        ],
-      ),
+    return Consumer<NewsProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Center(
+              child: CircularProgressIndicator(color: AppColors.roseColor),
+            ),
+          );
+        }
+
+        if (!provider.hasData || provider.newsList.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'News',
+                style: GoogleFonts.dmSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 180,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: provider.newsList.length,
+                itemBuilder: (context, index) {
+                  final news = provider.newsList[index];
+
+                  return GestureDetector(
+                    onTap: () {
+                      if (news.newsLink != null && news.newsLink!.isNotEmpty) {
+                        SnackBarHelper.showInfoSnackBar(
+                          context,
+                          'Opening ${news.title}',
+                        );
+                        // TODO: Open URL in browser
+                        // You can use url_launcher package:
+                        // launchUrl(Uri.parse(news.newsLink!));
+                      }
+                    },
+                    child: Container(
+                      width: 300,
+                      margin: const EdgeInsets.only(right: 16),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child:
+                            news.imageUrl != null && news.imageUrl!.isNotEmpty
+                            ? Image.network(
+                                news.imageUrl!,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                                height: double.infinity,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: AppColors.roseColor.withOpacity(0.2),
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.article,
+                                        size: 60,
+                                        color: AppColors.roseColor,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                      if (loadingProgress == null) return child;
+                                      return Container(
+                                        color: Colors.grey[200],
+                                        child: Center(
+                                          child: CircularProgressIndicator(
+                                            color: AppColors.roseColor,
+                                            value:
+                                                loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                          .cumulativeBytesLoaded /
+                                                      loadingProgress
+                                                          .expectedTotalBytes!
+                                                : null,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                              )
+                            : Container(
+                                color: AppColors.roseColor.withOpacity(0.2),
+                                child: Center(
+                                  child: Icon(
+                                    Icons.article,
+                                    size: 60,
+                                    color: AppColors.roseColor,
+                                  ),
+                                ),
+                              ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }

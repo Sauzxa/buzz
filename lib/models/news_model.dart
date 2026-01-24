@@ -3,6 +3,9 @@ class NewsModel {
   final String title;
   final String description;
   final String? imageUrl;
+  final String? newsLink;
+  final DateTime? startDate;
+  final DateTime? endDate;
   final DateTime? date;
   final String? category;
   final bool? isActive;
@@ -12,6 +15,9 @@ class NewsModel {
     required this.title,
     required this.description,
     this.imageUrl,
+    this.newsLink,
+    this.startDate,
+    this.endDate,
     this.date,
     this.category,
     this.isActive,
@@ -22,7 +28,14 @@ class NewsModel {
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
-      imageUrl: json['imageUrl']?.toString(),
+      imageUrl: json['image']?.toString() ?? json['imageUrl']?.toString(),
+      newsLink: json['newsLink']?.toString(),
+      startDate: json['startDate'] != null
+          ? DateTime.tryParse(json['startDate'])
+          : null,
+      endDate: json['endDate'] != null
+          ? DateTime.tryParse(json['endDate'])
+          : null,
       date: json['date'] != null ? DateTime.tryParse(json['date']) : null,
       category: json['category']?.toString(),
       isActive: json['isActive'] as bool? ?? true,
@@ -35,6 +48,9 @@ class NewsModel {
       'title': title,
       'description': description,
       'imageUrl': imageUrl,
+      'newsLink': newsLink,
+      'startDate': startDate?.toIso8601String(),
+      'endDate': endDate?.toIso8601String(),
       'date': date?.toIso8601String(),
       'category': category,
       'isActive': isActive,
