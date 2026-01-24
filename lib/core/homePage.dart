@@ -513,7 +513,7 @@ class _HomePageState extends State<HomePage> {
                   itemCount: 4,
                   itemBuilder: (context, index) {
                     return const Padding(
-                      padding: EdgeInsets.only(right: 12),
+                      padding: EdgeInsets.only(right: 16),
                       child: SkeletonLoader(width: 200, height: 120),
                     );
                   },
@@ -538,22 +538,25 @@ class _HomePageState extends State<HomePage> {
                 itemCount: services.length,
                 itemBuilder: (context, index) {
                   final service = services[index];
-                  return SizedBox(
-                    width: 200,
-                    child: LongPressServiceWrapper(
-                      service: service,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                ServiceChoosingPage(service: service),
-                          ),
-                        );
-                      },
-                      child: ServiceCard(
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: SizedBox(
+                      width: 200,
+                      child: LongPressServiceWrapper(
                         service: service,
-                        // onTap is handled by wrapper
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ServiceChoosingPage(service: service),
+                            ),
+                          );
+                        },
+                        child: ServiceCard(
+                          service: service,
+                          // onTap is handled by wrapper
+                        ),
                       ),
                     ),
                   );

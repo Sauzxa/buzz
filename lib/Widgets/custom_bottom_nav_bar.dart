@@ -14,48 +14,50 @@ class CustomBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 20, left: 20, right: 20),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(30),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            height: 60,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.7),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-                width: 1.5,
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(30),
+        topRight: Radius.circular(30),
+      ),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          height: 70,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.7),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(30),
+              topRight: Radius.circular(30),
+            ),
+            border: Border(
+              top: BorderSide(color: Colors.white.withOpacity(0.2), width: 1.5),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 20,
+                spreadRadius: 2,
+                offset: const Offset(0, -5),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 20,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 5),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _buildNavItem(0, Icons.home_rounded, Icons.home_outlined),
-                _buildNavItem(1, Icons.search, Icons.search),
-                _buildNavItem(
-                  2,
-                  Icons.business_center_rounded,
-                  Icons.business_center_outlined,
-                ),
-                _buildNavItem(3, Icons.person_rounded, Icons.person_outline),
-                _buildNavItem(
-                  4,
-                  Icons.chat_bubble_rounded,
-                  Icons.chat_bubble_outline,
-                ),
-              ],
-            ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildNavItem(0, Icons.home_rounded, Icons.home_outlined),
+              _buildNavItem(1, Icons.search, Icons.search),
+              _buildNavItem(
+                2,
+                Icons.business_center_rounded,
+                Icons.business_center_outlined,
+              ),
+              _buildNavItem(3, Icons.person_rounded, Icons.person_outline),
+              _buildNavItem(
+                4,
+                Icons.chat_bubble_rounded,
+                Icons.chat_bubble_outline,
+              ),
+            ],
           ),
         ),
       ),

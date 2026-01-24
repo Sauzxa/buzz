@@ -197,46 +197,108 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                       return AlertDialog(
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                            12,
+                                            20,
                                           ),
+                                        ),
+                                        backgroundColor: Colors.white,
+                                        contentPadding: const EdgeInsets.all(
+                                          24,
                                         ),
                                         title: Text(
                                           'Cancel Order',
                                           style: GoogleFonts.dmSans(
                                             fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                            color: Colors.black,
                                           ),
                                         ),
                                         content: Text(
                                           'Are you sure you want to cancel this order?',
-                                          style: GoogleFonts.dmSans(),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(
-                                                dialogContext,
-                                              ).pop(false);
-                                            },
-                                            child: Text(
-                                              'No',
-                                              style: GoogleFonts.dmSans(
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 16,
+                                            color: Colors.grey[700],
                                           ),
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.of(
-                                                dialogContext,
-                                              ).pop(true);
-                                            },
-                                            child: Text(
-                                              'Yes, Cancel',
-                                              style: GoogleFonts.dmSans(
-                                                color: Colors.red,
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                        ),
+                                        actionsPadding:
+                                            const EdgeInsets.fromLTRB(
+                                              24,
+                                              0,
+                                              24,
+                                              24,
                                             ),
+                                        actions: [
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.of(
+                                                      dialogContext,
+                                                    ).pop(false);
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.grey[200],
+                                                    foregroundColor:
+                                                        Colors.grey[800],
+                                                    elevation: 0,
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          vertical: 12,
+                                                        ),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  child: Text(
+                                                    'No',
+                                                    style: GoogleFonts.dmSans(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.of(
+                                                      dialogContext,
+                                                    ).pop(true);
+                                                  },
+                                                  style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        AppColors.roseColor,
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                    elevation: 0,
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          vertical: 12,
+                                                        ),
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            8,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  child: Text(
+                                                    'Yes, Cancel',
+                                                    style: GoogleFonts.dmSans(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       );
