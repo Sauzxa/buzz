@@ -11,6 +11,7 @@ class ServicesProvider extends ChangeNotifier {
   LoadingState _state = LoadingState.idle;
   List<ServiceModel> _services = [];
   String? _errorMessage;
+  List<String> _discountServiceNames = [];
 
   // Configuration for "Other Services" section
   static const int maxServicesPerCategory = 4;
@@ -22,6 +23,7 @@ class ServicesProvider extends ChangeNotifier {
   bool get isLoading => _state == LoadingState.loading;
   bool get hasError => _state == LoadingState.error;
   bool get hasData => _services.isNotEmpty;
+  List<String> get discountServiceNames => _discountServiceNames;
 
   /// Fetch all services from API
   Future<void> fetchServices() async {
@@ -99,6 +101,65 @@ class ServicesProvider extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  /// Fetch active discounts from API
+  Future<void> fetchDiscounts() async {
+    try {
+      print('🔍 [DISCOUNTS] Starting fetch...');
+
+      final response = await _apiClient.get(ApiEndpoints.getActiveDiscounts);
+
+      print('📡 [DISCOUNTS] Response Status: ${response.statusCode}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.data is! List) {
+          print('❌ [DISCOUNTS] ERROR: Expected List but got: ${response.data}');
+          return;
+        }
+
+        final List<dynamic> data = response.data as List<dynamic>;
+        print('✅ [DISCOUNTS] Discounts count: ${data.length}');
+
+        // Extract service names from discounts
+        _discountServiceNames = [];
+        for (var discount in data) {
+          if (discount['servicesNames'] != null &&
+              discount['servicesNames'] is List) {
+            final List<dynamic> serviceNames =
+                discount['servicesNames'] as List<dynamic>;
+            _discountServiceNames.addAll(serviceNames.map((e) => e.toString()));
+          }
+        }
+
+        print(
+          '✅ [DISCOUNTS] Service names with discounts: $_discountServiceNames',
+        );
+        notifyListeners();
+      } else {
+        print('❌ [DISCOUNTS] Error status: ${response.statusCode}');
+      }
+    } catch (e, stackTrace) {
+      print('❌ [DISCOUNTS] Network error: $e');
+      print('❌ [DISCOUNTS] Stack trace: $stackTrace');
+    }
+  }
+
+  /// Get services that have discounts
+  List<ServiceModel> getDiscountedServices() {
+    return _services
+        .where((service) => _discountServiceNames.contains(service.name))
+        .toList();
+  }
+
+  /// Get services by category name
+  List<ServiceModel> getServicesByCategoryName(String categoryName) {
+    return _services
+        .where(
+          (service) =>
+              service.categoryName?.toLowerCase() == categoryName.toLowerCase(),
+        )
+        .toList();
   }
 
   /// Get services by category ID

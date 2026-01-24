@@ -45,6 +45,9 @@ class ApiEndpoints {
   // News endpoints
   static String get getNews => '$apiPrefix/news';
 
+  // Discount endpoints
+  static String get getActiveDiscounts => '$apiPrefix/discounts';
+
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {
     return '$baseUrl$endpoint';

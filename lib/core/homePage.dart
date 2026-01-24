@@ -7,6 +7,8 @@ import '../providers/categories_provider.dart';
 import '../providers/services_provider.dart';
 import '../providers/news_provider.dart';
 import '../providers/saved_services_provider.dart';
+import '../models/service_model.dart';
+import '../models/category_model.dart';
 import '../Widgets/home_drawer.dart';
 import '../Widgets/notification_popup.dart';
 import '../Widgets/category_card.dart';
@@ -31,6 +33,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
+  String? _selectedFilter; // null means "All" or no filter
 
   @override
   void initState() {
@@ -82,6 +85,7 @@ class _HomePageState extends State<HomePage> {
     final futures = <Future>[
       categoriesProvider.fetchCategories(),
       servicesProvider.fetchServices(),
+      servicesProvider.fetchDiscounts(),
       newsProvider.fetchNews(),
     ];
 
@@ -412,12 +416,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildNewsSection() {
-    // Mock filter chips
-    final filters = [
-      'Logo Design',
-      'Print',
-      'Video Editing',
-      'Charte Graphic',
+    // Dynamic filters based on categories + Promotion
+    final categories = [
+      'Graphic-Design',
+      'Audio-Visual',
+      'Printing',
       'Promotion',
     ];
 
@@ -437,19 +440,37 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.black87,
                 ),
               ),
-              TextButton(
-                onPressed: () {
-                  SnackBarHelper.showInfoSnackBar(
-                    context,
-                    'View all services coming soon!',
-                  );
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    _selectedFilter = null;
+                  });
                 },
-                child: Text(
-                  'See All',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.roseColor,
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: _selectedFilter == null
+                        ? AppColors.roseColor
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.roseColor.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    'See All',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: _selectedFilter == null
+                          ? Colors.white
+                          : AppColors.roseColor,
+                    ),
                   ),
                 ),
               ),
@@ -458,27 +479,29 @@ class _HomePageState extends State<HomePage> {
         ),
         const SizedBox(height: 12),
 
-        // Filter Chips (Visual only for now)
+        // Filter Chips
         SizedBox(
           height: 40,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: filters.length,
+            itemCount: categories.length,
             itemBuilder: (context, index) {
-              final isFirst = index == 0;
+              final category = categories[index];
+              final isSelected = _selectedFilter == category;
+
               return Container(
                 margin: const EdgeInsets.only(right: 8),
                 child: FilterChip(
                   label: Text(
-                    filters[index],
+                    category.replaceAll('-', ' '),
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: isFirst ? Colors.white : AppColors.roseColor,
+                      color: isSelected ? Colors.white : AppColors.roseColor,
                     ),
                   ),
-                  selected: isFirst,
+                  selected: isSelected,
                   selectedColor: AppColors.roseColor,
                   backgroundColor: Colors.white,
                   side: BorderSide(
@@ -486,7 +509,9 @@ class _HomePageState extends State<HomePage> {
                     width: 1,
                   ),
                   onSelected: (selected) {
-                    // TODO: Implement filter logic
+                    setState(() {
+                      _selectedFilter = selected ? category : null;
+                    });
                   },
                   showCheckmark: false,
                   padding: const EdgeInsets.symmetric(
@@ -530,14 +555,62 @@ class _HomePageState extends State<HomePage> {
             // For "News & Offers" section maybe we just show the first few?
             final services = provider.services;
 
+            // Filter services based on selected filter
+            List<ServiceModel> filteredServices;
+            if (_selectedFilter == null) {
+              filteredServices = services;
+            } else if (_selectedFilter == 'Promotion') {
+              filteredServices = provider.getDiscountedServices();
+            } else {
+              // Get category ID from category name, then filter by ID
+              final categoriesProvider = context.read<CategoriesProvider>();
+              
+              final category = categoriesProvider.categories.firstWhere(
+                (cat) =>
+                    cat.categoryName.toLowerCase() ==
+                    _selectedFilter!.toLowerCase(),
+                orElse: () => CategoryModel(
+                  id: '',
+                  categoryName: '',
+                  description: '',
+                  categoryColor: '',
+                  categoryImage: '',
+                ),
+              );
+
+              if (category.id.isNotEmpty) {
+                filteredServices = provider.getServicesByCategory(category.id);
+              } else {
+                filteredServices = [];
+              }
+            }
+
+            if (filteredServices.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 40,
+                ),
+                child: Center(
+                  child: Text(
+                    'No services available',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              );
+            }
+
             return SizedBox(
               height: 120,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: services.length,
+                itemCount: filteredServices.length,
                 itemBuilder: (context, index) {
-                  final service = services[index];
+                  final service = filteredServices[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 16),
                     child: SizedBox(
