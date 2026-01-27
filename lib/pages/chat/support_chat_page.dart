@@ -108,11 +108,15 @@ class _ChatHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Builder(
-            builder: (context) => IconButton(
-              icon: const Icon(Icons.grid_view, color: Colors.white, size: 28),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 24),
+            onPressed: () {
+              if (Navigator.canPop(context)) {
+                Navigator.pop(context);
+              } else {
+                Navigator.pushReplacementNamed(context, RouteNames.home);
+              }
+            },
           ),
           Text(
             'Support Chat',

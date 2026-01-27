@@ -5,6 +5,7 @@ import '../../providers/orders_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../Widgets/order_drawer.dart';
 import '../../Widgets/order_card.dart';
+import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
 import '../../theme/colors.dart';
 
@@ -17,6 +18,7 @@ class OrderManagementPage extends StatefulWidget {
 
 class _OrderManagementPageState extends State<OrderManagementPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _selectedIndex = 2; // Orders tab is index 2
 
   @override
   void initState() {
@@ -45,6 +47,22 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
     ).fetchActiveOrders(userId);
   }
 
+  void _onBottomNavTapped(int index) {
+    if (index == 0) {
+      Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 1) {
+      // Search - Navigate to home
+      Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 2) {
+      // Already on orders page
+    } else if (index == 3) {
+      // Profile
+      Navigator.pushNamed(context, '/profile');
+    } else if (index == 4) {
+      Navigator.pushNamed(context, RouteNames.chat);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
@@ -53,13 +71,27 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: Colors.grey[50], // Light background
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _selectedIndex,
+        onTap: _onBottomNavTapped,
+      ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () =>
-              Navigator.pushReplacementNamed(context, RouteNames.home),
+          onPressed: () {
+            // Close drawer if open
+            if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
+              Navigator.pop(context);
+            }
+            
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, RouteNames.home);
+            }
+          },
         ),
         title: Text(
           'My orders',

@@ -57,8 +57,18 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () =>
-              Navigator.pushReplacementNamed(context, RouteNames.home),
+          onPressed: () {
+            // Close drawer if open
+            if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
+              Navigator.pop(context);
+            }
+            
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, RouteNames.home);
+            }
+          },
         ),
         title: Text(
           'Tracking',
@@ -85,39 +95,24 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
 
           final orders = ordersProvider.activeOrders;
 
-          return Column(
-            children: [
-              Expanded(
-                child: orders.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No orders to track',
-                          style: GoogleFonts.dmSans(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: orders.length,
-                        itemBuilder: (context, index) {
-                          final order = orders[index];
-                          return _buildTrackingCard(order);
-                        },
-                      ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: PrimaryButton(
-                  text: 'Start ordering',
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, RouteNames.home);
+          return orders.isEmpty
+              ? Center(
+                  child: Text(
+                    'No orders to track',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    final order = orders[index];
+                    return _buildTrackingCard(order);
                   },
-                ),
-              ),
-            ],
-          );
+                );
         },
       ),
     );

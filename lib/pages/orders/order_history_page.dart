@@ -6,7 +6,6 @@ import '../../providers/user_provider.dart';
 import '../../Widgets/order_drawer.dart';
 import '../../routes/route_names.dart';
 import '../../theme/colors.dart';
-import '../../Widgets/button.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({Key? key}) : super(key: key);
@@ -53,8 +52,18 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () =>
-              Navigator.pushReplacementNamed(context, RouteNames.home),
+          onPressed: () {
+            // Close drawer if open
+            if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
+              Navigator.pop(context);
+            }
+            
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              Navigator.pushReplacementNamed(context, RouteNames.home);
+            }
+          },
         ),
         title: Text(
           'History',
@@ -81,39 +90,24 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
           final orders = ordersProvider.archivedOrders;
 
-          return Column(
-            children: [
-              Expanded(
-                child: orders.isEmpty
-                    ? Center(
-                        child: Text(
-                          'No history available',
-                          style: GoogleFonts.dmSans(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      )
-                    : ListView.builder(
-                        padding: const EdgeInsets.all(20),
-                        itemCount: orders.length,
-                        itemBuilder: (context, index) {
-                          final order = orders[index];
-                          return _buildHistoryCard(order);
-                        },
-                      ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: PrimaryButton(
-                  text: 'Start ordering',
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, RouteNames.home);
+          return orders.isEmpty
+              ? Center(
+                  child: Text(
+                    'No history available',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: orders.length,
+                  itemBuilder: (context, index) {
+                    final order = orders[index];
+                    return _buildHistoryCard(order);
                   },
-                ),
-              ),
-            ],
-          );
+                );
         },
       ),
     );

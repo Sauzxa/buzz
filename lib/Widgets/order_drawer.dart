@@ -76,10 +76,9 @@ class OrderDrawer extends StatelessWidget {
               )
             : null,
         onTap: () {
+          Navigator.pop(context); // Always close drawer first
           if (!isActive) {
-            Navigator.pushReplacementNamed(context, route);
-          } else {
-            Navigator.pop(context); // Close drawer if already on page
+            Navigator.pushNamed(context, route); // Then navigate
           }
         },
       ),
