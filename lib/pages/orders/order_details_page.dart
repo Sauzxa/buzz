@@ -134,9 +134,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                   // Price Breakdown
                   _buildPriceBreakdownCard(order),
                   const SizedBox(height: 20),
-
-                  // Payment / Status Section
-                  _buildPaymentSection(context, canUpload, order),
                 ],
               ),
             ),
@@ -288,10 +285,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             child: Center(
               child: Text(
                 'Unable to load pricing details',
-                style: GoogleFonts.dmSans(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.dmSans(color: Colors.grey, fontSize: 14),
               ),
             ),
           );
@@ -308,10 +302,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             child: Center(
               child: Text(
                 'No invoice available',
-                style: GoogleFonts.dmSans(
-                  color: Colors.grey,
-                  fontSize: 14,
-                ),
+                style: GoogleFonts.dmSans(color: Colors.grey, fontSize: 14),
               ),
             ),
           );
@@ -340,13 +331,19 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
 
               // Pricing Breakdown Section
               _buildSectionHeader('💰 Pricing Breakdown'),
-              _buildPriceRow('Subtotal', '${invoice.subtotal?.toStringAsFixed(2) ?? '0.00'} DA'),
+              _buildPriceRow(
+                'Subtotal',
+                '${invoice.subtotal?.toStringAsFixed(2) ?? '0.00'} DA',
+              ),
               _buildPriceRow(
                 'Discount',
                 '-${invoice.discountAmount?.toStringAsFixed(2) ?? '0.00'} DA',
                 valueColor: AppColors.greenColor,
               ),
-              _buildPriceRow('Fee', '+${invoice.fee?.toStringAsFixed(2) ?? '0.00'} DA'),
+              _buildPriceRow(
+                'Fee',
+                '+${invoice.fee?.toStringAsFixed(2) ?? '0.00'} DA',
+              ),
               const Divider(),
               _buildPriceRow(
                 'Total Amount',
@@ -415,64 +412,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           fontWeight: FontWeight.bold,
           color: Colors.black87,
         ),
-      ),
-    );
-  }
-
-  Widget _buildPaymentSection(
-    BuildContext context,
-    bool canUpload,
-    Map<String, dynamic> order,
-  ) {
-    if (!canUpload) return const SizedBox.shrink();
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Payment Method',
-            style: GoogleFonts.dmSans(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.upload_file, color: AppColors.roseColor),
-            title: Text(
-              'Upload Payment Receipt',
-              style: GoogleFonts.dmSans(fontWeight: FontWeight.w500),
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                RouteNames.paymentUpload,
-                arguments: order,
-              );
-            },
-          ),
-          const Divider(),
-          ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.credit_card, color: Colors.grey),
-            title: Text(
-              'ECCP Info',
-              style: GoogleFonts.dmSans(fontWeight: FontWeight.w500),
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-            onTap: () {
-              Navigator.pushNamed(context, RouteNames.paymentInfo);
-            },
-          ),
-        ],
       ),
     );
   }
@@ -557,7 +496,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             style: GoogleFonts.dmSans(
               fontSize: isTotal ? 16 : 14,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
-              color: valueColor ?? (isTotal ? AppColors.roseColor : Colors.black),
+              color:
+                  valueColor ?? (isTotal ? AppColors.roseColor : Colors.black),
             ),
           ),
         ],
