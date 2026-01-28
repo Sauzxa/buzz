@@ -8,6 +8,7 @@ import '../../Widgets/order_card.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
 import '../../theme/colors.dart';
+import '../settings/profile/edit_profile_settings.dart';
 
 class OrderManagementPage extends StatefulWidget {
   const OrderManagementPage({Key? key}) : super(key: key);
@@ -57,7 +58,10 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
       // Already on orders page
     } else if (index == 3) {
       // Profile
-      Navigator.pushNamed(context, '/profile');
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const EditProfileSettings()),
+      );
     } else if (index == 4) {
       Navigator.pushNamed(context, RouteNames.chat);
     }

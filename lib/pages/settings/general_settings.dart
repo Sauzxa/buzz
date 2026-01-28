@@ -18,14 +18,16 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
   void _onBottomNavTapped(int index) {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 1) {
+      // Search - Navigate to home
+      Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 2) {
+      // Order Management
+      Navigator.pushNamed(context, RouteNames.orderManagement);
     } else if (index == 3) {
       // Already on settings, do nothing
     } else if (index == 4) {
       Navigator.pushReplacementNamed(context, RouteNames.chat);
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Feature coming soon!')));
     }
   }
 

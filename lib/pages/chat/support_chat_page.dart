@@ -5,6 +5,7 @@ import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/chat_bubble.dart';
 import '../../routes/route_names.dart';
 import '../../Widgets/home_drawer.dart';
+import '../settings/profile/edit_profile_settings.dart';
 
 class SupportChatPage extends StatefulWidget {
   const SupportChatPage({super.key});
@@ -22,12 +23,20 @@ class _SupportChatPageState extends State<SupportChatPage> {
   void _onBottomNavTapped(int index) {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 1) {
+      // Search - Navigate to home
+      Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 2) {
+      // Order Management
+      Navigator.pushNamed(context, RouteNames.orderManagement);
+    } else if (index == 3) {
+      // Profile
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const EditProfileSettings()),
+      );
     } else if (index == 4) {
       // Already on Chat
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Feature coming soon!')));
     }
   }
 

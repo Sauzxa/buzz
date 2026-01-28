@@ -9,6 +9,7 @@ import '../../../theme/colors.dart';
 import '../../../Widgets/custom_bottom_nav_bar.dart';
 import '../../../Widgets/button.dart';
 import '../../../providers/user_provider.dart';
+import '../../../routes/route_names.dart';
 
 class EditProfileSettings extends StatefulWidget {
   const EditProfileSettings({Key? key}) : super(key: key);
@@ -210,22 +211,18 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
   }
 
   void _onBottomNavTapped(int index) {
-    // Assuming route names are available or using Navigator directly
-    // Adjust according to your app's actual RouteNames if different
     if (index == 0) {
-      Navigator.pushReplacementNamed(
-        context,
-        '/home',
-      ); // Assuming '/home' is RouteNames.home
+      Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 1) {
+      // Search - Navigate to home
+      Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 2) {
+      // Order Management
+      Navigator.pushNamed(context, RouteNames.orderManagement);
+    } else if (index == 3) {
+      // Already on profile/settings
     } else if (index == 4) {
-      Navigator.pushReplacementNamed(
-        context,
-        '/chat',
-      ); // Assuming '/chat' is RouteNames.chat
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Feature coming soon!')));
+      Navigator.pushNamed(context, RouteNames.chat);
     }
   }
 
