@@ -57,7 +57,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
               Navigator.pop(context);
             }
-            
+
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             } else {
@@ -92,12 +92,32 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
 
           return orders.isEmpty
               ? Center(
-                  child: Text(
-                    'No history available',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.history,
+                        size: 80,
+                        color: Colors.grey[300],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No completed orders yet',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Your order history will appear here',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    ],
                   ),
                 )
               : ListView.builder(
@@ -170,12 +190,22 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      order['status'] ?? '',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(order['status']),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        _getStatusDisplay(order['status'] ?? ''),
+                        style: GoogleFonts.dmSans(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -210,6 +240,32 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       return '${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year}';
     } catch (e) {
       return dateStr;
+    }
+  }
+
+  String _getStatusDisplay(String status) {
+    switch (status) {
+      case 'COMPLETED':
+        return 'Delivered';
+      case 'CANCELLED':
+        return 'Cancelled';
+      case 'REFUSED':
+        return 'Refused';
+      default:
+        return status;
+    }
+  }
+
+  Color _getStatusColor(String? status) {
+    switch (status) {
+      case 'COMPLETED':
+        return AppColors.greenColor;
+      case 'CANCELLED':
+        return Colors.grey;
+      case 'REFUSED':
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 }

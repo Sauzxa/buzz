@@ -62,7 +62,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
               Navigator.pop(context);
             }
-            
+
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             } else {
@@ -99,10 +99,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
               ? Center(
                   child: Text(
                     'No orders to track',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 16,
-                      color: Colors.grey,
-                    ),
+                    style: GoogleFonts.dmSans(fontSize: 16, color: Colors.grey),
                   ),
                 )
               : ListView.builder(

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/orders_provider.dart';
+import '../../providers/invoice_provider.dart';
 import '../../routes/route_names.dart';
 import '../../theme/colors.dart';
 import '../../Widgets/button.dart';
@@ -25,7 +26,22 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   @override
   void initState() {
     super.initState();
-    _loadOrderDetails();
+    // Defer provider access until after the first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _loadOrderDetails();
+        _loadInvoice();
+      }
+    });
+  }
+
+  Future<void> _loadInvoice() async {
+    final orderId = widget.order['id'].toString();
+    final invoiceProvider = Provider.of<InvoiceProvider>(
+      context,
+      listen: false,
+    );
+    await invoiceProvider.fetchInvoiceByOrderId(orderId);
   }
 
   Future<void> _loadOrderDetails() async {
@@ -249,41 +265,156 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        children: [
-          _buildPriceRow(
-            'Service Charge',
-            '${order['totalPrice'] ?? '0.00'} DA',
+    return Consumer<InvoiceProvider>(
+      builder: (context, invoiceProvider, child) {
+        if (invoiceProvider.isLoading) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: const Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (invoiceProvider.error != null) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Text(
+                'Unable to load pricing details',
+                style: GoogleFonts.dmSans(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          );
+        }
+
+        final invoice = invoiceProvider.invoice;
+        if (invoice == null) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Center(
+              child: Text(
+                'No invoice available',
+                style: GoogleFonts.dmSans(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          );
+        }
+
+        return Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
           ),
-          // Using total price as service charge for now as we don't have breakdown
-          const Divider(height: 24),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: ListView(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(20),
             children: [
+              // Header
               Text(
-                'Total',
+                'Service Charges & Payments',
                 style: GoogleFonts.dmSans(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Text(
-                '${order['totalPrice'] ?? '0.00'} DA',
-                style: GoogleFonts.dmSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.roseColor,
+              const SizedBox(height: 16),
+              const Divider(),
+
+              // Pricing Breakdown Section
+              _buildSectionHeader('💰 Pricing Breakdown'),
+              _buildPriceRow('Subtotal', '${invoice.subtotal?.toStringAsFixed(2) ?? '0.00'} DA'),
+              _buildPriceRow(
+                'Discount',
+                '-${invoice.discountAmount?.toStringAsFixed(2) ?? '0.00'} DA',
+                valueColor: AppColors.greenColor,
+              ),
+              _buildPriceRow('Fee', '+${invoice.fee?.toStringAsFixed(2) ?? '0.00'} DA'),
+              const Divider(),
+              _buildPriceRow(
+                'Total Amount',
+                '${invoice.totalAmount?.toStringAsFixed(2) ?? '0.00'} DA',
+                isTotal: true,
+              ),
+              const SizedBox(height: 16),
+
+              // Payment Details Section (if split payment)
+              if (invoice.isSplitPayment) ...[
+                const Divider(),
+                _buildSectionHeader('📋 Payment Plan'),
+                _buildPriceRow(
+                  'First Payment (Versement)',
+                  '${invoice.initialAmount?.toStringAsFixed(2) ?? '0.00'} DA',
                 ),
+                _buildPriceRow(
+                  'Remaining Payment',
+                  '${invoice.finalAmount?.toStringAsFixed(2) ?? '0.00'} DA',
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Payment Status Section
+              const Divider(),
+              _buildSectionHeader('✅ Payment Status'),
+              if (invoice.isSplitPayment) ...[
+                _buildPriceRow(
+                  'Initial Paid',
+                  '${invoice.initialAmountPaid?.toStringAsFixed(2) ?? '0.00'} DA',
+                  valueColor: AppColors.greenColor,
+                ),
+                _buildPriceRow(
+                  'Final Paid',
+                  '${invoice.finalAmountPaid?.toStringAsFixed(2) ?? '0.00'} DA',
+                  valueColor: AppColors.greenColor,
+                ),
+              ],
+              _buildPriceRow(
+                'Total Paid',
+                '${invoice.totalPaidAmount?.toStringAsFixed(2) ?? '0.00'} DA',
+                valueColor: AppColors.greenColor,
+              ),
+              _buildPriceRow(
+                'Still Owed',
+                '${invoice.remainingAmount?.toStringAsFixed(2) ?? '0.00'} DA',
+                valueColor: (invoice.remainingAmount ?? 0) > 0
+                    ? Colors.orange
+                    : AppColors.greenColor,
+                isTotal: true,
               ),
             ],
           ),
-        ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Text(
+        title,
+        style: GoogleFonts.dmSans(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
       ),
     );
   }
@@ -402,19 +533,35 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     );
   }
 
-  Widget _buildPriceRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: GoogleFonts.dmSans(color: Colors.grey[600], fontSize: 14),
-        ),
-        Text(
-          value,
-          style: GoogleFonts.dmSans(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
-      ],
+  Widget _buildPriceRow(
+    String label,
+    String value, {
+    Color? valueColor,
+    bool isTotal = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.dmSans(
+              fontSize: isTotal ? 16 : 14,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
+              color: Colors.grey[600],
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.dmSans(
+              fontSize: isTotal ? 16 : 14,
+              fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
+              color: valueColor ?? (isTotal ? AppColors.roseColor : Colors.black),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

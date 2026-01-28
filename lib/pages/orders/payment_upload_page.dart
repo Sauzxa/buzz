@@ -41,7 +41,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
       );
       if (invoice != null) {
         setState(() {
-          _invoiceId = invoice['id'].toString();
+          _invoiceId = invoice.id.toString();
           _isLoading = false;
         });
       } else {

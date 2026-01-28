@@ -85,7 +85,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
             if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
               Navigator.pop(context);
             }
-            
+
             if (Navigator.canPop(context)) {
               Navigator.pop(context);
             } else {

@@ -109,7 +109,11 @@ class _ChatHeader extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 24),
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+              size: 24,
+            ),
             onPressed: () {
               if (Navigator.canPop(context)) {
                 Navigator.pop(context);
