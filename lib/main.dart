@@ -13,12 +13,14 @@ import 'providers/saved_services_provider.dart';
 import 'providers/orders_provider.dart';
 import 'providers/invoice_provider.dart';
 import 'providers/notification_provider.dart';
+import 'providers/chat_provider.dart';
 import 'services/fcm_service.dart';
 import 'services/notification_navigation_service.dart';
 
 // Global FCM Service instance for access throughout app
 late FcmService globalFcmService;
 NotificationProvider? _globalNotificationProvider;
+ChatProvider? _globalChatProvider;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -78,6 +80,11 @@ class _BuzzState extends State<Buzz> {
       // Update notification provider when new notification arrives
       _globalNotificationProvider?.refreshNotifications();
     };
+
+    globalFcmService.onNewChatMessage = (chatId, messageId) {
+      // Update chat provider when new message arrives
+      _globalChatProvider?.onNewMessageNotification();
+    };
   }
 
   @override
@@ -96,6 +103,13 @@ class _BuzzState extends State<Buzz> {
           create: (context) {
             final provider = NotificationProvider();
             _globalNotificationProvider = provider;
+            return provider;
+          },
+        ),
+        ChangeNotifierProvider(
+          create: (context) {
+            final provider = ChatProvider();
+            _globalChatProvider = provider;
             return provider;
           },
         ),

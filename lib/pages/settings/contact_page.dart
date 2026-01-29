@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../pages/chat/support_chat_page.dart';
+import '../../pages/chat/chat_screen.dart';
 
 class ContactPage extends StatelessWidget {
   const ContactPage({super.key});
@@ -148,7 +148,7 @@ class ContactPage extends StatelessWidget {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const SupportChatPage(),
+                                            const ChatScreen(),
                                       ),
                                     );
                                   },

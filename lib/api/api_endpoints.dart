@@ -70,6 +70,24 @@ class ApiEndpoints {
   static String deleteNotification(int notificationId) =>
       '$apiPrefix/notification/$notificationId';
 
+  // Chat endpoints
+  static String get getOrCreateMyChat => '$apiPrefix/chats/my-chat';
+  static String getAllChats({
+    int page = 0,
+    int size = 10,
+    String sortDir = 'desc',
+  }) => '$apiPrefix/chats?page=$page&size=$size&sortDir=$sortDir';
+  static String getChatById(int chatId) => '$apiPrefix/chats/$chatId';
+
+  // Message endpoints
+  static String getChatMessages(int chatId, {int page = 0, int size = 20}) =>
+      '$apiPrefix/chats/$chatId/messages?page=$page&size=$size';
+  static String sendMessage(int chatId) => '$apiPrefix/chats/$chatId/messages';
+  static String markMessageAsRead(int chatId, int messageId) =>
+      '$apiPrefix/chats/$chatId/messages/$messageId/read';
+  static String markChatAsRead(int chatId) =>
+      '$apiPrefix/chats/$chatId/mark-all-read';
+
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {
     return '$baseUrl$endpoint';

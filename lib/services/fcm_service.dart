@@ -46,6 +46,9 @@ class FcmService {
   // Callback for new notifications (for updating badge count)
   Function(NotificationModel)? onNewNotification;
 
+  // Callback for new chat messages
+  Function(int chatId, int messageId)? onNewChatMessage;
+
   String? get fcmToken => _fcmToken;
   bool get isInitialized => _isInitialized;
 
@@ -220,6 +223,9 @@ class FcmService {
       if (message.data.isNotEmpty) {
         print('🔔 Notifying listeners about new notification');
         _notifyNewNotification(message.data);
+
+        // Check if it's a chat message notification
+        _notifyNewChatMessage(message.data);
       }
     });
 
@@ -388,6 +394,32 @@ class FcmService {
       }
     } catch (e) {
       print('❌ Error notifying new notification: $e');
+    }
+  }
+
+  /// Notify chat provider about new chat message
+  void _notifyNewChatMessage(Map<String, dynamic> data) {
+    try {
+      // Check if this is a chat message notification
+      final notificationTypeStr = data['notificationType'] as String?;
+      if (notificationTypeStr != 'CHAT_MESSAGE') return;
+
+      final chatId = data['chatId'] != null
+          ? int.tryParse(data['chatId'].toString())
+          : null;
+
+      final messageId = data['messageId'] != null
+          ? int.tryParse(data['messageId'].toString())
+          : null;
+
+      if (chatId != null && messageId != null && onNewChatMessage != null) {
+        print(
+          '💬 Notifying chat provider: chatId=$chatId, messageId=$messageId',
+        );
+        onNewChatMessage!(chatId, messageId);
+      }
+    } catch (e) {
+      print('❌ Error notifying new chat message: $e');
     }
   }
 

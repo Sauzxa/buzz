@@ -12,7 +12,7 @@ import '../auth/SignIn.dart';
 import '../auth/forgetPassword.dart';
 import '../core/welcome.dart';
 import '../core/homePage.dart';
-import '../pages/chat/support_chat_page.dart';
+import '../pages/chat/chat_screen.dart';
 import '../core/splash_screen.dart';
 import '../pages/settings/general_settings.dart';
 import '../pages/orders/order_management_page.dart';
@@ -65,7 +65,7 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const HomePage());
 
       case RouteNames.chat:
-        return MaterialPageRoute(builder: (_) => const SupportChatPage());
+        return MaterialPageRoute(builder: (_) => const ChatScreen());
 
       case RouteNames.settings:
         return MaterialPageRoute(builder: (_) => const GeneralSettingsPage());

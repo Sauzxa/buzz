@@ -37,6 +37,16 @@ class ApiClient {
         onRequest: (options, handler) {
           // Force logging for debugging
           print('REQUEST[${options.method}] => ${options.path}');
+          print('📋 [API_CLIENT] Headers: ${options.headers}');
+          print('📋 [API_CLIENT] Content-Type: ${options.contentType}');
+          print('📋 [API_CLIENT] Data type: ${options.data.runtimeType}');
+          if (options.data is FormData) {
+            final formData = options.data as FormData;
+            print('📋 [API_CLIENT] FormData fields: ${formData.fields}');
+            print(
+              '📋 [API_CLIENT] FormData files: ${formData.files.map((f) => '${f.key}: ${f.value.filename}')}',
+            );
+          }
           return handler.next(options);
         },
         onResponse: (response, handler) {
