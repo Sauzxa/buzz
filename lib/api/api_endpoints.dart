@@ -88,7 +88,7 @@ class ApiEndpoints {
   static String markMessageAsRead(int chatId, int messageId) =>
       '$apiPrefix/chats/$chatId/messages/$messageId/read';
   static String markChatAsRead(int chatId) =>
-      '$apiPrefix/chats/$chatId/mark-all-read';
+      '$apiPrefix/chats/$chatId/messages/read-all';
 
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {

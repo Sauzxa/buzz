@@ -81,17 +81,15 @@ class ChatService {
       print('📤 [CHAT_SERVICE] Chat ID: $chatId');
       print('📤 [CHAT_SERVICE] Text: $text');
 
-      // Backend @RequestPart has content-type issues with both octet-stream and text/plain;charset
-      // The backend needs to be fixed to use @RequestParam for text-only messages
-      // For now, try sending with explicit content-type header
-      final data = {'messageType': 'TEXT', 'text': text};
+      // Backend uses @RequestPart which requires multipart/form-data
+      // Must use FormData for proper multipart encoding
+      final formData = FormData.fromMap({'messageType': 'TEXT', 'text': text});
 
-      print('📤 [CHAT_SERVICE] Sending data: $data');
+      print('📤 [CHAT_SERVICE] Sending FormData with messageType=TEXT');
 
       final response = await _apiClient.post(
         ApiEndpoints.sendMessage(chatId),
-        data: data,
-        options: Options(contentType: Headers.formUrlEncodedContentType),
+        data: formData,
       );
 
       print('📤 [CHAT_SERVICE] Response status: ${response.statusCode}');
@@ -187,7 +185,7 @@ class ChatService {
   /// Mark all messages in chat as read
   Future<void> markChatAsRead(int chatId) async {
     try {
-      final response = await _apiClient.post(
+      final response = await _apiClient.patch(
         ApiEndpoints.markChatAsRead(chatId),
       );
 

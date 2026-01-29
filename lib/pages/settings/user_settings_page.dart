@@ -6,6 +6,7 @@ import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
 import '../../Widgets/home_drawer.dart';
 import '../../providers/user_provider.dart';
+import '../../services/fcm_service.dart';
 import 'widgets/settings_tile.dart';
 import 'widgets/notification_toggle_tile.dart';
 import 'contact_page.dart';
@@ -240,10 +241,52 @@ class _SettingsPageState extends State<SettingsPage> {
                           title: 'Push Notifications',
                           subtitle: 'For daily update and others',
                           value: _pushNotifications,
-                          onChanged: (value) {
+                          onChanged: (value) async {
                             setState(() {
                               _pushNotifications = value;
                             });
+                            
+                            // Disable/Enable FCM notifications
+                            final fcmService = FcmService();
+                            if (value) {
+                              // Enable notifications
+                              await fcmService.requestPermission();
+                              // Re-register token if we have one
+                              if (fcmService.fcmToken != null) {
+                                await fcmService.registerTokenWithBackend(
+                                  fcmService.fcmToken!,
+                                );
+                              }
+                              
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Push notifications enabled',
+                                      style: GoogleFonts.dmSans(),
+                                    ),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            } else {
+                              // Disable notifications by removing FCM token from backend
+                              if (fcmService.fcmToken != null) {
+                                await fcmService.removeTokenFromBackend();
+                              }
+                              
+                              if (mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Push notifications disabled',
+                                      style: GoogleFonts.dmSans(),
+                                    ),
+                                    backgroundColor: Colors.orange,
+                                  ),
+                                );
+                              }
+                            }
                           },
                         ),
                         NotificationToggleTile(
