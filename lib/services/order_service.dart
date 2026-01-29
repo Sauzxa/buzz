@@ -64,6 +64,13 @@ class OrderService {
         // Content-Type: application/json is set by default in ApiClient
       );
 
+      print('\n' + '=' * 50);
+      print('📦 ORDER CREATION RESPONSE');
+      print('=' * 50);
+      print('Status Code: ${response.statusCode}');
+      print('Response Data: ${response.data}');
+      print('=' * 50 + '\n');
+
       if (response.statusCode != null &&
           (response.statusCode! < 200 || response.statusCode! >= 300)) {
         throw Exception(
@@ -82,7 +89,8 @@ class OrderService {
         throw Exception('Order created but ID was missing in response');
       }
 
-      print('Order created successfully. ID: $orderId');
+      print('\n✅ Order created successfully. ID: $orderId');
+      print('⏳ Backend should now send ORDER_CREATED notification...\n');
 
       // Step 2: Upload Files (Multipart)
       if (files != null && files.isNotEmpty) {

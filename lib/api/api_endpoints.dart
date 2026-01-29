@@ -48,6 +48,27 @@ class ApiEndpoints {
   // Discount endpoints
   static String get getActiveDiscounts => '$apiPrefix/discounts';
 
+  // FCM (Firebase Cloud Messaging) endpoints
+  static String get registerFcmToken => '$apiPrefix/fcm/register';
+  static String removeFcmToken(String token) => '$apiPrefix/fcm/token/$token';
+  static String get removeAllFcmTokens => '$apiPrefix/fcm/tokens/all';
+
+  // Notification endpoints
+  static String getUserNotifications({
+    required String userId,
+    bool? isRead,
+    int page = 0,
+    int size = 20,
+  }) {
+    final readParam = isRead != null ? '&isRead=$isRead' : '';
+    return '$apiPrefix/notification/user/$userId?page=$page&size=$size$readParam';
+  }
+
+  static String markNotificationAsRead(int notificationId) =>
+      '$apiPrefix/notification/$notificationId/read';
+  static String deleteNotification(int notificationId) =>
+      '$apiPrefix/notification/$notificationId';
+
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {
     return '$baseUrl$endpoint';

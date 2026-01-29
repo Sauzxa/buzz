@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import '../models/user.model.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
+import '../services/fcm_service.dart';
 import '../api/api_client.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
   final StorageService _storageService = StorageService();
   final ApiClient _apiClient = ApiClient();
+  final FcmService _fcmService = FcmService();
 
   UserModel? _user;
   bool _isLoading = false;
@@ -40,6 +42,9 @@ class AuthProvider with ChangeNotifier {
           await _storageService.saveUserId(_user!.id!);
         }
         await _storageService.saveUserData(_user!);
+
+        // Register FCM token with backend after successful login
+        await _registerFcmToken();
       }
     } catch (e) {
       // Extract clean error message
@@ -99,6 +104,9 @@ class AuthProvider with ChangeNotifier {
           await _storageService.saveUserId(_user!.id!);
         }
         await _storageService.saveUserData(_user!);
+
+        // Register FCM token with backend after successful signup
+        await _registerFcmToken();
       }
     } catch (e) {
       _error = 'Signup failed: ${e.toString()}';
@@ -130,6 +138,10 @@ class AuthProvider with ChangeNotifier {
         // Token is valid, update storage with fresh data
         await _storageService.saveUserData(_user!);
         _isAuthenticated = true;
+
+        // Register FCM token if not already registered
+        await _registerFcmToken();
+
         _setLoading(false);
         return true;
       }
@@ -158,6 +170,9 @@ class AuthProvider with ChangeNotifier {
   /// Logout - clear token and user data
   Future<void> logout() async {
     try {
+      // Remove FCM token from backend
+      await _removeFcmToken();
+
       // Call server logout
       await _authService.logout();
 
@@ -176,6 +191,47 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       _error = 'Logout failed: ${e.toString()}';
       notifyListeners();
+    }
+  }
+
+  /// Register FCM token with backend
+  Future<void> _registerFcmToken() async {
+    try {
+      print('\n' + '=' * 50);
+      print('🔑 CHECKING FCM TOKEN FOR REGISTRATION');
+      print('=' * 50);
+      print('FCM Initialized: ${_fcmService.isInitialized}');
+      print('FCM Token Available: ${_fcmService.fcmToken != null}');
+      print('FCM Token: ${_fcmService.fcmToken}');
+      print('=' * 50 + '\n');
+
+      if (_fcmService.isInitialized && _fcmService.fcmToken != null) {
+        print('✅ FCM ready, registering token with backend...');
+        await _fcmService.registerTokenWithBackend(_fcmService.fcmToken!);
+      } else {
+        print('⚠️ FCM not initialized or token not available');
+        print('   - Please check Firebase configuration');
+        print('   - Ensure google-services.json is in android/app/');
+        print('   - Ensure GoogleService-Info.plist is in ios/Runner/');
+      }
+    } catch (e) {
+      print('\n' + '=' * 50);
+      print('❌ ERROR IN _registerFcmToken');
+      print('=' * 50);
+      print('Error: $e');
+      print('=' * 50 + '\n');
+      // Don't throw - FCM registration failure shouldn't prevent login
+    }
+  }
+
+  /// Remove FCM token from backend
+  Future<void> _removeFcmToken() async {
+    try {
+      print('📤 Removing FCM token from backend...');
+      await _fcmService.removeTokenFromBackend();
+    } catch (e) {
+      print('❌ Error removing FCM token: $e');
+      // Don't throw - FCM removal failure shouldn't prevent logout
     }
   }
 

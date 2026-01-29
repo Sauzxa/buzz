@@ -81,16 +81,34 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const OrderTrackingPage());
 
       case RouteNames.orderDetails:
-        final order = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => OrderDetailsPage(order: order),
-        );
+        final args = settings.arguments;
+        if (args is Map<String, dynamic>) {
+          // Full order map passed (normal navigation)
+          return MaterialPageRoute(
+            builder: (_) => OrderDetailsPage(order: args),
+          );
+        } else if (args is String) {
+          // Only orderId passed (from notification)
+          return MaterialPageRoute(
+            builder: (_) => OrderDetailsPage(order: {'id': args}),
+          );
+        }
+        return _errorRoute();
 
       case RouteNames.paymentUpload:
-        final order = settings.arguments as Map<String, dynamic>;
-        return MaterialPageRoute(
-          builder: (_) => PaymentUploadPage(order: order),
-        );
+        final args = settings.arguments;
+        if (args is Map<String, dynamic>) {
+          // Full order map passed (normal navigation)
+          return MaterialPageRoute(
+            builder: (_) => PaymentUploadPage(order: args),
+          );
+        } else if (args is String) {
+          // Only orderId passed (from notification)
+          return MaterialPageRoute(
+            builder: (_) => PaymentUploadPage(order: {'id': args}),
+          );
+        }
+        return _errorRoute();
 
       case RouteNames.paymentInfo:
         return MaterialPageRoute(builder: (_) => const PaymentInfoPage());

@@ -48,6 +48,9 @@ UI.txt
 # config files
 lib/config/
 *.config.dart
+
+# Backend Firebase Service Account (SECURITY - DO NOT COMMIT)
+buzz_back/src/main/resources/firebase/*.json
 # env files
 .env
 #Readme files

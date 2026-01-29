@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
 import '../providers/user_provider.dart';
+import '../providers/notification_provider.dart';
 import '../routes/route_names.dart';
+import '../services/notification_navigation_service.dart';
 
 import '../theme/colors.dart';
 
@@ -41,8 +43,26 @@ class _SplashScreenState extends State<SplashScreen> {
       if (authProvider.user != null) {
         final userProvider = context.read<UserProvider>();
         userProvider.updateUser(authProvider.user!);
+
+        // Set user ID in notification provider for FCM callbacks
+        if (authProvider.user!.id != null) {
+          final notificationProvider = context.read<NotificationProvider>();
+          notificationProvider.setUserId(authProvider.user!.id!);
+        }
       }
       Navigator.of(context).pushReplacementNamed(RouteNames.home);
+
+      // Check for pending notification navigation (app opened from terminated state)
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final navigationService = NotificationNavigationService();
+        final navigatorContext =
+            NotificationNavigationService.navigatorKey.currentContext;
+        if (navigatorContext != null) {
+          await navigationService.checkAndHandlePendingNavigation(
+            navigatorContext,
+          );
+        }
+      });
     } else if (authProvider.hasSeenOnboarding) {
       // No token but has seen onboarding → SignIn
       Navigator.of(context).pushReplacementNamed(RouteNames.signIn);
