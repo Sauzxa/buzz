@@ -19,6 +19,7 @@ class ApiEndpoints {
   // User endpoints
   static String getUserById(String userId) => '$apiPrefix/users/$userId';
   static String updateUser(String userId) => '$apiPrefix/users/$userId';
+  static String deleteUser(String userId) => '$apiPrefix/users/$userId';
 
   // Category endpoints
   static String get getAllCategories =>

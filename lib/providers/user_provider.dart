@@ -197,4 +197,54 @@ class UserProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Delete user account (soft delete)
+  Future<bool> deleteAccount() async {
+    print('--- deleteAccount STARTED ---');
+    
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final userId = _user.id;
+      if (userId == null) throw Exception('User ID is null');
+
+      final url = ApiEndpoints.deleteUser(userId); // DELETE /api/users/{id}
+      print('Sending DELETE request to: $url');
+
+      final response = await _apiClient.delete(url);
+
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Data: ${response.data}');
+
+      if (response.statusCode == 204 || response.statusCode == 200) {
+        print('--- deleteAccount SUCCESS ---');
+        // Clear user data
+        _user = UserModel();
+        return true;
+      } else {
+        _errorMessage = 'Delete failed: ${response.statusMessage}';
+        print('--- deleteAccount FAILED: $_errorMessage ---');
+        return false;
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('DioException: ${e.message}');
+        print('DioException response: ${e.response}');
+        if (e.response?.data != null) {
+          _errorMessage = e.response!.data['message'] ?? 'Failed to delete account';
+        } else {
+          _errorMessage = 'Failed to delete account';
+        }
+      } else {
+        _errorMessage = 'Delete error: ${e.toString()}';
+      }
+      print('--- deleteAccount EXCEPTION: $_errorMessage ---');
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
 }
