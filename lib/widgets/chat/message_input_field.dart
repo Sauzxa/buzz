@@ -153,7 +153,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
           children: [
             // Attachment button
             IconButton(
-              icon: Icon(Icons.attach_file, color: AppColors.primaryColor),
+              icon: Icon(Icons.attach_file, color: AppColors.roseColor),
               onPressed: widget.isSending ? null : _showAttachmentOptions,
             ),
 
@@ -192,7 +192,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
             Container(
               decoration: BoxDecoration(
                 color: _isComposing && !widget.isSending
-                    ? AppColors.primaryColor
+                    ? AppColors.roseColor
                     : Colors.grey[300],
                 shape: BoxShape.circle,
               ),

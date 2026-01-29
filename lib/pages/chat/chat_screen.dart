@@ -127,32 +127,20 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColors.roseColor,
         elevation: 2,
-        title: Consumer<ChatProvider>(
-          builder: (context, chatProvider, child) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Support Chat',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-                if (chatProvider.currentChat != null)
-                  Text(
-                    'Customer Support Team',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.white.withOpacity(0.9),
-                    ),
-                  ),
-              ],
-            );
-          },
+        title: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Support Chat',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
         actions: [
           // Refresh button
@@ -236,6 +224,22 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
           return Column(
             children: [
+              // Subtitle section
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                color: Colors.white,
+                child: const Text(
+                  'Please wait our support team will reply you\nas soon as possible.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+              
               // Messages list
               Expanded(
                 child: chatProvider.messages.isEmpty
