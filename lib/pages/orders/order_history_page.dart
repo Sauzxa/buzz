@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/orders_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../providers/invoice_provider.dart';
 import '../../Widgets/order_drawer.dart';
 import '../../routes/route_names.dart';
 import '../../theme/colors.dart';
@@ -16,6 +17,7 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final Map<String, Map<String, dynamic>> _invoiceCache = {};
 
   @override
   void initState() {
@@ -28,6 +30,8 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   }
 
   Future<void> _fetchHistory() async {
+    if (!mounted) return;
+
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userId = userProvider.user.id?.toString();
 
@@ -36,10 +40,56 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       return;
     }
 
+    if (!mounted) return;
     await Provider.of<OrdersProvider>(
       context,
       listen: false,
     ).fetchArchivedOrders(userId);
+
+    // Fetch invoices for all archived orders
+    if (mounted) {
+      await _fetchInvoicesForOrders();
+    }
+  }
+
+  Future<void> _fetchInvoicesForOrders() async {
+    if (!mounted) return;
+
+    final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
+    final invoiceProvider = Provider.of<InvoiceProvider>(
+      context,
+      listen: false,
+    );
+
+    for (final order in ordersProvider.archivedOrders) {
+      if (!mounted) return; // Check before each iteration
+
+      final orderId = order['id']?.toString();
+      if (orderId != null && !_invoiceCache.containsKey(orderId)) {
+        try {
+          await invoiceProvider.fetchInvoiceByOrderId(orderId);
+          if (!mounted) return; // Check after async operation
+
+          if (invoiceProvider.invoice != null) {
+            _invoiceCache[orderId] = {
+              'serviceName': invoiceProvider.invoice!.serviceName,
+              'finalAmount': invoiceProvider.invoice!.finalAmount,
+              'paymentValidatedAt':
+                  invoiceProvider.invoice!.paymentValidatedAt?.isNotEmpty ==
+                      true
+                  ? invoiceProvider.invoice!.paymentValidatedAt!.last
+                  : null,
+            };
+          }
+        } catch (e) {
+          print('⚠️ Failed to fetch invoice for order $orderId: $e');
+        }
+      }
+    }
+
+    if (mounted) {
+      setState(() {}); // Refresh UI with invoice data
+    }
   }
 
   @override
@@ -88,7 +138,13 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final orders = ordersProvider.archivedOrders;
+          final allOrders = ordersProvider.archivedOrders;
+
+          // Filter to only show COMPLETED and CANCELLED orders
+          final orders = allOrders.where((order) {
+            final status = order['status']?.toString().toUpperCase();
+            return status == 'COMPLETED' || status == 'CANCELLED';
+          }).toList();
 
           return orders.isEmpty
               ? Center(
@@ -121,7 +177,11 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   itemCount: orders.length,
                   itemBuilder: (context, index) {
                     final order = orders[index];
-                    return _buildHistoryCard(order);
+                    final orderId = order['id']?.toString();
+                    final invoiceData = orderId != null
+                        ? _invoiceCache[orderId]
+                        : null;
+                    return _buildHistoryCard(order, invoiceData);
                   },
                 );
         },
@@ -129,8 +189,15 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     );
   }
 
-  Widget _buildHistoryCard(Map<String, dynamic> order) {
-    // simplified card for history
+  Widget _buildHistoryCard(
+    Map<String, dynamic> order,
+    Map<String, dynamic>? invoiceData,
+  ) {
+    final serviceName =
+        invoiceData?['serviceName'] ?? order['category'] ?? 'Service';
+    final finalAmount = invoiceData?['finalAmount'] ?? order['totalPrice'] ?? 0;
+    final paymentValidatedAt = invoiceData?['paymentValidatedAt'];
+
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
@@ -143,16 +210,20 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  order['title'] ?? order['category'] ?? 'Service',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                Expanded(
+                  child: Text(
+                    serviceName,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                const SizedBox(width: 8),
                 Text(
-                  '${order['totalPrice'] ?? 0} DA',
+                  '${finalAmount.toStringAsFixed(2)} DA',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -206,7 +277,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'EST ${_formatDate(order['deadline'])}',
+                      paymentValidatedAt != null
+                          ? 'EST ${_formatDate(paymentValidatedAt)}'
+                          : 'EST ${_formatDate(order['deadline'])}',
                       style: GoogleFonts.dmSans(
                         fontSize: 10,
                         color: Colors.black54,
@@ -222,6 +295,36 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   ],
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            // Details Button
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    RouteNames.orderDetails,
+                    arguments: order,
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.roseColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'View Details',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

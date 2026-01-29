@@ -125,16 +125,20 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Top Card with Service Info
-                  _buildServiceInfoCard(order),
-                  const SizedBox(height: 20),
+              child: Consumer<InvoiceProvider>(
+                builder: (context, invoiceProvider, child) {
+                  return Column(
+                    children: [
+                      // Top Card with Service Info
+                      _buildServiceInfoCard(order, invoiceProvider.invoice),
+                      const SizedBox(height: 20),
 
-                  // Price Breakdown
-                  _buildPriceBreakdownCard(order),
-                  const SizedBox(height: 20),
-                ],
+                      // Price Breakdown
+                      _buildPriceBreakdownCard(order),
+                      const SizedBox(height: 20),
+                    ],
+                  );
+                },
               ),
             ),
       bottomNavigationBar: (_isLoading || _error != null)
@@ -143,7 +147,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     );
   }
 
-  Widget _buildServiceInfoCard(Map<String, dynamic> order) {
+  Widget _buildServiceInfoCard(Map<String, dynamic> order, dynamic invoice) {
     // Extract title or fallback
     final title = order['title'] ?? 'Order';
 
@@ -163,6 +167,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         order['description'] ??
         order['designerName'] ??
         'No description';
+
+    // Get deadline from invoice if available, otherwise from order
+    final deadline = invoice?.paymentDeadline ?? order['deadline'];
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -233,7 +240,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           const SizedBox(height: 20),
           _buildInfoRow('Description', description),
           const SizedBox(height: 12),
-          _buildInfoRow('Deadline', _formatDate(order['deadline'])),
+          _buildInfoRow('Payment Deadline', _formatDate(deadline)),
           const SizedBox(height: 12),
           _buildInfoRow('Status', _formatStatus(order['status'])),
         ],
@@ -512,6 +519,16 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       return '${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year}';
     } catch (e) {
       return dateStr;
+    }
+  }
+
+  bool _isDeadlinePassed(String? dateStr) {
+    if (dateStr == null) return false;
+    try {
+      final deadline = DateTime.parse(dateStr);
+      return DateTime.now().isAfter(deadline);
+    } catch (e) {
+      return false;
     }
   }
 

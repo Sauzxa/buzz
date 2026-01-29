@@ -46,6 +46,13 @@ class NotificationProvider extends ChangeNotifier {
 
     _isLoading = true;
     _error = null;
+
+    // Clear old notifications when not loading more to prevent showing stale data
+    if (!loadMore) {
+      _notifications.clear();
+      _unreadNotifications.clear();
+    }
+
     notifyListeners();
 
     try {

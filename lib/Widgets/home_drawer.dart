@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../theme/colors.dart';
 import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 
 import '../utils/fade_route.dart';
 import '../pages/settings/general_settings.dart';
@@ -32,12 +33,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
     try {
       final authProvider = context.read<AuthProvider>();
       final userProvider = context.read<UserProvider>();
+      final notificationProvider = context.read<NotificationProvider>();
 
       // Logout from backend
       await authProvider.logout();
 
       // Clear local user data
       userProvider.clearUser();
+
+      // Clear notifications
+      notificationProvider.clearNotifications();
 
       if (!mounted) return;
 

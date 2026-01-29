@@ -7,6 +7,7 @@ import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/notification_provider.dart';
 
 import 'user_settings_page.dart';
 
@@ -266,10 +267,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
           ),
           content: Text(
             'Are you sure you want to delete your account? This action cannot be undone.',
-            style: GoogleFonts.dmSans(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
+            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
           ),
           actions: [
             TextButton(
@@ -396,15 +394,13 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
     try {
       final userProvider = context.read<UserProvider>();
       final authProvider = context.read<AuthProvider>();
-      
+
       // Show loading indicator
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => Center(
-          child: CircularProgressIndicator(
-            color: AppColors.roseColor,
-          ),
+          child: CircularProgressIndicator(color: AppColors.roseColor),
         ),
       );
 
@@ -418,6 +414,13 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
       if (success) {
         // Logout and clear all data
         await authProvider.logout();
+
+        // Clear notifications
+        final notificationProvider = Provider.of<NotificationProvider>(
+          context,
+          listen: false,
+        );
+        notificationProvider.clearNotifications();
 
         if (!mounted) return;
 
@@ -454,10 +457,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
         Navigator.pop(context); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              'An error occurred: $e',
-              style: GoogleFonts.dmSans(),
-            ),
+            content: Text('An error occurred: $e', style: GoogleFonts.dmSans()),
             backgroundColor: Colors.red,
           ),
         );

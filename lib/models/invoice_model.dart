@@ -22,6 +22,7 @@ class InvoiceModel {
   final bool? isFullyPaid;
   final bool? isPaymentDeadlinePassed;
   final List<String>? paymentProofs;
+  final List<String>? paymentValidatedAt;
   final String? createdAt;
   final String? updatedAt;
 
@@ -49,6 +50,7 @@ class InvoiceModel {
     this.isFullyPaid,
     this.isPaymentDeadlinePassed,
     this.paymentProofs,
+    this.paymentValidatedAt,
     this.createdAt,
     this.updatedAt,
   });
@@ -80,6 +82,9 @@ class InvoiceModel {
       paymentProofs: json['paymentProofs'] != null
           ? List<String>.from(json['paymentProofs'])
           : null,
+      paymentValidatedAt: json['paymentValidatedAt'] != null
+          ? List<String>.from(json['paymentValidatedAt'])
+          : null,
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
     );
@@ -110,6 +115,7 @@ class InvoiceModel {
       'isFullyPaid': isFullyPaid,
       'isPaymentDeadlinePassed': isPaymentDeadlinePassed,
       'paymentProofs': paymentProofs,
+      'paymentValidatedAt': paymentValidatedAt,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };

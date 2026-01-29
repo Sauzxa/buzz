@@ -8,6 +8,7 @@ class OrderCard extends StatelessWidget {
   final VoidCallback? onUploadReceipt;
   final Function(DismissDirection)? onDismissed;
   final Future<bool?> Function(DismissDirection)? confirmDismiss;
+  final String? paymentDeadline;
 
   const OrderCard({
     Key? key,
@@ -16,6 +17,7 @@ class OrderCard extends StatelessWidget {
     this.onUploadReceipt,
     this.onDismissed,
     this.confirmDismiss,
+    this.paymentDeadline,
   }) : super(key: key);
 
   @override
@@ -142,7 +144,7 @@ class OrderCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    _formatDate(order['deadline']),
+                    _formatDate(paymentDeadline ?? order['deadline']),
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

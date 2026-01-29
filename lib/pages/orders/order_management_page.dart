@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/orders_provider.dart';
 import '../../providers/user_provider.dart';
+import '../../providers/invoice_provider.dart';
 import '../../Widgets/order_drawer.dart';
 import '../../Widgets/order_card.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
@@ -20,6 +21,7 @@ class OrderManagementPage extends StatefulWidget {
 class _OrderManagementPageState extends State<OrderManagementPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 2; // Orders tab is index 2
+  final Map<String, String?> _invoiceDeadlineCache = {};
 
   @override
   void initState() {
@@ -32,6 +34,8 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
   }
 
   Future<void> _fetchOrders() async {
+    if (!mounted) return;
+
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final userId = userProvider.user.id?.toString();
 
@@ -42,10 +46,49 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
       return;
     }
 
+    if (!mounted) return;
     await Provider.of<OrdersProvider>(
       context,
       listen: false,
     ).fetchAllOrders(userId);
+
+    // Fetch invoice deadlines for all orders
+    if (mounted) {
+      await _fetchInvoiceDeadlines();
+    }
+  }
+
+  Future<void> _fetchInvoiceDeadlines() async {
+    if (!mounted) return;
+
+    final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
+    final invoiceProvider = Provider.of<InvoiceProvider>(
+      context,
+      listen: false,
+    );
+
+    for (final order in ordersProvider.allOrders) {
+      if (!mounted) return; // Check before each iteration
+
+      final orderId = order['id']?.toString();
+      if (orderId != null && !_invoiceDeadlineCache.containsKey(orderId)) {
+        try {
+          await invoiceProvider.fetchInvoiceByOrderId(orderId);
+          if (!mounted) return; // Check after async operation
+
+          if (invoiceProvider.invoice != null) {
+            _invoiceDeadlineCache[orderId] =
+                invoiceProvider.invoice!.paymentDeadline;
+          }
+        } catch (e) {
+          print('⚠️ Failed to fetch invoice for order $orderId: $e');
+        }
+      }
+    }
+
+    if (mounted) {
+      setState(() {}); // Refresh UI with invoice data
+    }
   }
 
   void _onBottomNavTapped(int index) {
@@ -207,8 +250,13 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                         itemCount: orders.length,
                         itemBuilder: (context, index) {
                           final order = orders[index];
+                          final orderId = order['id']?.toString();
+                          final paymentDeadline = orderId != null
+                              ? _invoiceDeadlineCache[orderId]
+                              : null;
                           return OrderCard(
                             order: order,
+                            paymentDeadline: paymentDeadline,
                             onTap: () {
                               // Navigate to details
                               Navigator.pushNamed(
