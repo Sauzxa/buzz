@@ -45,7 +45,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
     await Provider.of<OrdersProvider>(
       context,
       listen: false,
-    ).fetchActiveOrders(userId);
+    ).fetchAllOrders(userId);
   }
 
   void _onBottomNavTapped(int index) {
@@ -154,7 +154,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                   return Center(child: Text('Error: ${ordersProvider.error}'));
                 }
 
-                final orders = ordersProvider.activeOrders;
+                final orders = ordersProvider.allOrders;
 
                 if (orders.isEmpty) {
                   return Center(
@@ -168,7 +168,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No active orders',
+                          'No orders',
                           style: GoogleFonts.dmSans(
                             fontSize: 16,
                             color: Colors.grey[600],

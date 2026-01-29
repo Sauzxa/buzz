@@ -6,13 +6,40 @@ class OrdersProvider extends ChangeNotifier {
 
   List<dynamic> _activeOrders = [];
   List<dynamic> _archivedOrders = [];
+  List<dynamic> _allOrders = [];
   bool _isLoadingFn = false; // "Fn" for Fetching
   String? _error;
 
   List<dynamic> get activeOrders => _activeOrders;
   List<dynamic> get archivedOrders => _archivedOrders;
+  List<dynamic> get allOrders => _allOrders;
   bool get isLoading => _isLoadingFn;
   String? get error => _error;
+
+  /// Fetch all orders for a customer (regardless of status)
+  /// Combines active and archived orders since the backend /customer/{id} endpoint is admin-only
+  Future<void> fetchAllOrders(String customerId) async {
+    _isLoadingFn = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // Fetch both active and archived orders in parallel
+      final results = await Future.wait([
+        _orderService.getActiveOrders(customerId),
+        _orderService.getArchivedOrders(customerId),
+      ]);
+
+      // Combine both lists
+      _allOrders = [...results[0], ...results[1]];
+    } catch (e) {
+      _error = 'Failed to load orders: $e';
+      print(_error);
+    } finally {
+      _isLoadingFn = false;
+      notifyListeners();
+    }
+  }
 
   /// Fetch all active orders for a customer
   Future<void> fetchActiveOrders(String customerId) async {

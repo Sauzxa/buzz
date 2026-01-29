@@ -5,6 +5,7 @@ import '../services/services_by_category_page.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/home_drawer.dart';
 import '../../Widgets/notification_popup.dart';
+import '../../Widgets/notification_badge.dart';
 import '../../routes/route_names.dart';
 
 class CategoryPage extends StatelessWidget {
@@ -12,10 +13,12 @@ class CategoryPage extends StatelessWidget {
 
   const CategoryPage({Key? key, required this.category}) : super(key: key);
 
-  void _showNotificationPopup(BuildContext context) {
-    showDialog(
+  void _showNotificationBottomSheet(BuildContext context) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => const NotificationPopup(),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const NotificationBottomSheet(),
     );
   }
 
@@ -121,13 +124,10 @@ class CategoryPage extends StatelessWidget {
                       ),
 
                       // Notification Button
-                      IconButton(
-                        icon: const Icon(
-                          Icons.notifications_outlined,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                        onPressed: () => _showNotificationPopup(context),
+                      NotificationIconWithBadge(
+                        onPressed: () => _showNotificationBottomSheet(context),
+                        iconColor: Colors.white,
+                        iconSize: 28,
                       ),
                     ],
                   ),

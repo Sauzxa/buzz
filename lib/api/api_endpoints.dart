@@ -32,6 +32,8 @@ class ApiEndpoints {
   static String get createOrder => '$apiPrefix/orders';
   static String uploadOrderFile(String orderId) =>
       '$apiPrefix/orders/$orderId/files';
+  static String getAllOrdersByCustomer(String customerId) =>
+      '$apiPrefix/orders/customer/$customerId';
   static String getActiveOrdersByCustomer(String customerId) =>
       '$apiPrefix/orders/customer/$customerId/active';
   static String getArchivedOrdersByCustomer(String customerId) =>
@@ -58,13 +60,13 @@ class ApiEndpoints {
 
   // Notification endpoints
   static String getUserNotifications({
-    required String userId,
     bool? isRead,
     int page = 0,
     int size = 20,
   }) {
-    final readParam = isRead != null ? '&isRead=$isRead' : '';
-    return '$apiPrefix/notification/user/$userId?page=$page&size=$size$readParam';
+    // Backend requires isRead parameter, default to false if not provided
+    final readParam = isRead ?? false;
+    return '$apiPrefix/notification/user/my-notification?isRead=$readParam&page=$page&size=$size';
   }
 
   static String markNotificationAsRead(int notificationId) =>

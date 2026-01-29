@@ -143,6 +143,28 @@ class OrderService {
     }
   }
 
+  /// Get all orders for a customer (regardless of status)
+  Future<List<dynamic>> getAllOrders(String customerId) async {
+    try {
+      final response = await _apiClient.get(
+        ApiEndpoints.getAllOrdersByCustomer(customerId),
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (data is Map<String, dynamic> && data.containsKey('content')) {
+          return data['content'] as List<dynamic>;
+        }
+        return [];
+      } else {
+        throw Exception('Failed to load all orders: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching all orders: $e');
+      rethrow;
+    }
+  }
+
   /// Get active orders for a customer
   Future<List<dynamic>> getActiveOrders(String customerId) async {
     try {

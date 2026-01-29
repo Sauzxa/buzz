@@ -41,11 +41,7 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   /// Fetch notifications from backend
-  Future<void> fetchNotifications({
-    required String userId,
-    bool? isRead,
-    bool loadMore = false,
-  }) async {
+  Future<void> fetchNotifications({bool? isRead, bool loadMore = false}) async {
     if (_isLoading) return;
 
     _isLoading = true;
@@ -55,16 +51,11 @@ class NotificationProvider extends ChangeNotifier {
     try {
       final page = loadMore ? _currentPage + 1 : 0;
 
-      print('📥 Fetching notifications for user: $userId, page: $page');
+      print('📥 Fetching notifications, page: $page');
 
       final apiClient = ApiClient();
       final response = await apiClient.get(
-        ApiEndpoints.getUserNotifications(
-          userId: userId,
-          isRead: isRead,
-          page: page,
-          size: 20,
-        ),
+        ApiEndpoints.getUserNotifications(isRead: isRead, page: page, size: 20),
       );
 
       if (response.statusCode == 200) {
@@ -86,7 +77,7 @@ class NotificationProvider extends ChangeNotifier {
         _hasMore = !(data['last'] as bool? ?? true);
 
         // Fetch unread count separately
-        await _fetchUnreadNotifications(userId);
+        await _fetchUnreadNotifications();
 
         print('✅ Fetched ${newNotifications.length} notifications');
       } else {
@@ -103,12 +94,11 @@ class NotificationProvider extends ChangeNotifier {
   }
 
   /// Fetch unread notifications count
-  Future<void> _fetchUnreadNotifications(String userId) async {
+  Future<void> _fetchUnreadNotifications() async {
     try {
       final apiClient = ApiClient();
       final response = await apiClient.get(
         ApiEndpoints.getUserNotifications(
-          userId: userId,
           isRead: false,
           page: 0,
           size: 100, // Get all unread
@@ -224,13 +214,13 @@ class NotificationProvider extends ChangeNotifier {
     }
     _currentPage = 0;
     _hasMore = true;
-    await fetchNotifications(userId: id);
+    await fetchNotifications();
   }
 
   /// Load more notifications (pagination)
-  Future<void> loadMoreNotifications(String userId, {bool? isRead}) async {
+  Future<void> loadMoreNotifications({bool? isRead}) async {
     if (!_hasMore || _isLoading) return;
-    await fetchNotifications(userId: userId, isRead: isRead, loadMore: true);
+    await fetchNotifications(isRead: isRead, loadMore: true);
   }
 
   /// Increment unread count (called when FCM notification arrives in foreground/background)

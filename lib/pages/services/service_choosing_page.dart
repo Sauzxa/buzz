@@ -7,6 +7,7 @@ import '../orders/service_order_form_page.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/home_drawer.dart';
 import '../../Widgets/notification_popup.dart';
+import '../../Widgets/notification_badge.dart';
 import '../../routes/route_names.dart';
 
 class ServiceChoosingPage extends StatelessWidget {
@@ -15,10 +16,12 @@ class ServiceChoosingPage extends StatelessWidget {
   const ServiceChoosingPage({Key? key, required this.service})
     : super(key: key);
 
-  void _showNotificationPopup(BuildContext context) {
-    showDialog(
+  void _showNotificationBottomSheet(BuildContext context) {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => const NotificationPopup(),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const NotificationBottomSheet(),
     );
   }
 
@@ -132,13 +135,10 @@ class ServiceChoosingPage extends StatelessWidget {
                       ),
 
                       // Notification
-                      IconButton(
-                        icon: const Icon(
-                          Icons.notifications_outlined,
-                          color: Colors.white,
-                          size: 28,
-                        ),
-                        onPressed: () => _showNotificationPopup(context),
+                      NotificationIconWithBadge(
+                        onPressed: () => _showNotificationBottomSheet(context),
+                        iconColor: Colors.white,
+                        iconSize: 28,
                       ),
                     ],
                   ),

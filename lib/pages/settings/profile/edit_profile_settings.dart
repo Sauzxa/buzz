@@ -63,7 +63,8 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
   @override
   void initState() {
     super.initState();
-    final user = context.read<UserProvider>().user;
+    final userProvider = context.read<UserProvider>();
+    final user = userProvider.user;
 
     _fullNameController = TextEditingController(text: user.fullName);
     _emailController = TextEditingController(text: user.email);
@@ -81,6 +82,32 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
         _wilayas.add(user.wilaya!);
       }
       _selectedState = user.wilaya!;
+    }
+
+    // Refresh user data to ensure it's up-to-date
+    if (user.id != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        userProvider.fetchUserById(user.id!).then((_) {
+          // Update controllers with fresh data
+          if (mounted) {
+            setState(() {
+              _fullNameController.text = userProvider.user.fullName ?? '';
+              _emailController.text = userProvider.user.email ?? '';
+              _phoneController.text = userProvider.user.phoneNumber ?? '';
+              _addressController.text = userProvider.user.currentAddress ?? '';
+              _zipCodeController.text =
+                  userProvider.user.postalCode?.toString() ?? '';
+              if (userProvider.user.wilaya != null &&
+                  userProvider.user.wilaya!.isNotEmpty) {
+                if (!_wilayas.contains(userProvider.user.wilaya)) {
+                  _wilayas.add(userProvider.user.wilaya!);
+                }
+                _selectedState = userProvider.user.wilaya!;
+              }
+            });
+          }
+        });
+      });
     }
   }
 

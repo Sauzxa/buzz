@@ -44,7 +44,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     await Provider.of<OrdersProvider>(
       context,
       listen: false,
-    ).fetchActiveOrders(userId);
+    ).fetchAllOrders(userId);
   }
 
   @override
@@ -93,7 +93,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final orders = ordersProvider.activeOrders;
+          final orders = ordersProvider.allOrders;
 
           return orders.isEmpty
               ? Center(

@@ -11,6 +11,7 @@ import '../models/service_model.dart';
 import '../models/category_model.dart';
 import '../Widgets/home_drawer.dart';
 import '../Widgets/notification_popup.dart';
+import '../Widgets/notification_badge.dart';
 import '../Widgets/category_card.dart';
 import '../Widgets/service_card.dart';
 import '../Widgets/long_press_service_wrapper.dart';
@@ -93,6 +94,8 @@ class _HomePageState extends State<HomePage> {
       futures.add(
         savedServicesProvider.loadSavedServices(userProvider.user.id!),
       );
+      // Refresh user data to ensure it's up-to-date
+      futures.add(userProvider.fetchUserById(userProvider.user.id!));
     }
 
     await Future.wait(futures);
@@ -120,10 +123,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _showNotificationPopup() {
-    showDialog(
+  void _showNotificationBottomSheet() {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => const NotificationPopup(),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const NotificationBottomSheet(),
     );
   }
 
@@ -186,13 +191,10 @@ class _HomePageState extends State<HomePage> {
                                 );
                               },
                             ),
-                            IconButton(
-                              icon: const Icon(
-                                Icons.notifications_outlined,
-                                color: Colors.white,
-                                size: 28,
-                              ),
-                              onPressed: _showNotificationPopup,
+                            NotificationIconWithBadge(
+                              onPressed: _showNotificationBottomSheet,
+                              iconColor: Colors.white,
+                              iconSize: 28,
                             ),
                           ],
                         ),
