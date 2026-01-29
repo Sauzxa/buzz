@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../Widgets/button.dart';
+import '../providers/auth_provider.dart';
+import '../utils/fade_route.dart';
+import 'resetEmailSent.dart';
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({Key? key}) : super(key: key);
@@ -11,6 +15,7 @@ class ForgetPasswordPage extends StatefulWidget {
 
 class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   final TextEditingController _emailController = TextEditingController();
+  bool _isProcessing = false;
 
   @override
   void dispose() {
@@ -18,8 +23,8 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
     super.dispose();
   }
 
-  void _onResetPassword() {
-    final email = _emailController.text;
+  Future<void> _onResetPassword() async {
+    final email = _emailController.text.trim();
 
     if (email.isEmpty) {
       _showError('Please enter your email address');
@@ -31,21 +36,41 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       return;
     }
 
-    // TODO: Implement password reset API call
-    print('Reset password for: $email');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Password reset link sent to your email!'),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-
-    // Navigate back after success
-    Future.delayed(const Duration(seconds: 2), () {
-      Navigator.pop(context);
+    setState(() {
+      _isProcessing = true;
     });
+
+    try {
+      final authProvider = context.read<AuthProvider>();
+      final success = await authProvider.forgotPassword(email);
+
+      if (!mounted) return;
+
+      setState(() {
+        _isProcessing = false;
+      });
+
+      if (success) {
+        // Navigate to Reset Email Sent page
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            FadeRoute(page: const ResetEmailSentPage()),
+          );
+        }
+      } else {
+        // Show error from provider
+        _showError(authProvider.error ?? 'Failed to send reset email');
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        _isProcessing = false;
+      });
+
+      _showError('An error occurred. Please try again.');
+    }
   }
 
   bool _isValidEmail(String email) {
@@ -151,7 +176,8 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
               // Reset Password Button
               PrimaryButton(
                 text: 'Reset Password',
-                onPressed: _onResetPassword,
+                isLoading: _isProcessing,
+                onPressed: _isProcessing ? () {} : _onResetPassword,
               ),
 
               const Spacer(),

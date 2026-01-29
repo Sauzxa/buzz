@@ -151,4 +151,38 @@ class AuthService {
       rethrow;
     }
   }
+
+  /// Request password reset link via email
+  /// Sends a password reset email to the provided email address
+  Future<void> forgotPassword(String email) async {
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoints.forgotPassword,
+        data: {'email': email},
+      );
+
+      // Check for server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          'Server error (${response.statusCode}). Please try again later.',
+        );
+      }
+
+      // Check for client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        String message = 'Failed to send password reset email';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Success - email sent
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Unexpected error occurred');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

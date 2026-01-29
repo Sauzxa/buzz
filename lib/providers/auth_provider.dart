@@ -300,6 +300,31 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Request password reset link
+  /// Sends a password reset email to the provided email address
+  Future<bool> forgotPassword(String email) async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      await _authService.forgotPassword(email);
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      // Extract clean error message
+      String errorMessage = e.toString();
+
+      // Remove "Exception: " prefix if present
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+
+      _error = errorMessage;
+      _setLoading(false);
+      return false;
+    }
+  }
+
   /// Register FCM token with backend
   Future<void> _registerFcmToken() async {
     try {

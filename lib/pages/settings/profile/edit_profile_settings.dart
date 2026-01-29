@@ -234,9 +234,12 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
     try {
       final userProvider = context.read<UserProvider>();
 
+      // Note: Backend does NOT support email updates via PUT /api/users/{id}
+      // UserUpdateDto only accepts: fullName, phoneNumber, currentAddress, postalCode, wilaya, profilePicture
+      // Email changes would require a separate endpoint (not currently available)
       final Map<String, dynamic> data = {
         'fullName': _fullNameController.text,
-        'email': _emailController.text,
+        // 'email': _emailController.text, // NOT SUPPORTED - Backend doesn't accept email updates
         'phoneNumber': _phoneController.text, // Backend handles cleaning
         'currentAddress': _addressController.text,
         'postalCode': _zipCodeController
@@ -452,6 +455,8 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                             controller: _emailController,
                             hint: 'oussama.aba@email.com',
                             keyboardType: TextInputType.emailAddress,
+                            readOnly:
+                                true, // Email cannot be changed - backend doesn't support it
                           ),
                           const SizedBox(height: 20),
 
@@ -602,7 +607,7 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
           style: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black,
+            color: readOnly ? Colors.grey.shade600 : Colors.black,
           ),
           decoration: InputDecoration(
             labelText: label,
@@ -610,6 +615,8 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: hint,
             hintStyle: GoogleFonts.dmSans(color: Colors.grey.shade400),
+            filled: readOnly,
+            fillColor: readOnly ? Colors.grey.shade100 : Colors.white,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 18,

@@ -15,6 +15,7 @@ class RouteNames {
   static const String signUp = '/sign-up';
   static const String signIn = '/sign-in';
   static const String forgetPassword = '/forget-password';
+  static const String resetEmailSent = '/reset-email-sent';
 
   // Core routes
   static const String welcome = '/welcome';

@@ -10,6 +10,7 @@ import '../auth/otp.dart';
 import '../auth/SignUp.dart';
 import '../auth/SignIn.dart';
 import '../auth/forgetPassword.dart';
+import '../auth/resetEmailSent.dart';
 import '../core/welcome.dart';
 import '../core/homePage.dart';
 import '../pages/chat/chat_screen.dart';
@@ -57,6 +58,9 @@ class RouteGenerator {
 
       case RouteNames.forgetPassword:
         return MaterialPageRoute(builder: (_) => const ForgetPasswordPage());
+
+      case RouteNames.resetEmailSent:
+        return MaterialPageRoute(builder: (_) => const ResetEmailSentPage());
 
       case RouteNames.welcome:
         return MaterialPageRoute(builder: (_) => const WelcomePage());
