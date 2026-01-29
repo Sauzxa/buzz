@@ -22,6 +22,8 @@ import '../pages/orders/order_tracking_page.dart';
 import '../pages/orders/order_details_page.dart';
 import '../pages/orders/payment_upload_page.dart';
 import '../pages/orders/payment_info_page.dart';
+import '../pages/services_pages/services_buzz_page.dart';
+import '../pages/notifications/notifications_buzz_page.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -73,6 +75,12 @@ class RouteGenerator {
 
       case RouteNames.settings:
         return MaterialPageRoute(builder: (_) => const GeneralSettingsPage());
+
+      case RouteNames.servicesBuzz:
+        return MaterialPageRoute(builder: (_) => const ServicesBuzzPage());
+
+      case RouteNames.notificationsBuzz:
+        return MaterialPageRoute(builder: (_) => const NotificationsBuzzPage());
 
       // Order Management Routes
       case RouteNames.orderManagement:

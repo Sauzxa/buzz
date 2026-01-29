@@ -21,7 +21,7 @@ import '../Widgets/ad_banner.dart';
 import '../utils/snackbar_helper.dart';
 import '../utils/static_categories.dart';
 import '../pages/categories/category_page.dart';
-import '../pages/services/service_choosing_page.dart';
+import '../pages/services_pages/service_choosing_page.dart';
 import '../pages/settings/profile/edit_profile_settings.dart';
 import '../routes/route_names.dart';
 

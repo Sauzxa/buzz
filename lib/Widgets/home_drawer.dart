@@ -8,7 +8,7 @@ import '../providers/notification_provider.dart';
 
 import '../utils/fade_route.dart';
 import '../pages/settings/general_settings.dart';
-import '../pages/services/saved_services.dart';
+import '../pages/services_pages/saved_services.dart';
 import '../auth/SignIn.dart';
 import '../pages/settings/user_settings_page.dart';
 
@@ -183,6 +183,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     title: 'Services',
                     onTap: () {
                       Navigator.pop(context);
+                      Navigator.pushNamed(context, '/services-buzz');
                     },
                   ),
                   _buildMenuItem(

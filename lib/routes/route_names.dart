@@ -22,6 +22,8 @@ class RouteNames {
   static const String home = '/home';
   static const String chat = '/chat';
   static const String settings = '/settings';
+  static const String servicesBuzz = '/services-buzz';
+  static const String notificationsBuzz = '/notifications-buzz';
 
   // Order management routes
   static const String orderManagement = '/order-management';

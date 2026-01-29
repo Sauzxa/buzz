@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/category_model.dart';
-import '../services/services_by_category_page.dart';
+import '../services_pages/services_by_category_page.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/home_drawer.dart';
 import '../../Widgets/notification_popup.dart';

@@ -7,7 +7,7 @@ import '../../providers/user_provider.dart';
 import '../../Widgets/service_card.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
-import '../services/service_choosing_page.dart';
+import 'service_choosing_page.dart';
 
 class SavedServicesPage extends StatefulWidget {
   const SavedServicesPage({super.key});

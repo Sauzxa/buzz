@@ -118,12 +118,9 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                           icon: Icons.notifications_outlined,
                           title: 'Notifications',
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Notifications page coming soon!',
-                                ),
-                              ),
+                            Navigator.pushNamed(
+                              context,
+                              RouteNames.notificationsBuzz,
                             );
                           },
                         ),

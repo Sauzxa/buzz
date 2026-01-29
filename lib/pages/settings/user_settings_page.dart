@@ -27,12 +27,16 @@ class _SettingsPageState extends State<SettingsPage> {
   void _onBottomNavTapped(int index) {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 1) {
+      // Search - Navigate to home
+      Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 2) {
+      // Order Management
+      Navigator.pushNamed(context, RouteNames.orderManagement);
+    } else if (index == 3) {
+      // Already on settings/profile
     } else if (index == 4) {
       Navigator.pushReplacementNamed(context, RouteNames.chat);
-    } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Feature coming soon!')));
     }
   }
 
@@ -245,7 +249,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             setState(() {
                               _pushNotifications = value;
                             });
-                            
+
                             // Disable/Enable FCM notifications
                             final fcmService = FcmService();
                             if (value) {
@@ -257,7 +261,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   fcmService.fcmToken!,
                                 );
                               }
-                              
+
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
@@ -274,7 +278,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               if (fcmService.fcmToken != null) {
                                 await fcmService.removeTokenFromBackend();
                               }
-                              
+
                               if (mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
