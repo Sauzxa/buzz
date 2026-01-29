@@ -8,7 +8,8 @@ class UserModel {
   final String? wilaya;
   final String? password;
   final String role;
-  final String? token; // JWT token field
+  final String? token; // JWT access token field
+  final String? refreshToken; // JWT refresh token field
   final String? profilePicture; // Added profile picture field
 
   UserModel({
@@ -22,6 +23,7 @@ class UserModel {
     this.password,
     this.role = 'CUSTOMER',
     this.token,
+    this.refreshToken,
     this.profilePicture,
   });
 
@@ -38,6 +40,7 @@ class UserModel {
       'password': password,
       'role': role,
       'token': token,
+      'refreshToken': refreshToken,
       'profilePicture': profilePicture,
     };
   }
@@ -57,6 +60,7 @@ class UserModel {
       password: json['password']?.toString(),
       role: json['role']?.toString() ?? 'CUSTOMER',
       token: json['accessToken']?.toString() ?? json['token']?.toString(),
+      refreshToken: json['refreshToken']?.toString(),
       profilePicture:
           json['profilePicture']?.toString() ??
           json['image']?.toString(), // Handle both possible keys
@@ -75,6 +79,7 @@ class UserModel {
     String? password,
     String? role,
     String? token,
+    String? refreshToken,
     String? profilePicture,
   }) {
     return UserModel(
@@ -88,6 +93,7 @@ class UserModel {
       password: password ?? this.password,
       role: role ?? this.role,
       token: token ?? this.token,
+      refreshToken: refreshToken ?? this.refreshToken,
       profilePicture: profilePicture ?? this.profilePicture,
     );
   }

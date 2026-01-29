@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../services/fcm_service.dart';
 import '../api/api_client.dart';
+import '../utils/jwt_decoder.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -34,6 +35,10 @@ class AuthProvider with ChangeNotifier {
       // Save token to secure storage if available
       if (_user?.token != null) {
         await _storageService.saveToken(_user!.token!);
+        // Save refresh token if available
+        if (_user?.refreshToken != null) {
+          await _storageService.saveRefreshToken(_user!.refreshToken!);
+        }
         _apiClient.setAuthToken(_user!.token!);
         _isAuthenticated = true;
 
@@ -96,6 +101,10 @@ class AuthProvider with ChangeNotifier {
       // Save token to secure storage if available
       if (_user?.token != null) {
         await _storageService.saveToken(_user!.token!);
+        // Save refresh token if available
+        if (_user?.refreshToken != null) {
+          await _storageService.saveRefreshToken(_user!.refreshToken!);
+        }
         _apiClient.setAuthToken(_user!.token!);
         _isAuthenticated = true;
 
@@ -126,29 +135,126 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final token = await _storageService.getToken();
+      final refreshToken = await _storageService.getRefreshToken();
       final userId = await _storageService.getUserId();
 
       if (token != null && token.isNotEmpty && userId != null) {
-        // Set token in API client for the validation request
+        // Check if access token is expired or will expire soon (within 3 minutes)
+        if (JwtDecoder.isExpired(token) ||
+            JwtDecoder.willExpireSoon(token, const Duration(minutes: 3))) {
+          print(
+            '🔄 Access token expired or expiring soon, attempting refresh...',
+          );
+
+          // Try to refresh the token
+          if (refreshToken != null && !JwtDecoder.isExpired(refreshToken)) {
+            try {
+              final refreshedUser = await _authService.refreshAccessToken(
+                refreshToken,
+              );
+
+              // Save new tokens
+              if (refreshedUser.token != null) {
+                await _storageService.saveToken(refreshedUser.token!);
+                _apiClient.setAuthToken(refreshedUser.token!);
+              }
+              if (refreshedUser.refreshToken != null) {
+                await _storageService.saveRefreshToken(
+                  refreshedUser.refreshToken!,
+                );
+              }
+
+              // Update user data
+              _user = refreshedUser;
+              await _storageService.saveUserData(_user!);
+              _isAuthenticated = true;
+
+              // Register FCM token if not already registered
+              await _registerFcmToken();
+
+              _setLoading(false);
+              print('✅ Token refreshed successfully during auto-login');
+              return true;
+            } catch (refreshError) {
+              print('❌ Token refresh failed: $refreshError');
+              // If refresh fails, clear auth and require re-login
+              await _storageService.clearAuthData();
+              _apiClient.clearAuthToken();
+              _user = null;
+              _isAuthenticated = false;
+              _setLoading(false);
+              return false;
+            }
+          } else {
+            print('❌ Refresh token expired or unavailable');
+            await _storageService.clearAuthData();
+            _apiClient.clearAuthToken();
+            _user = null;
+            _isAuthenticated = false;
+            _setLoading(false);
+            return false;
+          }
+        }
+
+        // Token is still valid, set it and validate with backend
         _apiClient.setAuthToken(token);
 
-        // Validate token and fetch fresh user data from backend
-        _user = await _authService.validateTokenAndFetchUser(userId);
+        try {
+          // Validate token and fetch fresh user data from backend
+          _user = await _authService.validateTokenAndFetchUser(userId);
 
-        // Token is valid, update storage with fresh data
-        await _storageService.saveUserData(_user!);
-        _isAuthenticated = true;
+          // Token is valid, update storage with fresh data
+          await _storageService.saveUserData(_user!);
+          _isAuthenticated = true;
 
-        // Register FCM token if not already registered
-        await _registerFcmToken();
+          // Register FCM token if not already registered
+          await _registerFcmToken();
 
-        _setLoading(false);
-        return true;
+          _setLoading(false);
+          return true;
+        } catch (validationError) {
+          // Check if it's a network error
+          if (validationError.toString().contains('Connection') ||
+              validationError.toString().contains('timeout') ||
+              validationError.toString().contains('internet')) {
+            print('⚠️ Network error during validation, using cached data');
+            // Use cached user data on network errors
+            final cachedUser = await _storageService.getUserData();
+            if (cachedUser != null) {
+              _user = cachedUser;
+              _isAuthenticated = true;
+              _setLoading(false);
+              return true;
+            }
+          }
+
+          // For auth errors or if no cached data, logout
+          throw validationError;
+        }
       }
     } catch (e) {
       print('Auto-login failed: $e');
 
-      // Token is invalid/expired, clear auth data
+      // Check if it's a network error - keep user logged in
+      if (e is NetworkException ||
+          e.toString().contains('Connection') ||
+          e.toString().contains('timeout') ||
+          e.toString().contains('internet')) {
+        print('⚠️ Network error, attempting to use cached data');
+        final cachedUser = await _storageService.getUserData();
+        final token = await _storageService.getToken();
+        if (cachedUser != null &&
+            token != null &&
+            !JwtDecoder.isExpired(token)) {
+          _user = cachedUser;
+          _apiClient.setAuthToken(token);
+          _isAuthenticated = true;
+          _setLoading(false);
+          return true;
+        }
+      }
+
+      // For non-network errors or expired tokens, clear auth data
       await _storageService.clearAuthData();
       _apiClient.clearAuthToken();
       _user = null;

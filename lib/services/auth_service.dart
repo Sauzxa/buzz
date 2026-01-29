@@ -59,6 +59,51 @@ class AuthService {
     }
   }
 
+  /// Refresh access token using refresh token
+  /// Returns a new UserModel with updated access and refresh tokens
+  Future<UserModel> refreshAccessToken(String refreshToken) async {
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoints.refreshToken,
+        data: {'refreshToken': refreshToken},
+      );
+
+      // Check for server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          'Server error (${response.statusCode}). Please try again later.',
+        );
+      }
+
+      // Check for authentication errors (401, 403)
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        String message = 'Refresh token expired or invalid';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Check for other client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        String message = 'Token refresh failed';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Success response (2xx)
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return UserModel.fromJson(response.data);
+      } else {
+        throw Exception('Unexpected error occurred during token refresh');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   /// Validate token and fetch fresh user data from backend
   /// This is used during auto-login to ensure the token is still valid
   /// and to get the latest user profile data

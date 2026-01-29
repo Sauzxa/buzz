@@ -12,6 +12,7 @@ class ApiEndpoints {
   static String get signup => '$apiPrefix/auth/register';
   static String get login => '$apiPrefix/auth/login';
   static String get logout => '$apiPrefix/auth/logout';
+  static String get refreshToken => '$apiPrefix/auth/refresh';
 
   // User endpoints
   // User endpoints

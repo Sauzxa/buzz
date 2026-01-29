@@ -14,6 +14,7 @@ class StorageService {
 
   // Storage keys
   static const String _tokenKey = 'auth_token';
+  static const String _refreshTokenKey = 'refresh_token';
   static const String _userIdKey = 'user_id';
   static const String _userDataKey = 'user_data';
   static const String _hasSeenOnboardingKey = 'has_seen_onboarding';
@@ -44,6 +45,36 @@ class StorageService {
       await _storage.delete(key: _tokenKey);
     } catch (e) {
       print('Error deleting token: $e');
+      rethrow;
+    }
+  }
+
+  /// Save refresh token to secure storage
+  Future<void> saveRefreshToken(String refreshToken) async {
+    try {
+      await _storage.write(key: _refreshTokenKey, value: refreshToken);
+    } catch (e) {
+      print('Error saving refresh token: $e');
+      rethrow;
+    }
+  }
+
+  /// Get refresh token from secure storage
+  Future<String?> getRefreshToken() async {
+    try {
+      return await _storage.read(key: _refreshTokenKey);
+    } catch (e) {
+      print('Error reading refresh token: $e');
+      return null;
+    }
+  }
+
+  /// Delete refresh token from secure storage
+  Future<void> deleteRefreshToken() async {
+    try {
+      await _storage.delete(key: _refreshTokenKey);
+    } catch (e) {
+      print('Error deleting refresh token: $e');
       rethrow;
     }
   }
@@ -155,6 +186,7 @@ class StorageService {
   Future<void> clearAuthData() async {
     try {
       await deleteToken();
+      await deleteRefreshToken();
       await deleteUserId();
       await deleteUserData();
       // Note: Does NOT clear hasSeenOnboarding
