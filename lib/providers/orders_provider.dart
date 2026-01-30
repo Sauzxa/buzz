@@ -17,24 +17,19 @@ class OrdersProvider extends ChangeNotifier {
   String? get error => _error;
 
   /// Fetch all orders for a customer (regardless of status)
-  /// Combines active and archived orders since the backend /customer/{id} endpoint is admin-only
   Future<void> fetchAllOrders(String customerId) async {
     _isLoadingFn = true;
     _error = null;
     notifyListeners();
 
     try {
-      // Fetch both active and archived orders in parallel
-      final results = await Future.wait([
-        _orderService.getActiveOrders(customerId),
-        _orderService.getArchivedOrders(customerId),
-      ]);
+      // Use the getAllOrders endpoint which returns all orders regardless of status
+      _allOrders = await _orderService.getAllOrders(customerId);
 
-      // Combine both lists
-      _allOrders = [...results[0], ...results[1]];
+      print('✅ [ORDERS_PROVIDER] Fetched ${_allOrders.length} total orders');
     } catch (e) {
       _error = 'Failed to load orders: $e';
-      print(_error);
+      print('❌ [ORDERS_PROVIDER] $_error');
     } finally {
       _isLoadingFn = false;
       notifyListeners();

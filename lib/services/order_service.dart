@@ -146,21 +146,44 @@ class OrderService {
   /// Get all orders for a customer (regardless of status)
   Future<List<dynamic>> getAllOrders(String customerId) async {
     try {
+      print('🔍 [ORDER_SERVICE] Fetching all orders for customer: $customerId');
+
       final response = await _apiClient.get(
         ApiEndpoints.getAllOrdersByCustomer(customerId),
       );
 
+      print('📡 [ORDER_SERVICE] Response status: ${response.statusCode}');
+      print(
+        '📦 [ORDER_SERVICE] Response data type: ${response.data.runtimeType}',
+      );
+
       if (response.statusCode == 200) {
         final data = response.data;
+
+        // Check if response has paginated content
         if (data is Map<String, dynamic> && data.containsKey('content')) {
-          return data['content'] as List<dynamic>;
+          final orders = data['content'] as List<dynamic>;
+          print(
+            '✅ [ORDER_SERVICE] Found ${orders.length} orders in paginated response',
+          );
+          return orders;
         }
+
+        // Check if response is directly a list
+        if (data is List<dynamic>) {
+          print(
+            '✅ [ORDER_SERVICE] Found ${data.length} orders in list response',
+          );
+          return data;
+        }
+
+        print('⚠️ [ORDER_SERVICE] Unexpected response format: $data');
         return [];
       } else {
         throw Exception('Failed to load all orders: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching all orders: $e');
+      print('❌ [ORDER_SERVICE] Error fetching all orders: $e');
       rethrow;
     }
   }
