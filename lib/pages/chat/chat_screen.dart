@@ -6,6 +6,7 @@ import '../../widgets/chat/message_bubble.dart';
 import '../../widgets/chat/message_input_field.dart';
 import '../../theme/colors.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
+import '../../Widgets/home_drawer.dart';
 import '../../routes/route_names.dart';
 import '../settings/profile/edit_profile_settings.dart';
 
@@ -126,22 +127,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
+      drawer: const HomeDrawer(),
       appBar: AppBar(
         backgroundColor: AppColors.roseColor,
         elevation: 2,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Support Chat',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-            ),
-          ],
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.grid_view, color: Colors.white, size: 28),
+            onPressed: () {
+              Scaffold.of(context).openDrawer();
+            },
+          ),
         ),
+        title: const Text(
+          'Support Chat',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        centerTitle: true,
         actions: [
           // Refresh button
           Consumer<ChatProvider>(
@@ -224,22 +230,39 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
 
           return Column(
             children: [
-              // Subtitle section
+              // Header section with larger "Support Chat" title
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 color: Colors.white,
-                child: const Text(
-                  'Please wait our support team will reply you\nas soon as possible.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey,
-                    height: 1.4,
-                  ),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Support Chat',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Please wait our support team will reply you\nas soon as possible.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              
+
               // Messages list
               Expanded(
                 child: chatProvider.messages.isEmpty

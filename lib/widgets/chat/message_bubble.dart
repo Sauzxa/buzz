@@ -41,19 +41,38 @@ class MessageBubble extends StatelessWidget {
                     Container(
                       width: 24,
                       height: 24,
-                      margin: const EdgeInsets.only(right: 6),
+                      margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(
-                        color: AppColors.roseColor,
+                        color: Colors.white,
                         shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          'B',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
                           ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(3),
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/Logos/buzz.png',
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              color: AppColors.roseColor,
+                              child: const Center(
+                                child: Text(
+                                  'B',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -96,7 +115,7 @@ class MessageBubble extends StatelessWidget {
 
                   const SizedBox(height: 6),
 
-                  // Timestamp and status
+                  // Timestamp and status (no read status for received messages)
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
