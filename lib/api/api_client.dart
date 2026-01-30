@@ -78,8 +78,9 @@ class ApiClient {
             print('Error response data: ${error.response?.data}');
           }
 
-          // Handle 401 errors with automatic token refresh
-          if (error.response?.statusCode == 401) {
+          // Handle 401 and 403 errors with automatic token refresh
+          if (error.response?.statusCode == 401 ||
+              error.response?.statusCode == 403) {
             // Don't retry if this is already a refresh token request or logout
             if (error.requestOptions.path.contains('/auth/refresh') ||
                 error.requestOptions.path.contains('/auth/logout')) {
@@ -87,10 +88,14 @@ class ApiClient {
             }
 
             try {
+              print(
+                '🔄 [API_CLIENT] Token expired (${error.response?.statusCode}), attempting refresh...',
+              );
               // Attempt to refresh token
               final newAccessToken = await _refreshToken();
 
               if (newAccessToken != null) {
+                print('✅ [API_CLIENT] Token refreshed, retrying request...');
                 // Update the failed request with new token
                 error.requestOptions.headers['Authorization'] =
                     'Bearer $newAccessToken';
@@ -99,11 +104,12 @@ class ApiClient {
                 final response = await _dio.fetch(error.requestOptions);
                 return handler.resolve(response);
               } else {
+                print('❌ [API_CLIENT] Token refresh failed');
                 // Refresh failed, propagate error
                 return handler.next(error);
               }
             } catch (refreshError) {
-              print('Token refresh failed: $refreshError');
+              print('❌ [API_CLIENT] Token refresh error: $refreshError');
               // Clear auth data on refresh failure
               await _storageService.clearAuthData();
               clearAuthToken();
@@ -186,6 +192,46 @@ class ApiClient {
   // Getter for current headers (for debugging)
   Map<String, dynamic> get currentHeaders => _dio.options.headers;
 
+  /// Check if token needs refresh and refresh proactively
+  /// Returns true if token is valid or successfully refreshed
+  Future<bool> ensureValidToken() async {
+    try {
+      final token = await _storageService.getToken();
+
+      if (token == null || token.isEmpty) {
+        print('⚠️ [API_CLIENT] No token available');
+        return false;
+      }
+
+      // Check if token is expired or about to expire (within 2 minutes)
+      if (JwtDecoder.isExpired(token)) {
+        print('⚠️ [API_CLIENT] Token expired, refreshing proactively...');
+        final newToken = await _refreshToken();
+        return newToken != null;
+      } else {
+        // Check if token expires soon (within 2 minutes)
+        final expiresAt = JwtDecoder.getExpirationDate(token);
+        if (expiresAt != null) {
+          final now = DateTime.now();
+          final timeUntilExpiry = expiresAt.difference(now);
+
+          if (timeUntilExpiry.inMinutes <= 2) {
+            print(
+              '⚠️ [API_CLIENT] Token expires in ${timeUntilExpiry.inMinutes} minutes, refreshing proactively...',
+            );
+            final newToken = await _refreshToken();
+            return newToken != null;
+          }
+        }
+      }
+
+      return true;
+    } catch (e) {
+      print('❌ [API_CLIENT] Error checking token validity: $e');
+      return false;
+    }
+  }
+
   // GET request
   Future<Response> get(
     String endpoint, {
@@ -193,6 +239,9 @@ class ApiClient {
     Options? options,
   }) async {
     try {
+      // Check and refresh token proactively before making request
+      await ensureValidToken();
+
       final response = await _dio.get(
         endpoint,
         queryParameters: queryParameters,
@@ -219,6 +268,9 @@ class ApiClient {
     Options? options,
   }) async {
     try {
+      // Check and refresh token proactively before making request
+      await ensureValidToken();
+
       final response = await _dio.post(
         endpoint,
         data: data,
@@ -239,6 +291,9 @@ class ApiClient {
     Options? options,
   }) async {
     try {
+      // Check and refresh token proactively before making request
+      await ensureValidToken();
+
       final response = await _dio.put(
         endpoint,
         data: data,
@@ -259,6 +314,9 @@ class ApiClient {
     Options? options,
   }) async {
     try {
+      // Check and refresh token proactively before making request
+      await ensureValidToken();
+
       final response = await _dio.delete(
         endpoint,
         data: data,

@@ -60,6 +60,6 @@ prompt.md
 DYNAMIC_PAGES_README.md
 README.md
 #backend src
-#buzz_back/
+buzz_back/
 lib/firebase_options.dart
 

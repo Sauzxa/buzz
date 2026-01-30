@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../../Widgets/notification_popup.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/colors.dart';
 import '../../../Widgets/button.dart';
@@ -17,6 +18,15 @@ class ChangePassSettings extends StatefulWidget {
 
 class _ChangePassSettingsState extends State<ChangePassSettings> {
   final _formKey = GlobalKey<FormState>();
+
+  void _showNotificationBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const NotificationBottomSheet(),
+    );
+  }
 
   // Controllers
   final TextEditingController _currentPassController = TextEditingController();
@@ -146,26 +156,31 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
                     ),
                   ),
                   // Notification icon
-                  Stack(
-                    children: [
-                      const Icon(
-                        Icons.notifications_outlined,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                      Positioned(
-                        right: 2,
-                        top: 2,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.amber,
-                            shape: BoxShape.circle,
+                  IconButton(
+                    icon: Stack(
+                      children: [
+                        const Icon(
+                          Icons.notifications_outlined,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.amber,
+                              shape: BoxShape.circle,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    onPressed: _showNotificationBottomSheet,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
                 ],
               ),

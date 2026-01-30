@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import '../../Widgets/notification_popup.dart';
 import '../../theme/colors.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
@@ -23,6 +24,15 @@ class _SettingsPageState extends State<SettingsPage> {
   // Notification toggle states
   bool _pushNotifications = true;
   bool _promotionalNotifications = true;
+
+  void _showNotificationBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const NotificationBottomSheet(),
+    );
+  }
 
   void _onBottomNavTapped(int index) {
     if (index == 0) {
@@ -91,9 +101,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           color: Colors.white,
                           size: 28,
                         ),
-                        onPressed: () {
-                          // TODO: Navigate to notifications
-                        },
+                        onPressed: _showNotificationBottomSheet,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),

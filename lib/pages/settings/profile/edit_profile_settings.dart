@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../Widgets/notification_popup.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'change_pass_settings.dart';
 import 'package:provider/provider.dart';
@@ -119,6 +120,15 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
     _addressController.dispose();
     _zipCodeController.dispose();
     super.dispose();
+  }
+
+  void _showNotificationBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const NotificationBottomSheet(),
+    );
   }
 
   Future<void> _pickImage() async {
@@ -347,26 +357,31 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                     ),
                   ),
                   // Notification icon with red dot as per design
-                  Stack(
-                    children: [
-                      const Icon(
-                        Icons.notifications_outlined,
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                      Positioned(
-                        right: 2,
-                        top: 2,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: Colors.amber, // Orange/Yellow dot
-                            shape: BoxShape.circle,
+                  IconButton(
+                    icon: Stack(
+                      children: [
+                        const Icon(
+                          Icons.notifications_outlined,
+                          color: Colors.white,
+                          size: 28,
+                        ),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.amber, // Orange/Yellow dot
+                              shape: BoxShape.circle,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                    onPressed: _showNotificationBottomSheet,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
                 ],
               ),

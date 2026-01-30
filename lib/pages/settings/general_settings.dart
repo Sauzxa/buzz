@@ -61,7 +61,10 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                           color: Colors.white,
                           size: 28,
                         ),
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () => Navigator.pushReplacementNamed(
+                          context,
+                          RouteNames.home,
+                        ),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                       ),
