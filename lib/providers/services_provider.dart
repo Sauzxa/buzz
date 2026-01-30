@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../models/service_model.dart';
+import '../models/discount_model.dart';
 import '../api/api_client.dart';
 import '../api/api_endpoints.dart';
 
@@ -12,6 +13,7 @@ class ServicesProvider extends ChangeNotifier {
   List<ServiceModel> _services = [];
   String? _errorMessage;
   List<String> _discountServiceNames = [];
+  List<DiscountModel> _discounts = [];
 
   // Configuration for "Other Services" section
   static const int maxServicesPerCategory = 4;
@@ -24,6 +26,7 @@ class ServicesProvider extends ChangeNotifier {
   bool get hasError => _state == LoadingState.error;
   bool get hasData => _services.isNotEmpty;
   List<String> get discountServiceNames => _discountServiceNames;
+  List<DiscountModel> get discounts => _discounts;
 
   /// Fetch all services from API
   Future<void> fetchServices() async {
@@ -121,17 +124,25 @@ class ServicesProvider extends ChangeNotifier {
         final List<dynamic> data = response.data as List<dynamic>;
         print('✅ [DISCOUNTS] Discounts count: ${data.length}');
 
-        // Extract service names from discounts
-        _discountServiceNames = [];
-        for (var discount in data) {
-          if (discount['servicesNames'] != null &&
-              discount['servicesNames'] is List) {
-            final List<dynamic> serviceNames =
-                discount['servicesNames'] as List<dynamic>;
-            _discountServiceNames.addAll(serviceNames.map((e) => e.toString()));
+        // Parse discount models
+        _discounts = data.map((json) {
+          try {
+            return DiscountModel.fromJson(json);
+          } catch (e, stackTrace) {
+            print('❌ [DISCOUNTS] Error parsing discount: $json');
+            print('❌ [DISCOUNTS] Parsing error: $e');
+            print('❌ [DISCOUNTS] Stack: $stackTrace');
+            rethrow;
           }
+        }).toList();
+
+        // Extract service names from discounts for backward compatibility
+        _discountServiceNames = [];
+        for (var discount in _discounts) {
+          _discountServiceNames.addAll(discount.serviceNames);
         }
 
+        print('✅ [DISCOUNTS] Parsed ${_discounts.length} discounts');
         print(
           '✅ [DISCOUNTS] Service names with discounts: $_discountServiceNames',
         );
@@ -147,9 +158,25 @@ class ServicesProvider extends ChangeNotifier {
 
   /// Get services that have discounts
   List<ServiceModel> getDiscountedServices() {
-    return _services
-        .where((service) => _discountServiceNames.contains(service.name))
-        .toList();
+    // Get unique service IDs from discounts
+    final discountServiceIds = _discounts.map((d) => d.serviceId).toSet();
+
+    // Filter services by ID first (more accurate), fallback to name matching
+    return _services.where((service) {
+      return discountServiceIds.contains(service.id) ||
+          _discountServiceNames.contains(service.name);
+    }).toList();
+  }
+
+  /// Get discount for a specific service
+  DiscountModel? getDiscountForService(String serviceId) {
+    try {
+      return _discounts.firstWhere(
+        (discount) => discount.serviceId == serviceId,
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Get services by category name
@@ -211,6 +238,8 @@ class ServicesProvider extends ChangeNotifier {
   /// Clear all data
   void clear() {
     _services = [];
+    _discounts = [];
+    _discountServiceNames = [];
     _state = LoadingState.idle;
     _errorMessage = null;
     notifyListeners();
