@@ -32,8 +32,8 @@ class _SplashScreenState extends State<SplashScreen> {
     // Try to auto-login (also checks onboarding status)
     final isAuthenticated = await authProvider.tryAutoLogin();
 
-    // Wait for splash effect
-    await Future.delayed(const Duration(seconds: 2));
+    // Minimal delay for smooth transition
+    await Future.delayed(const Duration(milliseconds: 100));
 
     if (!mounted) return;
 

@@ -11,6 +11,7 @@ import '../auth/SignUp.dart';
 import '../auth/SignIn.dart';
 import '../auth/forgetPassword.dart';
 import '../auth/resetEmailSent.dart';
+import '../auth/setNewPassword.dart';
 import '../core/welcome.dart';
 import '../core/homePage.dart';
 import '../pages/chat/chat_screen.dart';
@@ -63,6 +64,12 @@ class RouteGenerator {
 
       case RouteNames.resetEmailSent:
         return MaterialPageRoute(builder: (_) => const ResetEmailSentPage());
+
+      case RouteNames.setNewPassword:
+        final String token = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => SetNewPasswordPage(token: token),
+        );
 
       case RouteNames.welcome:
         return MaterialPageRoute(builder: (_) => const WelcomePage());

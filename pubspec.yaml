@@ -51,6 +51,7 @@ dependencies:
   permission_handler: ^11.3.0
   intl: ^0.20.2
   flutter_launcher_icons: ^0.14.4
+  app_links: ^6.4.1  # For deep linking / password reset (replaces uni_links)
 
 dev_dependencies:
   flutter_test:
@@ -109,6 +110,7 @@ flutter:
     - assets/CategorySucces/AudioVisual.png
     - assets/CategorySucces/GraphicDesing.png
     - assets/CategorySucces/Printing.png
+    - assets/others/ResetEmail.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

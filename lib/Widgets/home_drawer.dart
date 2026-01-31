@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../theme/colors.dart';
 import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
@@ -232,8 +233,68 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     context,
                     icon: Icons.help_outline,
                     title: 'Buzz Features',
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pop(context);
+
+                      // Show confirmation dialog
+                      final bool? shouldOpen = await showDialog<bool>(
+                        context: context,
+                        builder: (BuildContext dialogContext) {
+                          return AlertDialog(
+                            title: Text(
+                              'Open in Browser',
+                              style: GoogleFonts.dmSans(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            content: Text(
+                              'This will open www.buzz-apex.com in your browser.',
+                              style: GoogleFonts.dmSans(),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(dialogContext).pop(false),
+                                child: Text(
+                                  'Cancel',
+                                  style: GoogleFonts.dmSans(color: Colors.grey),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(dialogContext).pop(true),
+                                child: Text(
+                                  'Open',
+                                  style: GoogleFonts.dmSans(
+                                    color: AppColors.roseColor,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+
+                      if (shouldOpen == true) {
+                        final Uri url = Uri.parse('https://www.buzz-apex.com');
+                        try {
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } catch (e) {
+                          debugPrint('Error launching URL: $e');
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Could not open website'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        }
+                      }
                     },
                   ),
                 ],

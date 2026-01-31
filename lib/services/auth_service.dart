@@ -185,4 +185,46 @@ class AuthService {
       rethrow;
     }
   }
+
+  /// Reset password with token from email
+  /// Validates token and sets new password
+  Future<void> resetPassword({
+    required String token,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoints.resetPassword,
+        data: {
+          'token': token,
+          'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
+        },
+      );
+
+      // Check for server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          'Server error (${response.statusCode}). Please try again later.',
+        );
+      }
+
+      // Check for client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        String message = 'Failed to reset password';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Success - password reset
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Unexpected error occurred');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

@@ -46,7 +46,12 @@ class ChatProvider with ChangeNotifier {
       // Load cached messages first for instant display
       await _loadCachedMessages();
 
-      // Fetch latest messages from server
+      // If we have cached messages, show UI immediately
+      if (_messages.isNotEmpty) {
+        _setLoading(false);
+      }
+
+      // Fetch latest messages from server in background
       await fetchMessages(refresh: true);
 
       // Start polling for new messages
@@ -107,13 +112,13 @@ class ChatProvider with ChangeNotifier {
   void startPolling() {
     stopPolling(); // Clear any existing timer
 
-    _pollingTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if (_isChatActive && _currentChat != null) {
         _fetchNewMessagesQuietly();
       }
     });
 
-    print('✅ Chat polling started (every 5 seconds)');
+    print('✅ Chat polling started (every 10 seconds)');
   }
 
   /// Stop polling

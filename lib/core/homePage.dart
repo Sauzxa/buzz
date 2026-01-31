@@ -40,8 +40,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     // Defer fetching data until after the first frame is built
+    // Don't await - let it fetch in background while UI renders
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchData();
+      _fetchData(); // Non-blocking - UI shows immediately with loading indicators
     });
   }
 
@@ -82,7 +83,7 @@ class _HomePageState extends State<HomePage> {
     final userProvider = context.read<UserProvider>();
     final savedServicesProvider = context.read<SavedServicesProvider>();
 
-    // Fetch all data
+    // Fetch all data in parallel (non-blocking)
     final futures = <Future>[
       categoriesProvider.fetchCategories(),
       servicesProvider.fetchServices(),
@@ -98,26 +99,15 @@ class _HomePageState extends State<HomePage> {
       futures.add(userProvider.fetchUserById(userProvider.user.id!));
     }
 
-    await Future.wait(futures);
+    // Wait for all to complete, but don't block UI
+    await Future.wait(futures, eagerError: false);
 
-    // Show error if any provider has an error
+    // Only show error for critical failures (categories or services)
     if (mounted) {
-      if (categoriesProvider.hasError) {
+      if (categoriesProvider.hasError || servicesProvider.hasError) {
         SnackBarHelper.showErrorSnackBar(
           context,
-          categoriesProvider.errorMessage ?? 'Failed to load categories',
-        );
-      }
-      if (servicesProvider.hasError) {
-        SnackBarHelper.showErrorSnackBar(
-          context,
-          servicesProvider.errorMessage ?? 'Failed to load services',
-        );
-      }
-      if (newsProvider.hasError) {
-        SnackBarHelper.showErrorSnackBar(
-          context,
-          newsProvider.errorMessage ?? 'Failed to load news',
+          'Failed to load some data. Pull to refresh.',
         );
       }
     }
