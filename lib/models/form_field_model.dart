@@ -12,7 +12,8 @@ class FormFieldModel {
   final List<String>? accept;
   final int? maxFileSize;
   final int? maxFiles;
-  final int? columns;
+  final int?
+  columns; // Page number for multi-page forms (1 or 2), also used for grid layout
 
   FormFieldModel({
     required this.id,
@@ -52,7 +53,7 @@ class FormFieldModel {
       accept: json['accept'] != null ? List<String>.from(json['accept']) : null,
       maxFileSize: json['maxFileSize'],
       maxFiles: json['maxFiles'],
-      columns: json['columns'],
+      columns: json['columns'], // Page number for multi-page forms
     );
   }
 }

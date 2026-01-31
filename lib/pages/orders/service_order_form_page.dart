@@ -2,12 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../models/service_model.dart';
+import '../../models/form_field_model.dart';
 import '../../Widgets/button.dart';
 import '../../Widgets/dynamic_form_builder.dart';
 import '../../Widgets/file_upload_widget.dart';
 import '../../theme/colors.dart';
 import '../../services/order_service.dart';
 import 'order_success_page.dart';
+import 'service_order_form_page2.dart';
 
 class ServiceOrderFormPage extends StatefulWidget {
   final ServiceModel service;
@@ -25,6 +27,29 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
   final OrderService _orderService = OrderService();
   bool _isSubmitting = false;
 
+  // Get maximum columns number to determine if multi-page
+  int get _maxColumn {
+    if (widget.service.formFields == null ||
+        widget.service.formFields!.isEmpty) {
+      return 1;
+    }
+    return widget.service.formFields!
+        .map((f) => f.columns ?? 1)
+        .reduce((a, b) => a > b ? a : b);
+  }
+
+  // Check if this service has multi-page form
+  bool get _isMultiPage => _maxColumn >= 2;
+
+  // Get fields for page 1 only
+  List<FormFieldModel> get _page1Fields {
+    if (widget.service.formFields == null) return [];
+    return widget.service.formFields!
+        .where((field) => (field.columns ?? 1) == 1)
+        .toList()
+      ..sort((a, b) => a.order.compareTo(b.order));
+  }
+
   void _onFieldChanged(String fieldId, dynamic value) {
     setState(() {
       _formData[fieldId] = value;
@@ -38,13 +63,8 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
     });
   }
 
-  bool _validateForm() {
-    if (widget.service.formFields == null ||
-        widget.service.formFields!.isEmpty) {
-      return false;
-    }
-
-    for (var field in widget.service.formFields!) {
+  bool _validatePage(List<FormFieldModel> fields) {
+    for (var field in fields) {
       final value = _formData[field.id];
 
       // Check required fields
@@ -115,8 +135,26 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
     );
   }
 
+  void _goToNextPage() {
+    // Validate page 1 before navigating
+    if (!_validatePage(_page1Fields)) return;
+
+    // Navigate to page 2
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ServiceOrderFormPage2(
+          service: widget.service,
+          page1FormData: Map<String, dynamic>.from(_formData),
+          page1Files: List<File>.from(_uploadedFiles),
+        ),
+      ),
+    );
+  }
+
   Future<void> _submitOrder() async {
-    if (!_validateForm()) return;
+    // Validate page 1 fields (for single-page forms)
+    if (!_validatePage(_page1Fields)) return;
 
     setState(() {
       _isSubmitting = true;
@@ -169,7 +207,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Place Order',
+          _isMultiPage ? 'Place Order - Page 1' : 'Place Order',
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -220,6 +258,9 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
   }
 
   Widget _buildForm() {
+    // Filter regular fields (non-file fields) for DynamicFormBuilder
+    final regularFields = _page1Fields.where((f) => f.type != 'file').toList();
+
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -237,34 +278,39 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Fill in the details below to place your order',
+              _isMultiPage
+                  ? 'Fill in the details below (Page 1 of 2)'
+                  : 'Fill in the details below to place your order',
               style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
             ),
             const SizedBox(height: 24),
 
-            // Dynamic Form Fields
+            // Page indicator for multi-page forms
+            if (_isMultiPage) _buildPageIndicator(),
+            if (_isMultiPage) const SizedBox(height: 24),
+
+            // Dynamic Form Fields for page 1
             DynamicFormBuilder(
-              formFields: widget.service.formFields!,
+              formFields: regularFields,
               formData: _formData,
               onFieldChanged: _onFieldChanged,
             ),
 
             const SizedBox(height: 24),
 
-            // File Upload Section
-            FileUploadWidget(
-              uploadedFiles: _uploadedFiles,
-              onFilesChanged: _onFilesChanged,
-            ),
+            // File Upload Section (if page 1 has file fields)
+            _buildFileUploadSection(),
 
             const SizedBox(height: 32),
 
-            // Submit Button
+            // Button: Next (for multi-page) or Submit Order (for single-page)
             PrimaryButton(
-              text: _isSubmitting ? 'Submitting...' : 'Submit Order',
+              text: _isMultiPage
+                  ? 'Next'
+                  : (_isSubmitting ? 'Submitting...' : 'Submit Order'),
               onPressed: () {
                 if (!_isSubmitting) {
-                  _submitOrder();
+                  _isMultiPage ? _goToNextPage() : _submitOrder();
                 }
               },
             ),
@@ -273,6 +319,47 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPageIndicator() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // Page 1 indicator (current)
+        Container(
+          width: 30,
+          height: 10,
+          decoration: BoxDecoration(
+            color: AppColors.greenColor,
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
+        const SizedBox(width: 8),
+        // Page 2 indicator (inactive)
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: Colors.grey[300],
+            shape: BoxShape.circle,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFileUploadSection() {
+    // Check if any fields in page 1 are file upload fields
+    final hasFileFields = _page1Fields.any((f) => f.type == 'file');
+
+    if (!hasFileFields) {
+      return const SizedBox.shrink();
+    }
+
+    return FileUploadWidget(
+      uploadedFiles: _uploadedFiles,
+      onFilesChanged: _onFilesChanged,
     );
   }
 }
