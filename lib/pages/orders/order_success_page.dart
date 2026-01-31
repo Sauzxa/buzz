@@ -3,11 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../Widgets/button.dart';
 import '../../routes/route_names.dart';
 import '../../utils/category_theme.dart';
+import 'order_details_page.dart';
 
 class OrderSuccessPage extends StatelessWidget {
   final String? categoryName;
+  final int? orderId;
 
-  const OrderSuccessPage({Key? key, this.categoryName}) : super(key: key);
+  const OrderSuccessPage({Key? key, this.categoryName, this.orderId})
+    : super(key: key);
 
   CategoryTheme get _categoryTheme =>
       CategoryTheme.fromCategoryName(categoryName);
@@ -38,35 +41,30 @@ class OrderSuccessPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Success Icon
-                    Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: _categoryTheme.color.withOpacity(0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.check_circle,
-                        size: 80,
-                        color: _categoryTheme.color,
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Category Logo
+                    // Category Logo (replaces check icon)
                     Image.asset(
                       _categoryTheme.logoPath,
-                      width: 150,
-                      height: 150,
+                      width: 180,
+                      height: 180,
                       errorBuilder: (context, error, stackTrace) {
-                        // Fallback if logo not found
-                        return const SizedBox.shrink();
+                        // Fallback if logo not found - show check icon
+                        return Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            color: _categoryTheme.color.withOpacity(0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.check_circle,
+                            size: 80,
+                            color: _categoryTheme.color,
+                          ),
+                        );
                       },
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
 
                     // Success Message
                     Padding(
@@ -128,19 +126,33 @@ class OrderSuccessPage extends StatelessWidget {
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: () {
-                      // TODO: Navigate to orders page when implemented
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Order tracking coming soon!'),
-                          backgroundColor: _categoryTheme.color,
-                        ),
-                      );
+                      if (orderId != null) {
+                        // Navigate to order details page with minimal order data
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => OrderDetailsPage(
+                              order: {
+                                'id': orderId,
+                                // The page will fetch full details using orderId
+                              },
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Order details not available'),
+                            backgroundColor: _categoryTheme.color,
+                          ),
+                        );
+                      }
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'View Order Status',
+                          'View Order Details',
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

@@ -167,21 +167,23 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
 
     try {
       // Call API to submit order
-      await _orderService.createOrder(
+      final orderId = await _orderService.createOrder(
         serviceId: widget.service.id,
         formData: _formData,
         files: _uploadedFiles,
       );
 
-      print('Order submitted successfully');
+      print('Order submitted successfully with ID: $orderId');
 
       // Navigate to success page
       if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) =>
-                OrderSuccessPage(categoryName: widget.service.categoryName),
+            builder: (_) => OrderSuccessPage(
+              categoryName: widget.service.categoryName,
+              orderId: orderId,
+            ),
           ),
         );
       }

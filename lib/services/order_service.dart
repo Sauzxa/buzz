@@ -7,7 +7,7 @@ import '../api/api_endpoints.dart';
 class OrderService {
   final ApiClient _apiClient = ApiClient();
 
-  Future<void> createOrder({
+  Future<int> createOrder({
     required String serviceId,
     required Map<String, dynamic> formData,
     List<File>? files,
@@ -96,6 +96,8 @@ class OrderService {
       if (files != null && files.isNotEmpty) {
         await _uploadFiles(orderId.toString(), files);
       }
+
+      return orderId;
     } catch (e) {
       print('Error in createOrder: $e');
       rethrow;

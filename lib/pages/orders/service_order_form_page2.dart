@@ -148,21 +148,23 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
       final completeFormData = {...widget.page1FormData, ..._page2FormData};
 
       // Call API to submit order with complete data
-      await _orderService.createOrder(
+      final orderId = await _orderService.createOrder(
         serviceId: widget.service.id,
         formData: completeFormData,
         files: _page2Files,
       );
 
-      print('Order submitted successfully');
+      print('Order submitted successfully with ID: $orderId');
 
       // Navigate to success page
       if (mounted) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (_) =>
-                OrderSuccessPage(categoryName: widget.service.categoryName),
+            builder: (_) => OrderSuccessPage(
+              categoryName: widget.service.categoryName,
+              orderId: orderId,
+            ),
           ),
         );
       }
