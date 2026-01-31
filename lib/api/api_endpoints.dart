@@ -15,6 +15,7 @@ class ApiEndpoints {
   static String get refreshToken => '$apiPrefix/auth/refresh';
   static String get forgotPassword => '$apiPrefix/auth/forgot-password';
   static String get resetPassword => '$apiPrefix/auth/reset-password';
+  static String get changePassword => '$apiPrefix/auth/change-password';
 
   // User endpoints
   // User endpoints

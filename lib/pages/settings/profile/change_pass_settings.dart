@@ -7,7 +7,10 @@ import '../../../Widgets/button.dart';
 import '../../../Widgets/custom_bottom_nav_bar.dart';
 import '../../../Widgets/home_drawer.dart';
 import '../../../providers/user_provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../routes/route_names.dart';
+import '../../../auth/SignIn.dart';
+import '../../../utils/fade_route.dart';
 
 class ChangePassSettings extends StatefulWidget {
   const ChangePassSettings({Key? key}) : super(key: key);
@@ -66,47 +69,50 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
     setState(() => _isLoading = true);
 
     try {
-      final userProvider = context.read<UserProvider>();
+      final authProvider = context.read<AuthProvider>();
 
-      // According to user: "it will send put user /id req same as the previous one"
-      // We assume passing 'password' field updates the password.
-      final Map<String, dynamic> data = {
-        'password': _newPassController.text,
-        // Backend might need 'currentPassword' validation? Use usually does.
-        // But user said "same as previous one", implying straight PUT.
-        // I will just send the new password.
-      };
-
-      final success = await userProvider.updateUserProfile(data: data);
+      // Call the changePassword method from AuthProvider
+      final success = await authProvider.changePassword(
+        currentPassword: _currentPassController.text,
+        newPassword: _newPassController.text,
+        confirmPassword: _confirmPassController.text,
+      );
 
       if (!mounted) return;
 
       if (success) {
+        // Clear form fields
+        _currentPassController.clear();
+        _newPassController.clear();
+        _confirmPassController.clear();
+
+        // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Password updated successfully! Please login again.'),
+            content: Text('Password changed successfully!'),
             backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
           ),
         );
-        // User noted: "changing password will required again login to the app"
-        // So we should probably logout or navigate to login?
-        // For now, staying on page or popping.
-        Navigator.pop(context);
       } else {
+        // Show error message from auth provider
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(userProvider.errorMessage ?? 'Update failed'),
+            content: Text(authProvider.error ?? 'Failed to change password'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
           ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('An error occurred: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('An error occurred: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

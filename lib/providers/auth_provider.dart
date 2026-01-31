@@ -366,6 +366,41 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Change password for authenticated user
+  /// Requires current password, new password, and confirmation
+  /// Returns true if successful, false otherwise
+  Future<bool> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      await _authService.changePassword(
+        currentPassword: currentPassword,
+        newPassword: newPassword,
+        confirmPassword: confirmPassword,
+      );
+
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      // Extract clean error message
+      String errorMessage = e.toString();
+
+      // Remove "Exception: " prefix if present
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+
+      _error = errorMessage;
+      _setLoading(false);
+      return false;
+    }
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
