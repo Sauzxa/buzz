@@ -106,7 +106,9 @@ flutter:
     - assets/others/onb4.png
     - assets/others/onb5.png
     - assets/Logos/buzz.png
-    
+    - assets/CategorySucces/AudioVisual.png
+    - assets/CategorySucces/GraphicDesing.png
+    - assets/CategorySucces/Printing.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

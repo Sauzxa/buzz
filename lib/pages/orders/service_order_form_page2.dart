@@ -6,20 +6,22 @@ import '../../models/form_field_model.dart';
 import '../../Widgets/button.dart';
 import '../../Widgets/dynamic_form_builder.dart';
 import '../../Widgets/file_upload_widget.dart';
-import '../../theme/colors.dart';
 import '../../services/order_service.dart';
+import '../../utils/category_theme.dart';
 import 'order_success_page.dart';
 
 class ServiceOrderFormPage2 extends StatefulWidget {
   final ServiceModel service;
   final Map<String, dynamic> page1FormData;
   final List<File> page1Files;
+  final CategoryTheme categoryTheme;
 
   const ServiceOrderFormPage2({
     Key? key,
     required this.service,
     required this.page1FormData,
     required this.page1Files,
+    required this.categoryTheme,
   }) : super(key: key);
 
   @override
@@ -158,7 +160,10 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const OrderSuccessPage()),
+          MaterialPageRoute(
+            builder: (_) =>
+                OrderSuccessPage(categoryName: widget.service.categoryName),
+          ),
         );
       }
     } catch (e) {
@@ -184,7 +189,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.greenColor,
+        backgroundColor: widget.categoryTheme.color,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -266,7 +271,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           width: 10,
           height: 10,
           decoration: BoxDecoration(
-            color: AppColors.greenColor.withOpacity(0.5),
+            color: widget.categoryTheme.color.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
         ),
@@ -276,7 +281,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           width: 30,
           height: 10,
           decoration: BoxDecoration(
-            color: AppColors.greenColor,
+            color: widget.categoryTheme.color,
             borderRadius: BorderRadius.circular(5),
           ),
         ),
@@ -296,6 +301,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
       formFields: regularFields,
       formData: _page2FormData,
       onFieldChanged: _onFieldChanged,
+      focusColor: widget.categoryTheme.color,
     );
   }
 

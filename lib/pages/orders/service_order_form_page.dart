@@ -6,8 +6,8 @@ import '../../models/form_field_model.dart';
 import '../../Widgets/button.dart';
 import '../../Widgets/dynamic_form_builder.dart';
 import '../../Widgets/file_upload_widget.dart';
-import '../../theme/colors.dart';
 import '../../services/order_service.dart';
+import '../../utils/category_theme.dart';
 import 'order_success_page.dart';
 import 'service_order_form_page2.dart';
 
@@ -26,6 +26,10 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
   final List<File> _uploadedFiles = [];
   final OrderService _orderService = OrderService();
   bool _isSubmitting = false;
+
+  // Get category theme colors
+  CategoryTheme get _categoryTheme =>
+      CategoryTheme.fromCategoryName(widget.service.categoryName);
 
   // Get maximum columns number to determine if multi-page
   int get _maxColumn {
@@ -147,6 +151,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           service: widget.service,
           page1FormData: Map<String, dynamic>.from(_formData),
           page1Files: List<File>.from(_uploadedFiles),
+          categoryTheme: _categoryTheme,
         ),
       ),
     );
@@ -174,7 +179,10 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const OrderSuccessPage()),
+          MaterialPageRoute(
+            builder: (_) =>
+                OrderSuccessPage(categoryName: widget.service.categoryName),
+          ),
         );
       }
     } catch (e) {
@@ -200,7 +208,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.greenColor,
+        backgroundColor: _categoryTheme.color,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
@@ -294,6 +302,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
               formFields: regularFields,
               formData: _formData,
               onFieldChanged: _onFieldChanged,
+              focusColor: _categoryTheme.color,
             ),
 
             const SizedBox(height: 24),
@@ -331,7 +340,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           width: 30,
           height: 10,
           decoration: BoxDecoration(
-            color: AppColors.greenColor,
+            color: _categoryTheme.color,
             borderRadius: BorderRadius.circular(5),
           ),
         ),

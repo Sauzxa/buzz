@@ -7,12 +7,14 @@ class DynamicFormBuilder extends StatefulWidget {
   final List<FormFieldModel> formFields;
   final Map<String, dynamic> formData;
   final Function(String fieldId, dynamic value) onFieldChanged;
+  final Color? focusColor;
 
   const DynamicFormBuilder({
     Key? key,
     required this.formFields,
     required this.formData,
     required this.onFieldChanged,
+    this.focusColor,
   }) : super(key: key);
 
   @override
@@ -118,8 +120,8 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.greenColor,
+              borderSide: BorderSide(
+                color: widget.focusColor ?? AppColors.greenColor,
                 width: 2,
               ),
             ),
@@ -163,8 +165,8 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: AppColors.greenColor,
+              borderSide: BorderSide(
+                color: widget.focusColor ?? AppColors.greenColor,
                 width: 2,
               ),
             ),
@@ -221,9 +223,10 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                             child: Container(
                               width: 10,
                               height: 10,
-                              decoration: const BoxDecoration(
+                              decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: AppColors.greenColor,
+                                color:
+                                    widget.focusColor ?? AppColors.greenColor,
                               ),
                             ),
                           )
@@ -351,8 +354,8 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppColors.greenColor,
+                borderSide: BorderSide(
+                  color: widget.focusColor ?? AppColors.greenColor,
                   width: 2,
                 ),
               ),

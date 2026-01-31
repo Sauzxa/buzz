@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../Widgets/button.dart';
-import '../../theme/colors.dart';
 import '../../routes/route_names.dart';
+import '../../utils/category_theme.dart';
 
 class OrderSuccessPage extends StatelessWidget {
-  const OrderSuccessPage({Key? key}) : super(key: key);
+  final String? categoryName;
+
+  const OrderSuccessPage({Key? key, this.categoryName}) : super(key: key);
+
+  CategoryTheme get _categoryTheme =>
+      CategoryTheme.fromCategoryName(categoryName);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: AppColors.greenColor,
+        backgroundColor: _categoryTheme.color,
         elevation: 0,
         leading: const SizedBox(), // Remove back button
         title: Text(
@@ -38,17 +43,30 @@ class OrderSuccessPage extends StatelessWidget {
                       width: 120,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: AppColors.greenColor.withOpacity(0.1),
+                        color: _categoryTheme.color.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.check_circle,
                         size: 80,
-                        color: AppColors.greenColor,
+                        color: _categoryTheme.color,
                       ),
                     ),
 
                     const SizedBox(height: 32),
+
+                    // Category Logo
+                    Image.asset(
+                      _categoryTheme.logoPath,
+                      width: 150,
+                      height: 150,
+                      errorBuilder: (context, error, stackTrace) {
+                        // Fallback if logo not found
+                        return const SizedBox.shrink();
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
 
                     // Success Message
                     Padding(
@@ -112,9 +130,9 @@ class OrderSuccessPage extends StatelessWidget {
                     onPressed: () {
                       // TODO: Navigate to orders page when implemented
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
+                        SnackBar(
                           content: Text('Order tracking coming soon!'),
-                          backgroundColor: AppColors.greenColor,
+                          backgroundColor: _categoryTheme.color,
                         ),
                       );
                     },
@@ -126,14 +144,14 @@ class OrderSuccessPage extends StatelessWidget {
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.greenColor,
+                            color: _categoryTheme.color,
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Icon(
+                        Icon(
                           Icons.arrow_forward,
                           size: 16,
-                          color: AppColors.greenColor,
+                          color: _categoryTheme.color,
                         ),
                       ],
                     ),
