@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -36,6 +38,14 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   String? _selectedFilter; // null means "All" or no filter
 
+  // Search functionality
+  final FocusNode _searchFocusNode = FocusNode();
+  final TextEditingController _searchController = TextEditingController();
+  Timer? _debounceTimer;
+  List<ServiceModel> _searchResults = [];
+  bool _isSearchFocused = false;
+  bool _isSearching = false;
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +54,79 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchData(); // Non-blocking - UI shows immediately with loading indicators
     });
+
+    // Listen to search focus changes
+    _searchFocusNode.addListener(() {
+      setState(() {
+        _isSearchFocused = _searchFocusNode.hasFocus;
+        if (!_isSearchFocused) {
+          // Clear search when focus is lost
+          _searchController.clear();
+          _searchResults.clear();
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchFocusNode.dispose();
+    _searchController.dispose();
+    _debounceTimer?.cancel();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    // Cancel previous timer
+    _debounceTimer?.cancel();
+
+    if (query.length < 1) {
+      setState(() {
+        _searchResults.clear();
+        _isSearching = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _isSearching = true;
+    });
+
+    // Debounce search for 300ms
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      _performSearch(query);
+    });
+  }
+
+  void _performSearch(String query) {
+    final servicesProvider = context.read<ServicesProvider>();
+    final allServices = servicesProvider.services;
+
+    // Filter services by name prefix (case-insensitive)
+    final results = allServices.where((service) {
+      return service.name.toLowerCase().startsWith(query.toLowerCase());
+    }).toList();
+
+    // Sort by name and take top 3
+    results.sort((a, b) => a.name.compareTo(b.name));
+
+    setState(() {
+      _searchResults = results.take(3).toList();
+      _isSearching = false;
+    });
+  }
+
+  void _onServiceSelected(ServiceModel service) {
+    // Clear search
+    _searchController.clear();
+    _searchResults.clear();
+    _searchFocusNode.unfocus();
+
+    // Navigate to service page
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ServiceChoosingPage(service: service)),
+    );
   }
 
   void _onBottomNavTapped(int index) {
@@ -132,14 +215,12 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         onTap: _onBottomNavTapped,
       ),
-      body: RefreshIndicator(
-        onRefresh: _fetchData,
-        color: AppColors.roseColor,
-        child: CustomScrollView(
-          slivers: [
-            // Custom Header (replaces AppBar)
-            SliverToBoxAdapter(
-              child: Container(
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              // Header section - stays visible and unblurred
+              Container(
                 color: AppColors.roseColor,
                 child: SafeArea(
                   bottom: false,
@@ -237,24 +318,58 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             // Search Input
                             Expanded(
-                              child: Container(
-                                height: 48,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                height: _isSearchFocused ? 56 : 48,
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(25),
+                                  boxShadow: _isSearchFocused
+                                      ? [
+                                          BoxShadow(
+                                            color: AppColors.roseColor
+                                                .withOpacity(0.3),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ]
+                                      : [],
                                 ),
                                 child: TextField(
+                                  controller: _searchController,
+                                  focusNode: _searchFocusNode,
                                   decoration: InputDecoration(
-                                    hintText: 'Search...',
+                                    hintText: 'Search services...',
                                     hintStyle: GoogleFonts.dmSans(
                                       color: Colors.grey[400],
                                       fontSize: 14,
                                     ),
-                                    prefixIcon: const Icon(
+                                    prefixIcon: Icon(
                                       Icons.search,
-                                      color: AppColors.roseColor,
-                                      size: 22,
+                                      color: _isSearchFocused
+                                          ? AppColors.roseColor
+                                          : AppColors.roseColor.withOpacity(
+                                              0.7,
+                                            ),
+                                      size: _isSearchFocused ? 24 : 22,
                                     ),
+                                    suffixIcon:
+                                        _searchController.text.isNotEmpty
+                                        ? IconButton(
+                                            icon: const Icon(
+                                              Icons.clear,
+                                              color: Colors.grey,
+                                              size: 20,
+                                            ),
+                                            onPressed: () {
+                                              _searchController.clear();
+                                              setState(() {
+                                                _searchResults.clear();
+                                              });
+                                            },
+                                          )
+                                        : null,
                                     border: InputBorder.none,
                                     contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 20,
@@ -265,9 +380,7 @@ class _HomePageState extends State<HomePage> {
                                     fontSize: 14,
                                     color: Colors.black87,
                                   ),
-                                  onChanged: (value) {
-                                    // TODO: Implement search
-                                  },
+                                  onChanged: _onSearchChanged,
                                 ),
                               ),
                             ),
@@ -324,34 +437,200 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-            ),
 
-            // Rest of the content
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 24),
+              // Scrollable content below - wrapped in Stack for blur
+              Expanded(
+                child: Stack(
+                  children: [
+                    RefreshIndicator(
+                      onRefresh: _fetchData,
+                      color: AppColors.roseColor,
+                      child: ListView(
+                        children: [
+                          const SizedBox(height: 24),
 
-                  // Categories Section (no title)
-                  _buildCategoriesSection(),
+                          // Categories Section (no title)
+                          _buildCategoriesSection(),
 
-                  const SizedBox(height: 32),
+                          const SizedBox(height: 32),
 
-                  // News & Offers Section (horizontal with filter chips)
-                  _buildNewsSection(),
+                          // News & Offers Section (horizontal with filter chips)
+                          _buildNewsSection(),
 
-                  const SizedBox(height: 24),
+                          const SizedBox(height: 24),
 
-                  // Pubs/Ads Section
-                  _buildAdsSection(),
+                          // Pubs/Ads Section
+                          _buildAdsSection(),
 
-                  const SizedBox(height: 32),
-                ],
+                          const SizedBox(height: 100),
+                        ],
+                      ),
+                    ),
+
+                    // Blur overlay when search is focused - only covers content below
+                    if (_isSearchFocused)
+                      Positioned.fill(
+                        child: GestureDetector(
+                          onTap: () {
+                            _searchFocusNode.unfocus();
+                          },
+                          child: ClipRect(
+                            child: BackdropFilter(
+                              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                              child: Container(
+                                color: Colors.black.withOpacity(0.3),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          // Autocomplete dropdown
+          if (_isSearchFocused &&
+              (_searchResults.isNotEmpty ||
+                  _isSearching ||
+                  _searchController.text.length >= 1))
+            Positioned(
+              top: MediaQuery.of(context).padding.top + 220,
+              left: 16,
+              right: 16,
+              child: Material(
+                elevation: 8,
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  constraints: const BoxConstraints(maxHeight: 300),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: _isSearching
+                      ? const Padding(
+                          padding: EdgeInsets.all(24.0),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.roseColor,
+                            ),
+                          ),
+                        )
+                      : _searchResults.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.search_off,
+                                  size: 48,
+                                  color: Colors.grey[400],
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  'No services found',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Try a different search term',
+                                  style: GoogleFonts.dmSans(
+                                    fontSize: 14,
+                                    color: Colors.grey[500],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : ListView.separated(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          itemCount: _searchResults.length,
+                          separatorBuilder: (context, index) =>
+                              Divider(height: 1, color: Colors.grey[200]),
+                          itemBuilder: (context, index) {
+                            final service = _searchResults[index];
+                            return ListTile(
+                              leading: Container(
+                                width: 50,
+                                height: 50,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: service.color != null
+                                      ? Color(
+                                          int.parse(
+                                            service.color!.replaceAll(
+                                              '#',
+                                              '0xFF',
+                                            ),
+                                          ),
+                                        )
+                                      : AppColors.roseColor.withOpacity(0.2),
+                                ),
+                                child:
+                                    service.imageUrl != null &&
+                                        service.imageUrl!.isNotEmpty
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: Image.network(
+                                          service.imageUrl!,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) {
+                                                return Icon(
+                                                  Icons.design_services,
+                                                  color: AppColors.roseColor,
+                                                  size: 24,
+                                                );
+                                              },
+                                        ),
+                                      )
+                                    : Icon(
+                                        Icons.design_services,
+                                        color: AppColors.roseColor,
+                                        size: 24,
+                                      ),
+                              ),
+                              title: Text(
+                                service.name,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              subtitle: service.description.isNotEmpty
+                                  ? Text(
+                                      service.description,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 13,
+                                        color: Colors.grey[600],
+                                      ),
+                                    )
+                                  : null,
+                              trailing: const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16,
+                                color: AppColors.roseColor,
+                              ),
+                              onTap: () => _onServiceSelected(service),
+                            );
+                          },
+                        ),
+                ),
               ),
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
