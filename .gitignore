@@ -59,6 +59,8 @@ IMPLEMENTATION_SUMMARY.md
 prompt.md
 DYNAMIC_PAGES_README.md
 README.md
+DROPDOWN_IMPLEMENTATION.md
+
 #backend src
 buzz_back/
 lib/firebase_options.dart

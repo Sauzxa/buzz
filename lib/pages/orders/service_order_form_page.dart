@@ -45,6 +45,10 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
   // Check if this service has multi-page form
   bool get _isMultiPage => _maxColumn >= 2;
 
+  // Check if this is a printing category service
+  bool get _isPrintingCategory =>
+      widget.service.categoryName?.toLowerCase() == 'printing';
+
   // Get fields for page 1 only
   List<FormFieldModel> get _page1Fields {
     if (widget.service.formFields == null) return [];
@@ -277,54 +281,17 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Service Name
-            Text(
-              widget.service.name,
-              style: GoogleFonts.dmSans(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _isMultiPage
-                  ? 'Fill in the details below (Page 1 of 2)'
-                  : 'Fill in the details below to place your order',
-              style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
-            ),
-            const SizedBox(height: 24),
+            // Service Image (outside colored container for printing)
+            if (_isPrintingCategory && widget.service.mainImage != null)
+              _buildServiceImage(),
+            if (_isPrintingCategory && widget.service.mainImage != null)
+              const SizedBox(height: 20),
 
-            // Page indicator for multi-page forms
-            if (_isMultiPage) _buildPageIndicator(),
-            if (_isMultiPage) const SizedBox(height: 24),
-
-            // Dynamic Form Fields for page 1
-            DynamicFormBuilder(
-              formFields: regularFields,
-              formData: _formData,
-              onFieldChanged: _onFieldChanged,
-              focusColor: _categoryTheme.color,
-            ),
-
-            const SizedBox(height: 24),
-
-            // File Upload Section (if page 1 has file fields)
-            _buildFileUploadSection(),
-
-            const SizedBox(height: 32),
-
-            // Button: Next (for multi-page) or Submit Order (for single-page)
-            PrimaryButton(
-              text: _isMultiPage
-                  ? 'Next'
-                  : (_isSubmitting ? 'Submitting...' : 'Submit Order'),
-              onPressed: () {
-                if (!_isSubmitting) {
-                  _isMultiPage ? _goToNextPage() : _submitOrder();
-                }
-              },
-            ),
+            // For printing category: wrap content in colored container
+            if (_isPrintingCategory)
+              _buildPrintingFormContent(regularFields)
+            else
+              _buildRegularFormContent(regularFields),
 
             const SizedBox(height: 20),
           ],
@@ -371,6 +338,155 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
     return FileUploadWidget(
       uploadedFiles: _uploadedFiles,
       onFilesChanged: _onFilesChanged,
+    );
+  }
+
+  // Service image widget (outside colored container)
+  Widget _buildServiceImage() {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Image.network(
+        widget.service.mainImage ?? widget.service.imageUrl ?? '',
+        height: 200,
+        width: double.infinity,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
+            height: 200,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              Icons.image_not_supported,
+              size: 60,
+              color: Colors.grey[400],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // Printing category form content with colored background
+  Widget _buildPrintingFormContent(List<FormFieldModel> regularFields) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: _categoryTheme.color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Service Name
+          Text(
+            widget.service.name,
+            style: GoogleFonts.dmSans(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            _isMultiPage
+                ? 'Fill in the details below (Page 1 of 2)'
+                : 'Fill in the details below to place your order',
+            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 24),
+
+          // Page indicator for multi-page forms
+          if (_isMultiPage) _buildPageIndicator(),
+          if (_isMultiPage) const SizedBox(height: 24),
+
+          // Dynamic Form Fields for page 1
+          DynamicFormBuilder(
+            formFields: regularFields,
+            formData: _formData,
+            onFieldChanged: _onFieldChanged,
+            focusColor: _categoryTheme.color,
+          ),
+
+          const SizedBox(height: 24),
+
+          // File Upload Section (if page 1 has file fields)
+          _buildFileUploadSection(),
+
+          const SizedBox(height: 32),
+
+          // Button: Next (for multi-page) or Submit Order (for single-page)
+          PrimaryButton(
+            text: _isMultiPage
+                ? 'Next'
+                : (_isSubmitting ? 'Submitting...' : 'Submit Order'),
+            onPressed: () {
+              if (!_isSubmitting) {
+                _isMultiPage ? _goToNextPage() : _submitOrder();
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Regular form content (for non-printing categories)
+  Widget _buildRegularFormContent(List<FormFieldModel> regularFields) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Service Name
+        Text(
+          widget.service.name,
+          style: GoogleFonts.dmSans(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          _isMultiPage
+              ? 'Fill in the details below (Page 1 of 2)'
+              : 'Fill in the details below to place your order',
+          style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
+        ),
+        const SizedBox(height: 24),
+
+        // Page indicator for multi-page forms
+        if (_isMultiPage) _buildPageIndicator(),
+        if (_isMultiPage) const SizedBox(height: 24),
+
+        // Dynamic Form Fields for page 1
+        DynamicFormBuilder(
+          formFields: regularFields,
+          formData: _formData,
+          onFieldChanged: _onFieldChanged,
+          focusColor: _categoryTheme.color,
+        ),
+
+        const SizedBox(height: 24),
+
+        // File Upload Section (if page 1 has file fields)
+        _buildFileUploadSection(),
+
+        const SizedBox(height: 32),
+
+        // Button: Next (for multi-page) or Submit Order (for single-page)
+        PrimaryButton(
+          text: _isMultiPage
+              ? 'Next'
+              : (_isSubmitting ? 'Submitting...' : 'Submit Order'),
+          onPressed: () {
+            if (!_isSubmitting) {
+              _isMultiPage ? _goToNextPage() : _submitOrder();
+            }
+          },
+        ),
+      ],
     );
   }
 }

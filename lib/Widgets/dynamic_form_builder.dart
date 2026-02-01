@@ -331,55 +331,18 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
   }
 
   Widget _buildDropdownField(FormFieldModel field) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildLabel(field),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFFF5F7FA),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: DropdownButtonFormField<String>(
-            value: widget.formData[field.id],
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(
-                  color: widget.focusColor ?? AppColors.greenColor,
-                  width: 2,
-                ),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-            ),
-            hint: Text(
-              field.placeholder ?? 'Select ${field.label.toLowerCase()}',
-              style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[400]),
-            ),
-            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.black87),
-            dropdownColor: Colors.white,
-            items: field.options!.map((option) {
-              return DropdownMenuItem<String>(
-                value: option.value,
-                child: Text(option.label),
-              );
-            }).toList(),
-            onChanged: (value) => widget.onFieldChanged(field.id, value),
-          ),
-        ),
-      ],
+    final selectedValue = widget.formData[field.id];
+    final selectedOption = field.options?.firstWhere(
+      (opt) => opt.value == selectedValue,
+      orElse: () => field.options!.first,
+    );
+
+    return _CustomDropdownField(
+      field: field,
+      selectedValue: selectedValue,
+      selectedLabel: selectedValue != null ? selectedOption?.label : null,
+      onChanged: (value) => widget.onFieldChanged(field.id, value),
+      focusColor: widget.focusColor,
     );
   }
 
@@ -534,6 +497,206 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
         ),
         children: [
           if (field.required)
+            const TextSpan(
+              text: ' *',
+              style: TextStyle(color: Colors.red),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// Custom Dropdown Field Widget
+class _CustomDropdownField extends StatefulWidget {
+  final FormFieldModel field;
+  final String? selectedValue;
+  final String? selectedLabel;
+  final Function(String?) onChanged;
+  final Color? focusColor;
+
+  const _CustomDropdownField({
+    required this.field,
+    required this.selectedValue,
+    required this.selectedLabel,
+    required this.onChanged,
+    this.focusColor,
+  });
+
+  @override
+  State<_CustomDropdownField> createState() => _CustomDropdownFieldState();
+}
+
+class _CustomDropdownFieldState extends State<_CustomDropdownField> {
+  bool _isOpen = false;
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void dispose() {
+    _removeOverlay();
+    super.dispose();
+  }
+
+  void _toggleDropdown() {
+    if (_isOpen) {
+      _removeOverlay();
+    } else {
+      _showOverlay();
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    setState(() {
+      _isOpen = false;
+    });
+  }
+
+  void _showOverlay() {
+    _overlayEntry = _createOverlayEntry();
+    Overlay.of(context).insert(_overlayEntry!);
+    setState(() {
+      _isOpen = true;
+    });
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    RenderBox renderBox = context.findRenderObject() as RenderBox;
+    var size = renderBox.size;
+
+    return OverlayEntry(
+      builder: (context) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0, size.height + 4),
+          child: Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 250),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                shrinkWrap: true,
+                itemCount: widget.field.options?.length ?? 0,
+                itemBuilder: (context, index) {
+                  final option = widget.field.options![index];
+                  final isSelected = widget.selectedValue == option.value;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          widget.onChanged(option.value);
+                          _removeOverlay();
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
+                          child: Text(
+                            option.label,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14,
+                              color: Colors.black87,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildLabel(),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: _toggleDropdown,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF5F7FA),
+                borderRadius: BorderRadius.circular(12),
+                border: _isOpen
+                    ? Border.all(
+                        color: widget.focusColor ?? AppColors.greenColor,
+                        width: 2,
+                      )
+                    : null,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.selectedLabel ??
+                          widget.field.placeholder ??
+                          'Select ${widget.field.label.toLowerCase()}',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14,
+                        color: widget.selectedLabel != null
+                            ? Colors.black87
+                            : Colors.grey[400],
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    _isOpen
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: Colors.grey[600],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLabel() {
+    return RichText(
+      text: TextSpan(
+        text: widget.field.label,
+        style: GoogleFonts.dmSans(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: Colors.black87,
+        ),
+        children: [
+          if (widget.field.required)
             const TextSpan(
               text: ' *',
               style: TextStyle(color: Colors.red),
