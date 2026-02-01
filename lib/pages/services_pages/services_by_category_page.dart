@@ -56,12 +56,15 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
@@ -69,7 +72,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
         ),
         centerTitle: true,
@@ -85,7 +88,11 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
+                  Icon(
+                    Icons.error_outline,
+                    size: 80,
+                    color: Colors.red.shade300,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     provider.errorMessage ?? 'Failed to load services',
@@ -110,13 +117,17 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.inbox_outlined, size: 80, color: Colors.grey[400]),
+                  Icon(
+                    Icons.inbox_outlined,
+                    size: 80,
+                    color: Theme.of(context).textTheme.bodySmall!.color,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'No services available',
                     style: GoogleFonts.dmSans(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).textTheme.bodySmall!.color,
                     ),
                   ),
                 ],
@@ -137,7 +148,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
                       style: GoogleFonts.dmSans(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.titleLarge!.color,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -145,7 +156,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
                       'Select your demands with the most qualified designers at around algeries',
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                         height: 1.4,
                       ),
                     ),
@@ -194,7 +205,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.05),

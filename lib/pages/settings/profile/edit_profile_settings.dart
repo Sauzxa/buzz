@@ -396,9 +396,9 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
             child: Container(
               width: double.infinity,
               height: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
@@ -555,7 +555,9 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                             width: double.infinity,
                             height: 56,
                             decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey.shade300),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                              ),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Material(
@@ -584,13 +586,17 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                                         style: GoogleFonts.dmSans(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black,
+                                          color: Theme.of(
+                                            context,
+                                          ).textTheme.titleLarge!.color,
                                         ),
                                       ),
-                                      const Icon(
+                                      Icon(
                                         Icons.arrow_forward_ios,
                                         size: 16,
-                                        color: Colors.black87,
+                                        color: Theme.of(
+                                          context,
+                                        ).iconTheme.color,
                                       ),
                                     ],
                                   ),
@@ -649,23 +655,31 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
           style: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: readOnly ? Colors.grey.shade600 : Colors.black,
+            color: readOnly
+                ? Theme.of(context).textTheme.bodySmall!.color
+                : Theme.of(context).textTheme.titleLarge!.color,
           ),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: GoogleFonts.dmSans(color: Colors.grey),
+            labelStyle: GoogleFonts.dmSans(
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: hint,
-            hintStyle: GoogleFonts.dmSans(color: Colors.grey.shade400),
+            hintStyle: GoogleFonts.dmSans(
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
             filled: readOnly,
-            fillColor: readOnly ? Colors.grey.shade100 : Colors.white,
+            fillColor: readOnly
+                ? Theme.of(context).cardColor
+                : Theme.of(context).scaffoldBackgroundColor,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 18,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
@@ -697,11 +711,13 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
           style: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
           decoration: InputDecoration(
             labelText: 'Phone Number',
-            labelStyle: GoogleFonts.dmSans(color: Colors.grey),
+            labelStyle: GoogleFonts.dmSans(
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             prefixIcon: Padding(
               padding: const EdgeInsets.only(left: 16, right: 12),
@@ -718,7 +734,7 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                   Text(
                     _countryCode,
                     style: GoogleFonts.dmSans(
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -727,14 +743,18 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                 ],
               ),
             ),
-            suffixIcon: const Icon(Icons.check, color: Colors.black, size: 18),
+            suffixIcon: Icon(
+              Icons.check,
+              color: Theme.of(context).iconTheme.color,
+              size: 18,
+            ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 18,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
@@ -761,12 +781,17 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
       style: GoogleFonts.dmSans(
         fontSize: 16,
         fontWeight: FontWeight.w500,
-        color: Colors.black,
+        color: Theme.of(context).textTheme.titleLarge!.color,
       ),
-      icon: const Icon(Icons.keyboard_arrow_down),
+      icon: Icon(
+        Icons.keyboard_arrow_down,
+        color: Theme.of(context).iconTheme.color,
+      ),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: GoogleFonts.dmSans(color: Colors.grey),
+        labelStyle: GoogleFonts.dmSans(
+          color: Theme.of(context).textTheme.bodySmall!.color,
+        ),
         floatingLabelBehavior: FloatingLabelBehavior.always,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -774,7 +799,7 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: Colors.grey.shade200),
+          borderSide: BorderSide(color: Theme.of(context).dividerColor),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

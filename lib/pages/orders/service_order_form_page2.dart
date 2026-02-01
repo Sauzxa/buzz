@@ -189,7 +189,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: widget.categoryTheme.color,
         elevation: 0,
@@ -219,7 +219,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
                 style: GoogleFonts.dmSans(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.titleLarge!.color,
                 ),
               ),
               const SizedBox(height: 8),
@@ -227,7 +227,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
                 'Complete the remaining details',
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodySmall!.color,
                 ),
               ),
               const SizedBox(height: 24),

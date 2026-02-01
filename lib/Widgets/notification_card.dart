@@ -29,20 +29,28 @@ class NotificationCard extends StatelessWidget {
         return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
+            backgroundColor: Theme.of(context).cardColor,
             title: Text(
               'Supprimer la notification',
-              style: GoogleFonts.dmSans(fontWeight: FontWeight.w600),
+              style: GoogleFonts.dmSans(
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).textTheme.titleLarge!.color,
+              ),
             ),
             content: Text(
               'Êtes-vous sûr de vouloir supprimer cette notification ?',
-              style: GoogleFonts.dmSans(),
+              style: GoogleFonts.dmSans(
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
                 child: Text(
                   'Annuler',
-                  style: GoogleFonts.dmSans(color: Colors.grey[600]),
+                  style: GoogleFonts.dmSans(
+                    color: Theme.of(context).textTheme.bodySmall!.color,
+                  ),
                 ),
               ),
               TextButton(
@@ -112,7 +120,9 @@ class NotificationCard extends StatelessWidget {
                                 style: GoogleFonts.dmSans(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.titleLarge!.color,
                                 ),
                               ),
                             ),
@@ -121,7 +131,9 @@ class NotificationCard extends StatelessWidget {
                               _formatTime(notification.createdAt),
                               style: GoogleFonts.dmSans(
                                 fontSize: 11,
-                                color: Colors.grey[500],
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall!.color,
                               ),
                             ),
                           ],
@@ -131,7 +143,7 @@ class NotificationCard extends StatelessWidget {
                           notification.message,
                           style: GoogleFonts.dmSans(
                             fontSize: 13,
-                            color: Colors.grey[600],
+                            color: Theme.of(context).textTheme.bodySmall!.color,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

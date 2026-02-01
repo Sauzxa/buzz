@@ -155,7 +155,7 @@ class _NotificationsBuzzPageState extends State<NotificationsBuzzPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: AppColors.roseColor,
         elevation: 0,
@@ -265,7 +265,10 @@ class _NotificationsBuzzPageState extends State<NotificationsBuzzPage> {
           const SizedBox(height: 16),
           Text(
             'Chargement...',
-            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
           ),
         ],
       ),
@@ -286,14 +289,17 @@ class _NotificationsBuzzPageState extends State<NotificationsBuzzPage> {
               style: GoogleFonts.dmSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: Theme.of(context).textTheme.titleMedium!.color,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               error,
               textAlign: TextAlign.center,
-              style: GoogleFonts.dmSans(fontSize: 13, color: Colors.grey[500]),
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
@@ -327,21 +333,28 @@ class _NotificationsBuzzPageState extends State<NotificationsBuzzPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.notifications_none, size: 80, color: Colors.grey[300]),
+            Icon(
+              Icons.notifications_none,
+              size: 80,
+              color: Theme.of(context).iconTheme.color?.withOpacity(0.3),
+            ),
             const SizedBox(height: 20),
             Text(
               'Aucune notification',
               style: GoogleFonts.dmSans(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               'Vous serez notifié quand un agent devient\ndisponible',
               textAlign: TextAlign.center,
-              style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[500]),
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
             ),
           ],
         ),

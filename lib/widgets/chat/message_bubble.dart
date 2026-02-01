@@ -80,7 +80,7 @@ class MessageBubble extends StatelessWidget {
                       message.senderFullName,
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -92,7 +92,9 @@ class MessageBubble extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
-                color: isMine ? AppColors.roseColor : Colors.grey[200],
+                color: isMine
+                    ? AppColors.roseColor
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -111,7 +113,7 @@ class MessageBubble extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Message content based on type
-                  _buildMessageContent(),
+                  _buildMessageContent(context),
 
                   const SizedBox(height: 6),
 
@@ -125,7 +127,7 @@ class MessageBubble extends StatelessWidget {
                           fontSize: 11,
                           color: isMine
                               ? Colors.white.withOpacity(0.8)
-                              : Colors.grey[600],
+                              : Theme.of(context).textTheme.bodySmall!.color,
                         ),
                       ),
                       if (isMine) ...[
@@ -158,14 +160,16 @@ class MessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildMessageContent() {
+  Widget _buildMessageContent(BuildContext context) {
     switch (message.messageType) {
       case MessageType.TEXT:
         return Text(
           message.text ?? '',
           style: TextStyle(
             fontSize: 15,
-            color: isMine ? Colors.white : Colors.black87,
+            color: isMine
+                ? Colors.white
+                : Theme.of(context).textTheme.bodyLarge!.color,
             height: 1.4,
           ),
         );
@@ -195,7 +199,9 @@ class MessageBubble extends StatelessWidget {
                 message.text!,
                 style: TextStyle(
                   fontSize: 15,
-                  color: isMine ? Colors.white : Colors.black87,
+                  color: isMine
+                      ? Colors.white
+                      : Theme.of(context).textTheme.bodyLarge!.color,
                 ),
               ),
             ],
@@ -216,7 +222,9 @@ class MessageBubble extends StatelessWidget {
               'Voice message',
               style: TextStyle(
                 fontSize: 15,
-                color: isMine ? Colors.white : Colors.black87,
+                color: isMine
+                    ? Colors.white
+                    : Theme.of(context).textTheme.bodyLarge!.color,
               ),
             ),
           ],
@@ -237,7 +245,9 @@ class MessageBubble extends StatelessWidget {
                 message.text ?? 'Document',
                 style: TextStyle(
                   fontSize: 15,
-                  color: isMine ? Colors.white : Colors.black87,
+                  color: isMine
+                      ? Colors.white
+                      : Theme.of(context).textTheme.bodyLarge!.color,
                 ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
@@ -283,7 +293,9 @@ class MessageBubble extends StatelessWidget {
                 message.text!,
                 style: TextStyle(
                   fontSize: 15,
-                  color: isMine ? Colors.white : Colors.black87,
+                  color: isMine
+                      ? Colors.white
+                      : Theme.of(context).textTheme.bodyLarge!.color,
                 ),
               ),
             ],

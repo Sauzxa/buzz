@@ -107,9 +107,9 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
@@ -128,7 +128,9 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
                               Icon(
                                 Icons.bookmark_border,
                                 size: 60,
-                                color: Colors.grey.shade400,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall!.color,
                               ),
                               const SizedBox(height: 16),
                               Text(
@@ -136,7 +138,9 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
                                 style: GoogleFonts.dmSans(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
-                                  color: Colors.grey.shade600,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodySmall!.color,
                                 ),
                               ),
                             ],

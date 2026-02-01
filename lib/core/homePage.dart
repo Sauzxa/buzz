@@ -135,12 +135,8 @@ class _HomePageState extends State<HomePage> {
         _selectedIndex = 0;
       });
     } else if (index == 1) {
-      // Search - For now stay on home but maybe focus search?
-      // Or if separate page exists: Navigator.pushNamed(context, RouteNames.search);
-      setState(() {
-        _selectedIndex = 1;
-      });
-      // Optional: focus search field
+      // Search - Navigate to search page
+      Navigator.pushNamed(context, RouteNames.search);
     } else if (index == 2) {
       Navigator.pushNamed(context, RouteNames.orderManagement);
     } else if (index == 3) {
@@ -208,7 +204,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       extendBody: true,
       drawer: const HomeDrawer(),
       bottomNavigationBar: CustomBottomNavBar(
@@ -323,7 +319,7 @@ class _HomePageState extends State<HomePage> {
                                 curve: Curves.easeInOut,
                                 height: _isSearchFocused ? 56 : 48,
                                 decoration: BoxDecoration(
-                                  color: Colors.white,
+                                  color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(25),
                                   boxShadow: _isSearchFocused
                                       ? [
@@ -342,7 +338,7 @@ class _HomePageState extends State<HomePage> {
                                   decoration: InputDecoration(
                                     hintText: 'Search services...',
                                     hintStyle: GoogleFonts.dmSans(
-                                      color: Colors.grey[400],
+                                      color: Theme.of(context).hintColor,
                                       fontSize: 14,
                                     ),
                                     prefixIcon: Icon(
@@ -378,7 +374,9 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                   style: GoogleFonts.dmSans(
                                     fontSize: 14,
-                                    color: Colors.black87,
+                                    color: Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge!.color,
                                   ),
                                   onChanged: _onSearchChanged,
                                 ),
@@ -389,8 +387,8 @@ class _HomePageState extends State<HomePage> {
                             Container(
                               width: 48,
                               height: 48,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
@@ -412,8 +410,8 @@ class _HomePageState extends State<HomePage> {
                             Container(
                               width: 48,
                               height: 48,
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
                                 shape: BoxShape.circle,
                               ),
                               child: IconButton(
@@ -505,7 +503,7 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   constraints: const BoxConstraints(maxHeight: 300),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: _isSearching
@@ -554,8 +552,10 @@ class _HomePageState extends State<HomePage> {
                           shrinkWrap: true,
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           itemCount: _searchResults.length,
-                          separatorBuilder: (context, index) =>
-                              Divider(height: 1, color: Colors.grey[200]),
+                          separatorBuilder: (context, index) => Divider(
+                            height: 1,
+                            color: Theme.of(context).dividerColor,
+                          ),
                           itemBuilder: (context, index) {
                             final service = _searchResults[index];
                             return ListTile(
@@ -604,7 +604,9 @@ class _HomePageState extends State<HomePage> {
                                 style: GoogleFonts.dmSans(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color,
                                 ),
                               ),
                               subtitle: service.description.isNotEmpty
@@ -708,7 +710,7 @@ class _HomePageState extends State<HomePage> {
                 style: GoogleFonts.dmSans(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: Theme.of(context).textTheme.titleLarge!.color,
                 ),
               ),
               InkWell(
@@ -726,7 +728,7 @@ class _HomePageState extends State<HomePage> {
                   decoration: BoxDecoration(
                     color: _selectedFilter == null
                         ? AppColors.roseColor
-                        : Colors.white,
+                        : Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: AppColors.roseColor.withOpacity(0.3),
@@ -774,7 +776,7 @@ class _HomePageState extends State<HomePage> {
                   ),
                   selected: isSelected,
                   selectedColor: AppColors.roseColor,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Theme.of(context).cardColor,
                   side: BorderSide(
                     color: AppColors.roseColor.withOpacity(0.3),
                     width: 1,

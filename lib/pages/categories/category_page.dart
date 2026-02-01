@@ -25,7 +25,9 @@ class CategoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Theme.of(context).brightness == Brightness.dark
+          ? Colors.black
+          : const Color(0xFF1A1A1A),
       drawer: const HomeDrawer(),
       // Add Bottom Navigation Bar to match design
       bottomNavigationBar: CustomBottomNavBar(

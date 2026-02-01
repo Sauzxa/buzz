@@ -92,7 +92,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -117,7 +117,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                 style: GoogleFonts.dmSans(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.titleLarge!.color,
                 ),
               ),
 
@@ -127,7 +127,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                 'Enter your email address\nto reset password.',
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
-                  color: Colors.grey[400],
+                  color: Theme.of(context).textTheme.bodySmall!.color,
                   height: 1.5,
                 ),
               ),
@@ -142,22 +142,24 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                     'Email Address',
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
-                      color: Colors.grey[400],
+                      color: Theme.of(
+                        context,
+                      ).inputDecorationTheme.labelStyle!.color,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[50],
+                      color: Theme.of(context).inputDecorationTheme.fillColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey[200]!),
+                      border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                     child: TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
                       decoration: InputDecoration(
                         border: InputBorder.none,

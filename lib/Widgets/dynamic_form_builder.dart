@@ -106,10 +106,14 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
             hintText: field.placeholder ?? 'Enter ${field.label.toLowerCase()}',
             hintStyle: GoogleFonts.dmSans(
               fontSize: 14,
-              color: Colors.grey[400],
+              color:
+                  Theme.of(context).inputDecorationTheme.hintStyle?.color ??
+                  Colors.grey[400],
             ),
             filled: true,
-            fillColor: const Color(0xFFF5F7FA),
+            fillColor:
+                Theme.of(context).inputDecorationTheme.fillColor ??
+                const Color(0xFFF5F7FA),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -151,10 +155,14 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
             hintText: field.placeholder ?? 'Enter ${field.label.toLowerCase()}',
             hintStyle: GoogleFonts.dmSans(
               fontSize: 14,
-              color: Colors.grey[400],
+              color:
+                  Theme.of(context).inputDecorationTheme.hintStyle?.color ??
+                  Colors.grey[400],
             ),
             filled: true,
-            fillColor: const Color(0xFFF5F7FA),
+            fillColor:
+                Theme.of(context).inputDecorationTheme.fillColor ??
+                const Color(0xFFF5F7FA),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -197,7 +205,8 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
               decoration: BoxDecoration(
                 color: isSelected
                     ? AppColors.greenColor.withOpacity(0.1)
-                    : const Color(0xFFF5F7FA),
+                    : Theme.of(context).inputDecorationTheme.fillColor ??
+                          const Color(0xFFF5F7FA),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected ? AppColors.greenColor : Colors.transparent,
@@ -214,7 +223,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                       border: Border.all(
                         color: isSelected
                             ? AppColors.greenColor
-                            : Colors.grey[400]!,
+                            : Theme.of(context).dividerColor,
                         width: 2,
                       ),
                     ),
@@ -241,7 +250,9 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                         fontWeight: isSelected
                             ? FontWeight.w600
                             : FontWeight.normal,
-                        color: Colors.black87,
+                        color:
+                            Theme.of(context).textTheme.bodyLarge?.color ??
+                            Colors.black87,
                       ),
                     ),
                   ),
@@ -280,7 +291,8 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
               decoration: BoxDecoration(
                 color: isSelected
                     ? AppColors.greenColor.withOpacity(0.1)
-                    : const Color(0xFFF5F7FA),
+                    : Theme.of(context).inputDecorationTheme.fillColor ??
+                          const Color(0xFFF5F7FA),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: isSelected ? AppColors.greenColor : Colors.transparent,
@@ -300,7 +312,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                       border: Border.all(
                         color: isSelected
                             ? AppColors.greenColor
-                            : Colors.grey[400]!,
+                            : Theme.of(context).dividerColor,
                         width: 2,
                       ),
                     ),
@@ -317,7 +329,9 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                         fontWeight: isSelected
                             ? FontWeight.w600
                             : FontWeight.normal,
-                        color: Colors.black87,
+                        color:
+                            Theme.of(context).textTheme.bodyLarge?.color ??
+                            Colors.black87,
                       ),
                     ),
                   ),
@@ -364,11 +378,13 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
               builder: (context, child) {
                 return Theme(
                   data: Theme.of(context).copyWith(
-                    colorScheme: const ColorScheme.light(
+                    colorScheme: ColorScheme.light(
                       primary: AppColors.greenColor,
                       onPrimary: Colors.white,
-                      surface: Colors.white,
-                      onSurface: Colors.black,
+                      surface: Theme.of(context).cardColor,
+                      onSurface:
+                          Theme.of(context).textTheme.bodyLarge?.color ??
+                          Colors.black,
                     ),
                   ),
                   child: child!,
@@ -382,7 +398,9 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFF5F7FA),
+              color:
+                  Theme.of(context).inputDecorationTheme.fillColor ??
+                  const Color(0xFFF5F7FA),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Row(
@@ -395,11 +413,21 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     color: selectedDate != null
-                        ? Colors.black87
-                        : Colors.grey[400],
+                        ? Theme.of(context).textTheme.bodyLarge?.color ??
+                              Colors.black87
+                        : Theme.of(
+                                context,
+                              ).inputDecorationTheme.hintStyle?.color ??
+                              Colors.grey[400],
                   ),
                 ),
-                Icon(Icons.calendar_today, size: 20, color: Colors.grey[600]),
+                Icon(
+                  Icons.calendar_today,
+                  size: 20,
+                  color:
+                      Theme.of(context).textTheme.bodySmall?.color ??
+                      Colors.grey[600],
+                ),
               ],
             ),
           ),
@@ -436,7 +464,8 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.greenColor.withOpacity(0.1)
-                      : const Color(0xFFF5F7FA),
+                      : Theme.of(context).inputDecorationTheme.fillColor ??
+                            const Color(0xFFF5F7FA),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected
@@ -459,7 +488,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                           errorBuilder: (_, __, ___) => Icon(
                             Icons.image,
                             size: 40,
-                            color: Colors.grey[400],
+                            color: Theme.of(context).disabledColor,
                           ),
                         ),
                       ),
@@ -473,7 +502,9 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
                         fontWeight: isSelected
                             ? FontWeight.w600
                             : FontWeight.normal,
-                        color: Colors.black87,
+                        color:
+                            Theme.of(context).textTheme.bodyLarge?.color ??
+                            Colors.black87,
                       ),
                     ),
                   ],
@@ -493,7 +524,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
         style: GoogleFonts.dmSans(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: Colors.black87,
+          color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black87,
         ),
         children: [
           if (field.required)
@@ -596,9 +627,9 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
             child: Container(
               constraints: const BoxConstraints(maxHeight: 250),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -634,7 +665,11 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
                             option.label,
                             style: GoogleFonts.dmSans(
                               fontSize: 14,
-                              color: Colors.black87,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge?.color ??
+                                  Colors.black87,
                               fontWeight: isSelected
                                   ? FontWeight.w600
                                   : FontWeight.w400,
@@ -667,7 +702,9 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F7FA),
+                color:
+                    Theme.of(context).inputDecorationTheme.fillColor ??
+                    const Color(0xFFF5F7FA),
                 borderRadius: BorderRadius.circular(12),
                 border: _isOpen
                     ? Border.all(
@@ -687,8 +724,12 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
                         color: widget.selectedLabel != null
-                            ? Colors.black87
-                            : Colors.grey[400],
+                            ? Theme.of(context).textTheme.bodyLarge?.color ??
+                                  Colors.black87
+                            : Theme.of(
+                                    context,
+                                  ).inputDecorationTheme.hintStyle?.color ??
+                                  Colors.grey[400],
                       ),
                     ),
                   ),
@@ -696,7 +737,9 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
                     _isOpen
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
-                    color: Colors.grey[600],
+                    color:
+                        Theme.of(context).textTheme.bodySmall?.color ??
+                        Colors.grey[600],
                   ),
                 ],
               ),
@@ -714,7 +757,7 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
         style: GoogleFonts.dmSans(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: Colors.black87,
+          color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black87,
         ),
         children: [
           if (widget.field.required)

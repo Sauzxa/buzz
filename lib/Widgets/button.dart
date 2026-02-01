@@ -73,7 +73,7 @@ class WhiteButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
+          backgroundColor: Theme.of(context).cardColor,
           foregroundColor: AppColors.roseColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),

@@ -286,7 +286,10 @@ class _ServicesBuzzPageState extends State<ServicesBuzzPage> {
       child: Container(
         width: 40,
         height: 40,
-        decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          shape: BoxShape.circle,
+        ),
         child: Icon(icon, color: AppColors.roseColor, size: 20),
       ),
     );

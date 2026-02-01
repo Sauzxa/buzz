@@ -89,12 +89,15 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             // Close drawer if open
             if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
@@ -113,13 +116,13 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.menu, color: Colors.black),
+            icon: Icon(Icons.menu, color: Theme.of(context).iconTheme.color),
             onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
           ),
         ],
@@ -145,7 +148,10 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
               ? Center(
                   child: Text(
                     'No orders to track',
-                    style: GoogleFonts.dmSans(fontSize: 16, color: Colors.grey),
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                    ),
                   ),
                 )
               : ListView.builder(
@@ -179,7 +185,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: InkWell(
         onTap: () {
           Navigator.pushNamed(
@@ -223,7 +229,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
                     ),
                   ),
                 ],
@@ -280,7 +286,9 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                           style: GoogleFonts.dmSans(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -291,7 +299,9 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                             order['serviceName'],
                             style: GoogleFonts.dmSans(
                               fontSize: 12,
-                              color: Colors.grey[600],
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodySmall!.color,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -308,7 +318,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                         style: GoogleFonts.dmSans(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.titleLarge!.color,
                         ),
                       ),
                     ),
@@ -325,7 +335,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
                     ),
                   ),
                   Text(
@@ -333,7 +343,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
                     ),
                   ),
                 ],
@@ -348,7 +358,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                 child: Icon(
                   Icons.info_outline,
                   size: 18,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodySmall!.color,
                 ),
               ),
             ],

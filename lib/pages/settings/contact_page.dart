@@ -93,9 +93,9 @@ class _ContactPageState extends State<ContactPage> {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
@@ -109,7 +109,7 @@ class _ContactPageState extends State<ContactPage> {
                         style: GoogleFonts.dmSans(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.titleLarge!.color,
                         ),
                       ),
                       const SizedBox(height: 12),
@@ -118,7 +118,7 @@ class _ContactPageState extends State<ContactPage> {
                         'Please choose what types of support do you\nneed and let us know.',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.dmSans(
-                          color: const Color(0xFF8D8D8D),
+                          color: Theme.of(context).textTheme.bodySmall!.color,
                           fontSize: 14,
                           height: 1.5,
                         ),
@@ -238,8 +238,10 @@ class _ContactPageState extends State<ContactPage> {
                             ).popUntil((route) => route.isFirst);
                           },
                           style: OutlinedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            side: const BorderSide(color: Color(0xFFE0E0E0)),
+                            backgroundColor: Theme.of(context).cardColor,
+                            side: BorderSide(
+                              color: Theme.of(context).dividerColor,
+                            ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -255,14 +257,16 @@ class _ContactPageState extends State<ContactPage> {
                                 style: GoogleFonts.dmSans(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF212121),
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.titleLarge!.color,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Icon(
+                              Icon(
                                 Icons.arrow_forward_rounded,
                                 size: 20,
-                                color: Color(0xFF212121),
+                                color: Theme.of(context).iconTheme.color,
                               ),
                             ],
                           ),
@@ -291,9 +295,9 @@ class _ContactPageState extends State<ContactPage> {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: const Color(0xFFEEEEEE), width: 1),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
           // No shadow in the flat modern look or very subtle
         ),
         child: Column(
@@ -311,14 +315,14 @@ class _ContactPageState extends State<ContactPage> {
               style: GoogleFonts.dmSans(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: const Color(0xFF212121),
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               subtitle,
               style: GoogleFonts.dmSans(
-                color: const Color(0xFF9E9E9E), // Grey
+                color: Theme.of(context).textTheme.bodySmall!.color,
                 fontSize: 12,
               ),
               textAlign: TextAlign.center,

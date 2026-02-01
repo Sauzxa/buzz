@@ -117,7 +117,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.grey[50], // Light background
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _selectedIndex,
         onTap: _onBottomNavTapped,
@@ -126,7 +126,10 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             // Close drawer if open
             if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
@@ -145,13 +148,13 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.menu, color: Colors.black),
+            icon: Icon(Icons.menu, color: Theme.of(context).iconTheme.color),
             onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
           ),
         ],
@@ -165,7 +168,9 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                   Icon(
                     Icons.person_off_outlined,
                     size: 64,
-                    color: Colors.grey[400],
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodySmall!.color?.withOpacity(0.5),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -173,7 +178,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                     style: GoogleFonts.dmSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).textTheme.bodySmall!.color,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -181,7 +186,9 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                     'Please log in to view your orders',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
-                      color: Colors.grey[500],
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodySmall!.color?.withOpacity(0.7),
                     ),
                   ),
                 ],
@@ -207,14 +214,16 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                         Icon(
                           Icons.shopping_bag_outlined,
                           size: 64,
-                          color: Colors.grey[400],
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall!.color?.withOpacity(0.5),
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'No orders',
                           style: GoogleFonts.dmSans(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color: Theme.of(context).textTheme.bodySmall!.color,
                           ),
                         ),
                       ],
@@ -230,13 +239,21 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.swipe, size: 16, color: Colors.grey[400]),
+                          Icon(
+                            Icons.swipe,
+                            size: 16,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodySmall!.color?.withOpacity(0.5),
+                          ),
                           const SizedBox(width: 8),
                           Text(
                             'swipe on an item to delete',
                             style: GoogleFonts.dmSans(
                               fontSize: 12,
-                              color: Colors.grey[600],
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodySmall!.color,
                             ),
                           ),
                         ],
@@ -284,7 +301,9 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                             20,
                                           ),
                                         ),
-                                        backgroundColor: Colors.white,
+                                        backgroundColor: Theme.of(
+                                          context,
+                                        ).cardColor,
                                         contentPadding: const EdgeInsets.all(
                                           24,
                                         ),
@@ -293,14 +312,18 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                           style: GoogleFonts.dmSans(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 20,
-                                            color: Colors.black,
+                                            color: Theme.of(
+                                              dialogContext,
+                                            ).textTheme.titleLarge!.color,
                                           ),
                                         ),
                                         content: Text(
                                           'Are you sure you want to cancel this order?',
                                           style: GoogleFonts.dmSans(
                                             fontSize: 16,
-                                            color: Colors.grey[700],
+                                            color: Theme.of(
+                                              dialogContext,
+                                            ).textTheme.bodySmall!.color,
                                           ),
                                         ),
                                         actionsPadding:
@@ -321,10 +344,14 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                                     ).pop(false);
                                                   },
                                                   style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.grey[200],
+                                                    backgroundColor: Theme.of(
+                                                      dialogContext,
+                                                    ).dividerColor,
                                                     foregroundColor:
-                                                        Colors.grey[800],
+                                                        Theme.of(dialogContext)
+                                                            .textTheme
+                                                            .titleLarge!
+                                                            .color,
                                                     elevation: 0,
                                                     padding:
                                                         const EdgeInsets.symmetric(

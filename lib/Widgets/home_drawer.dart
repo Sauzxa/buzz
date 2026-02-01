@@ -6,6 +6,7 @@ import '../theme/colors.dart';
 import '../providers/user_provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
+import '../providers/theme_provider.dart';
 
 import '../utils/fade_route.dart';
 import '../pages/settings/general_settings.dart';
@@ -91,24 +92,61 @@ class _HomeDrawerState extends State<HomeDrawer> {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(24, 60, 24, 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Stack(
                 children: [
-                  // User Avatar
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundColor: Colors.white,
-                    child: ClipOval(
-                      child:
-                          userProvider.user.profilePicture != null &&
-                              userProvider.user.profilePicture!.isNotEmpty
-                          ? Image.network(
-                              userProvider.user.profilePicture!,
-                              width: 70,
-                              height: 70,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Text(
+                  // Theme Toggle Icon - Top Right
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: Consumer<ThemeProvider>(
+                      builder: (context, themeProvider, _) {
+                        return IconButton(
+                          icon: Icon(
+                            themeProvider.isDarkMode
+                                ? Icons.nightlight_round
+                                : Icons.wb_sunny,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                          onPressed: () {
+                            themeProvider.toggleTheme();
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                  // User info column
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // User Avatar
+                      CircleAvatar(
+                        radius: 35,
+                        backgroundColor: Colors.white,
+                        child: ClipOval(
+                          child:
+                              userProvider.user.profilePicture != null &&
+                                  userProvider.user.profilePicture!.isNotEmpty
+                              ? Image.network(
+                                  userProvider.user.profilePicture!,
+                                  width: 70,
+                                  height: 70,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Text(
+                                      userProvider.fullName.isNotEmpty
+                                          ? userProvider.fullName[0]
+                                                .toUpperCase()
+                                          : 'U',
+                                      style: GoogleFonts.dmSans(
+                                        fontSize: 32,
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.roseColor,
+                                      ),
+                                    );
+                                  },
+                                )
+                              : Text(
                                   userProvider.fullName.isNotEmpty
                                       ? userProvider.fullName[0].toUpperCase()
                                       : 'U',
@@ -117,43 +155,33 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                     fontWeight: FontWeight.bold,
                                     color: AppColors.roseColor,
                                   ),
-                                );
-                              },
-                            )
-                          : Text(
-                              userProvider.fullName.isNotEmpty
-                                  ? userProvider.fullName[0].toUpperCase()
-                                  : 'U',
-                              style: GoogleFonts.dmSans(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.roseColor,
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // User Name
-                  Text(
-                    userProvider.fullName.isNotEmpty
-                        ? userProvider.fullName
-                        : 'User Name',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  // User Phone
-                  Text(
-                    userProvider.fullPhoneNumber.isNotEmpty
-                        ? userProvider.fullPhoneNumber
-                        : '+213 777 58 59 66',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color: Colors.white.withOpacity(0.9),
-                    ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      // User Name
+                      Text(
+                        userProvider.fullName.isNotEmpty
+                            ? userProvider.fullName
+                            : 'User Name',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      // User Phone
+                      Text(
+                        userProvider.fullPhoneNumber.isNotEmpty
+                            ? userProvider.fullPhoneNumber
+                            : '+213 777 58 59 66',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

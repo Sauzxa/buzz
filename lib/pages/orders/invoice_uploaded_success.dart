@@ -52,9 +52,9 @@ class InvoiceUploadedSuccess extends StatelessWidget {
             Expanded(
               child: Container(
                 width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).scaffoldBackgroundColor,
+                  borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
                   ),
@@ -92,7 +92,9 @@ class InvoiceUploadedSuccess extends StatelessWidget {
                           style: GoogleFonts.dmSans(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
                           ),
                         ),
 
@@ -124,7 +126,10 @@ class InvoiceUploadedSuccess extends StatelessWidget {
                         const SizedBox(height: 30),
 
                         // Divider
-                        Divider(color: Colors.grey.shade300, thickness: 1),
+                        Divider(
+                          color: Theme.of(context).dividerColor,
+                          thickness: 1,
+                        ),
 
                         const SizedBox(height: 20),
 
@@ -134,7 +139,9 @@ class InvoiceUploadedSuccess extends StatelessWidget {
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black87,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
                           ),
                         ),
 
@@ -144,7 +151,7 @@ class InvoiceUploadedSuccess extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade50,
+                            color: Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Column(

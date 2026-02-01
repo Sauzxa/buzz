@@ -37,7 +37,7 @@ class _PaymentInfoPageState extends State<PaymentInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'ECCP Payment Info',
@@ -69,7 +69,10 @@ class _PaymentInfoPageState extends State<PaymentInfoPage> {
               const SizedBox(height: 8),
               Text(
                 'Please enter your 20-digit CCP account number.',
-                style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey),
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: Theme.of(context).textTheme.bodySmall!.color,
+                ),
               ),
               const SizedBox(height: 30),
 

@@ -88,9 +88,9 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
               Expanded(
                 child: Container(
                   width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(30),
                       topRight: Radius.circular(30),
                     ),
@@ -209,7 +209,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
         style: GoogleFonts.dmSans(
           fontSize: 12,
           fontWeight: FontWeight.w600,
-          color: Colors.grey[600],
+          color: Theme.of(context).textTheme.bodySmall!.color,
           letterSpacing: 0.5,
         ),
       ),
@@ -226,20 +226,23 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: Theme.of(context).cardColor,
           shape: BoxShape.circle,
         ),
-        child: Icon(icon, color: Colors.black, size: 20),
+        child: Icon(icon, color: Theme.of(context).iconTheme.color, size: 20),
       ),
       title: Text(
         title,
         style: GoogleFonts.dmSans(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: Colors.black,
+          color: Theme.of(context).textTheme.titleLarge!.color,
         ),
       ),
-      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: Theme.of(context).textTheme.bodySmall!.color,
+      ),
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
     );

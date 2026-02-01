@@ -199,9 +199,9 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
             child: Container(
               width: double.infinity,
               height: double.infinity,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
@@ -225,7 +225,7 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
                         style: GoogleFonts.dmSans(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.titleLarge!.color,
                         ),
                       ),
 
@@ -237,7 +237,7 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
                         textAlign: TextAlign.start,
                         style: GoogleFonts.dmSans(
                           fontSize: 14,
-                          color: Colors.grey.shade500,
+                          color: Theme.of(context).textTheme.bodySmall!.color,
                           height: 1.5,
                         ),
                       ),
@@ -328,32 +328,36 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
           style: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: GoogleFonts.dmSans(color: Colors.grey.shade400),
+            labelStyle: GoogleFonts.dmSans(
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: hint,
-            hintStyle: GoogleFonts.dmSans(color: Colors.black87),
+            hintStyle: GoogleFonts.dmSans(
+              color: Theme.of(context).textTheme.bodyMedium!.color,
+            ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 20,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
               borderSide: BorderSide(
-                color: Colors.grey.shade200,
+                color: Theme.of(context).dividerColor,
               ), // Figma shows grey even when focused/active? Keeping it subtle
             ),
             suffixIcon: IconButton(
               icon: Icon(
                 isObscure ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey.shade400,
+                color: Theme.of(context).iconTheme.color,
                 size: 22,
               ),
               onPressed: onVisibilityToggle,
@@ -387,30 +391,34 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
           style: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: GoogleFonts.dmSans(color: Colors.grey.shade400),
+            labelStyle: GoogleFonts.dmSans(
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
             floatingLabelBehavior: FloatingLabelBehavior.always,
             hintText: hint,
-            hintStyle: GoogleFonts.dmSans(color: Colors.black87),
+            hintStyle: GoogleFonts.dmSans(
+              color: Theme.of(context).textTheme.bodyMedium!.color,
+            ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 24,
               vertical: 20,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderSide: BorderSide(color: Theme.of(context).dividerColor),
             ),
             suffixIcon: IconButton(
               icon: Icon(
                 isObscure ? Icons.visibility_off : Icons.visibility,
-                color: Colors.grey.shade400,
+                color: Theme.of(context).iconTheme.color,
                 size: 22,
               ),
               onPressed: onVisibilityToggle,

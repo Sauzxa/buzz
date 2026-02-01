@@ -79,7 +79,7 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: ListView(
@@ -115,7 +115,7 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
               style: GoogleFonts.dmSans(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
             ),
 
@@ -123,7 +123,10 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
 
             Text(
               'Enter your phone number to get started',
-              style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
             ),
 
             const SizedBox(height: 40),
@@ -141,7 +144,7 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
             // Phone Number Input
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
+                border: Border.all(color: Theme.of(context).dividerColor),
                 borderRadius: BorderRadius.circular(12),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -151,7 +154,7 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
                     _countryCode,
                     style: GoogleFonts.dmSans(
                       fontSize: 16,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -166,13 +169,15 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
                       ],
                       style: GoogleFonts.dmSans(
                         fontSize: 16,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
                       decoration: InputDecoration(
                         hintText: 'Phone number',
                         hintStyle: GoogleFonts.dmSans(
                           fontSize: 16,
-                          color: Colors.grey[400],
+                          color: Theme.of(
+                            context,
+                          ).inputDecorationTheme.hintStyle!.color,
                         ),
                         border: InputBorder.none,
                       ),
@@ -304,9 +309,9 @@ class _CustomCountryDropdownState extends State<_CustomCountryDropdown> {
             child: Container(
               constraints: const BoxConstraints(maxHeight: 250),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -399,7 +404,7 @@ class _CustomCountryDropdownState extends State<_CustomCountryDropdown> {
                     widget.selectedCountry,
                     style: GoogleFonts.dmSans(
                       fontSize: 16,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.bodyLarge!.color,
                     ),
                   ),
                 ],

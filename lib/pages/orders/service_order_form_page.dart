@@ -212,7 +212,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: _categoryTheme.color,
         elevation: 0,
@@ -245,14 +245,20 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.description_outlined, size: 80, color: Colors.grey[400]),
+            Icon(
+              Icons.description_outlined,
+              size: 80,
+              color: Theme.of(
+                context,
+              ).textTheme.bodySmall!.color?.withOpacity(0.5),
+            ),
             const SizedBox(height: 20),
             Text(
               'Form Not Available',
               style: GoogleFonts.dmSans(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
             ),
             const SizedBox(height: 12),
@@ -261,7 +267,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 fontSize: 14,
-                color: Colors.grey[600],
+                color: Theme.of(context).textTheme.bodySmall!.color,
                 height: 1.5,
               ),
             ),
@@ -319,7 +325,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           width: 10,
           height: 10,
           decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: Theme.of(context).dividerColor.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
         ),
@@ -355,13 +361,13 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
             height: 200,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               Icons.image_not_supported,
               size: 60,
-              color: Colors.grey[400],
+              color: Theme.of(context).textTheme.bodySmall!.color,
             ),
           );
         },
@@ -386,7 +392,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
             style: GoogleFonts.dmSans(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Theme.of(context).textTheme.titleLarge!.color,
             ),
           ),
           const SizedBox(height: 8),
@@ -394,7 +400,10 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
             _isMultiPage
                 ? 'Fill in the details below (Page 1 of 2)'
                 : 'Fill in the details below to place your order',
-            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
           ),
           const SizedBox(height: 24),
 
@@ -444,7 +453,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           style: GoogleFonts.dmSans(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
         ),
         const SizedBox(height: 8),
@@ -452,7 +461,10 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           _isMultiPage
               ? 'Fill in the details below (Page 1 of 2)'
               : 'Fill in the details below to place your order',
-          style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
+          style: GoogleFonts.dmSans(
+            fontSize: 14,
+            color: Theme.of(context).textTheme.bodySmall!.color,
+          ),
         ),
         const SizedBox(height: 24),
 

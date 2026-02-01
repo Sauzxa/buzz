@@ -22,13 +22,13 @@ class SettingsTile extends StatelessWidget {
     return ListTile(
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-      leading: Icon(icon, size: 24, color: Colors.black87),
+      leading: Icon(icon, size: 24, color: Theme.of(context).iconTheme.color),
       title: Text(
         title,
         style: GoogleFonts.dmSans(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: Colors.black,
+          color: Theme.of(context).textTheme.titleLarge!.color,
         ),
       ),
       subtitle: subtitle != null
@@ -38,15 +38,15 @@ class SettingsTile extends StatelessWidget {
                 subtitle!,
                 style: GoogleFonts.dmSans(
                   fontSize: 12,
-                  color: const Color(0xFF8B8B97),
+                  color: Theme.of(context).textTheme.bodySmall!.color,
                 ),
               ),
             )
           : null,
-      trailing: const Icon(
+      trailing: Icon(
         Icons.arrow_forward_ios,
         size: 16,
-        color: Colors.black54,
+        color: Theme.of(context).iconTheme.color,
       ),
     );
   }

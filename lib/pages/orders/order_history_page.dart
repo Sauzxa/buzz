@@ -89,12 +89,15 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             // Close drawer if open
             if (_scaffoldKey.currentState?.isEndDrawerOpen ?? false) {
@@ -113,13 +116,13 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.bold,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.menu, color: Colors.black),
+            icon: Icon(Icons.menu, color: Theme.of(context).iconTheme.color),
             onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
           ),
         ],
@@ -144,14 +147,20 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.history, size: 80, color: Colors.grey[300]),
+                      Icon(
+                        Icons.history,
+                        size: 80,
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodySmall!.color?.withOpacity(0.3),
+                      ),
                       const SizedBox(height: 16),
                       Text(
                         'No completed orders yet',
                         style: GoogleFonts.dmSans(
                           fontSize: 18,
                           fontWeight: FontWeight.w500,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).textTheme.bodySmall!.color,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -159,7 +168,9 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                         'Your order history will appear here',
                         style: GoogleFonts.dmSans(
                           fontSize: 14,
-                          color: Colors.grey[400],
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall!.color?.withOpacity(0.6),
                         ),
                       ),
                     ],

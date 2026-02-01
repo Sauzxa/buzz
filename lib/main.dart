@@ -17,8 +17,11 @@ import 'providers/orders_provider.dart';
 import 'providers/invoice_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/chat_provider.dart';
+import 'providers/theme_provider.dart';
 import 'services/fcm_service.dart';
 import 'services/notification_navigation_service.dart';
+import 'theme/colors.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // Global FCM Service instance for access throughout app
 late FcmService globalFcmService;
@@ -148,6 +151,7 @@ class _BuzzState extends State<Buzz> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CategoriesProvider()),
@@ -171,12 +175,249 @@ class _BuzzState extends State<Buzz> {
           },
         ),
       ],
-      child: MaterialApp(
-        navigatorKey: NotificationNavigationService.navigatorKey,
-        initialRoute: AppRoutes.initialRoute,
-        onGenerateRoute: AppRoutes.onGenerateRoute,
-        debugShowCheckedModeBanner: false,
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp(
+            navigatorKey: NotificationNavigationService.navigatorKey,
+            initialRoute: AppRoutes.initialRoute,
+            onGenerateRoute: AppRoutes.onGenerateRoute,
+            debugShowCheckedModeBanner: false,
+            theme: _buildLightTheme(),
+            darkTheme: _buildDarkTheme(),
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+          );
+        },
       ),
     );
   }
+}
+
+// Light theme configuration
+ThemeData _buildLightTheme() {
+  return ThemeData(
+    brightness: Brightness.light,
+    primaryColor: AppColors.roseColor,
+    scaffoldBackgroundColor: Colors.white,
+    cardColor: Colors.white,
+    dividerColor: const Color(0xFFE0E0E0),
+
+    // AppBar theme
+    appBarTheme: AppBarTheme(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      elevation: 0,
+      iconTheme: const IconThemeData(color: Colors.black),
+      titleTextStyle: GoogleFonts.dmSans(
+        color: Colors.black,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+
+    // Icon theme
+    iconTheme: const IconThemeData(color: Colors.black),
+
+    // Text theme
+    textTheme: TextTheme(
+      bodyLarge: GoogleFonts.dmSans(color: Colors.black, fontSize: 16),
+      bodyMedium: GoogleFonts.dmSans(color: Colors.black, fontSize: 14),
+      bodySmall: GoogleFonts.dmSans(
+        color: const Color(0xFF888888),
+        fontSize: 12,
+      ),
+      titleLarge: GoogleFonts.dmSans(
+        color: Colors.black,
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+      titleMedium: GoogleFonts.dmSans(
+        color: Colors.black,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+      titleSmall: GoogleFonts.dmSans(
+        color: Colors.black,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+
+    // Input decoration theme
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFFF5F7FA),
+      hintStyle: GoogleFonts.dmSans(color: Colors.black, fontSize: 16),
+      labelStyle: GoogleFonts.dmSans(
+        color: const Color(0xFF888888),
+        fontSize: 14,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: AppColors.roseColor, width: 1.5),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: Colors.red, width: 1),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: Colors.red, width: 1.5),
+      ),
+    ),
+
+    // Card theme
+    cardTheme: CardThemeData(
+      color: Colors.white,
+      elevation: 2,
+      shadowColor: Colors.black.withOpacity(0.1),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+
+    // Bottom navigation bar theme
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
+      selectedItemColor: AppColors.roseColor,
+      unselectedItemColor: Colors.grey,
+    ),
+
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.roseColor,
+      secondary: AppColors.greenColor,
+      surface: Colors.white,
+      background: Colors.white,
+      error: Colors.red,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
+      onSurface: Colors.black,
+      onBackground: Colors.black,
+      onError: Colors.white,
+    ),
+  );
+}
+
+// Dark theme configuration
+ThemeData _buildDarkTheme() {
+  return ThemeData(
+    brightness: Brightness.dark,
+    primaryColor: AppColors.roseColorDark,
+    scaffoldBackgroundColor: AppColors.darkBackground,
+    cardColor: AppColors.darkCard,
+    dividerColor: AppColors.darkBorder,
+
+    // AppBar theme
+    appBarTheme: AppBarTheme(
+      backgroundColor: AppColors.darkBackground,
+      foregroundColor: AppColors.darkTextPrimary,
+      elevation: 0,
+      iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),
+      titleTextStyle: GoogleFonts.dmSans(
+        color: AppColors.darkTextPrimary,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+
+    // Icon theme
+    iconTheme: const IconThemeData(color: AppColors.darkTextPrimary),
+
+    // Text theme
+    textTheme: TextTheme(
+      bodyLarge: GoogleFonts.dmSans(
+        color: AppColors.darkTextPrimary,
+        fontSize: 16,
+      ),
+      bodyMedium: GoogleFonts.dmSans(
+        color: AppColors.darkTextPrimary,
+        fontSize: 14,
+      ),
+      bodySmall: GoogleFonts.dmSans(
+        color: AppColors.darkTextSecondary,
+        fontSize: 12,
+      ),
+      titleLarge: GoogleFonts.dmSans(
+        color: AppColors.darkTextPrimary,
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+      titleMedium: GoogleFonts.dmSans(
+        color: AppColors.darkTextPrimary,
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+      ),
+      titleSmall: GoogleFonts.dmSans(
+        color: AppColors.darkTextPrimary,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+
+    // Input decoration theme
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: AppColors.darkInputFill,
+      hintStyle: GoogleFonts.dmSans(
+        color: AppColors.darkTextSecondary,
+        fontSize: 16,
+      ),
+      labelStyle: GoogleFonts.dmSans(
+        color: AppColors.darkTextSecondary,
+        fontSize: 14,
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: AppColors.darkBorder, width: 1),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(
+          color: AppColors.roseColorDark,
+          width: 1.5,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: Colors.red, width: 1),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(20),
+        borderSide: const BorderSide(color: Colors.red, width: 1.5),
+      ),
+    ),
+
+    // Card theme
+    cardTheme: CardThemeData(
+      color: AppColors.darkCard,
+      elevation: 2,
+      shadowColor: Colors.black.withOpacity(0.3),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    ),
+
+    // Bottom navigation bar theme
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: AppColors.darkCard,
+      selectedItemColor: AppColors.roseColorDark,
+      unselectedItemColor: AppColors.darkTextSecondary,
+    ),
+
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.roseColorDark,
+      secondary: AppColors.greenColorDark,
+      surface: AppColors.darkCard,
+      background: AppColors.darkBackground,
+      error: Colors.red,
+      onPrimary: Colors.white,
+      onSecondary: Colors.white,
+      onSurface: AppColors.darkTextPrimary,
+      onBackground: AppColors.darkTextPrimary,
+      onError: Colors.white,
+    ),
+  );
 }

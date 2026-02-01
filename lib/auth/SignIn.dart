@@ -146,7 +146,7 @@ class _SignInPageState extends State<SignInPage> {
     final userProvider = context.watch<UserProvider>();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -170,7 +170,7 @@ class _SignInPageState extends State<SignInPage> {
               style: GoogleFonts.dmSans(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
             ),
 
@@ -181,7 +181,7 @@ class _SignInPageState extends State<SignInPage> {
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 fontSize: 16,
-                color: const Color(0xFF888888),
+                color: Theme.of(context).textTheme.bodySmall!.color,
                 height: 1.5,
               ),
             ),
@@ -266,7 +266,7 @@ class _SignInPageState extends State<SignInPage> {
                         style: GoogleFonts.dmSans(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
                         ),
                       ),
                     ),
@@ -306,7 +306,7 @@ class _SignInPageState extends State<SignInPage> {
                   style: GoogleFonts.dmSans(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF888888),
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
                 ),
                 const Spacer(),
@@ -319,7 +319,7 @@ class _SignInPageState extends State<SignInPage> {
             Container(
               height: 56,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F5F7), // Light grey background
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(28),
               ),
               child: Material(
@@ -348,7 +348,7 @@ class _SignInPageState extends State<SignInPage> {
                         style: GoogleFonts.dmSans(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
                         ),
                       ),
                     ],
@@ -367,7 +367,7 @@ class _SignInPageState extends State<SignInPage> {
                   'Don\'t have an account ? ',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
-                    color: const Color(0xFF888888),
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
                 ),
                 GestureDetector(
@@ -416,19 +416,21 @@ class _SignInPageState extends State<SignInPage> {
           style: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
           ),
           decoration: InputDecoration(
             labelText: label,
             hintText: hintText,
             floatingLabelBehavior: FloatingLabelBehavior.always,
+            filled: true,
+            fillColor: Theme.of(context).inputDecorationTheme.fillColor,
             hintStyle: GoogleFonts.dmSans(
-              color: Colors.black,
+              color: Theme.of(context).inputDecorationTheme.hintStyle!.color,
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
             labelStyle: GoogleFonts.dmSans(
-              color: const Color(0xFF888888),
+              color: Theme.of(context).inputDecorationTheme.labelStyle!.color,
               fontSize: 14,
             ),
             contentPadding: const EdgeInsets.symmetric(
@@ -437,12 +439,15 @@ class _SignInPageState extends State<SignInPage> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(color: Color(0xFFE0E0E0), width: 1),
+              borderSide: BorderSide(
+                color: Theme.of(context).dividerColor,
+                width: 1,
+              ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: const BorderSide(
-                color: AppColors.roseColor,
+              borderSide: BorderSide(
+                color: Theme.of(context).primaryColor,
                 width: 1.5,
               ),
             ),

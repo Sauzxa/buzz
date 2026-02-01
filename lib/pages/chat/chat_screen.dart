@@ -126,7 +126,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       drawer: const HomeDrawer(),
       appBar: AppBar(
         backgroundColor: AppColors.roseColor,
@@ -192,7 +192,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey[800],
+                      color: Theme.of(context).textTheme.titleLarge!.color,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -201,7 +201,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     child: Text(
                       chatProvider.error!,
                       textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).textTheme.bodySmall!.color,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -237,16 +240,16 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   horizontal: 20,
                   vertical: 16,
                 ),
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 child: Column(
                   children: [
-                    const Text(
+                    Text(
                       'Support Chat',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: Theme.of(context).textTheme.titleLarge!.color,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -255,7 +258,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                         height: 1.4,
                       ),
                     ),
@@ -369,20 +372,27 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.chat_bubble_outline, size: 80, color: Colors.grey[300]),
+          Icon(
+            Icons.chat_bubble_outline,
+            size: 80,
+            color: Theme.of(context).iconTheme.color?.withOpacity(0.3),
+          ),
           const SizedBox(height: 16),
           Text(
             'No messages yet',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
-              color: Colors.grey[600],
+              color: Theme.of(context).textTheme.titleMedium!.color,
             ),
           ),
           const SizedBox(height: 8),
           Text(
             'Start a conversation with our support team',
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            style: TextStyle(
+              fontSize: 14,
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
           ),
         ],
       ),

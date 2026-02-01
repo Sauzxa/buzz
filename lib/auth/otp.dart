@@ -137,7 +137,7 @@ class _OTPPageState extends State<OTPPage> {
     final phoneNumber = context.watch<UserProvider>().fullPhoneNumber;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -152,7 +152,7 @@ class _OTPPageState extends State<OTPPage> {
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
         ),
         centerTitle: true,
@@ -171,7 +171,7 @@ class _OTPPageState extends State<OTPPage> {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).textTheme.bodySmall!.color,
                 ),
               ),
 
@@ -215,7 +215,7 @@ class _OTPPageState extends State<OTPPage> {
                     'Code Sent. Resend Code in ',
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).textTheme.bodySmall!.color,
                     ),
                   ),
                   Text(
@@ -225,7 +225,7 @@ class _OTPPageState extends State<OTPPage> {
                       fontWeight: FontWeight.w600,
                       color: _remainingSeconds > 0
                           ? AppColors.roseColor
-                          : Colors.grey[600],
+                          : Theme.of(context).textTheme.bodySmall!.color,
                     ),
                   ),
                 ],
@@ -275,7 +275,7 @@ class _OTPPageState extends State<OTPPage> {
         style: GoogleFonts.dmSans(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: Theme.of(context).textTheme.bodyLarge!.color,
         ),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         decoration: const InputDecoration(

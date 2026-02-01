@@ -15,7 +15,7 @@ class ResetEmailSentPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -40,7 +40,7 @@ class ResetEmailSentPage extends StatelessWidget {
                 style: GoogleFonts.dmSans(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Theme.of(context).textTheme.titleLarge!.color,
                 ),
               ),
 
@@ -52,7 +52,7 @@ class ResetEmailSentPage extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
-                  color: Colors.grey[400],
+                  color: Theme.of(context).textTheme.bodySmall!.color,
                   height: 1.5,
                 ),
               ),

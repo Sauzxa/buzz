@@ -30,7 +30,11 @@ class NotificationToggleTile extends StatelessWidget {
             width: 24,
             height: 24,
             alignment: Alignment.center,
-            child: Icon(icon, size: 24, color: Colors.black87),
+            child: Icon(
+              icon,
+              size: 24,
+              color: Theme.of(context).iconTheme.color,
+            ),
           ),
           const SizedBox(width: 16),
 
@@ -44,7 +48,7 @@ class NotificationToggleTile extends StatelessWidget {
                   style: GoogleFonts.dmSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
-                    color: Colors.black,
+                    color: Theme.of(context).textTheme.titleLarge!.color,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -52,7 +56,7 @@ class NotificationToggleTile extends StatelessWidget {
                   subtitle,
                   style: GoogleFonts.dmSans(
                     fontSize: 12,
-                    color: const Color(0xFF8B8B97),
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
                 ),
               ],

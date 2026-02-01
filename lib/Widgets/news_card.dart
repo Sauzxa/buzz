@@ -16,9 +16,9 @@ class NewsCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey[200]!, width: 1),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
@@ -85,7 +85,9 @@ class NewsCard extends StatelessWidget {
                     style: GoogleFonts.dmSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+                      color:
+                          Theme.of(context).textTheme.bodyLarge?.color ??
+                          Colors.black87,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -98,7 +100,9 @@ class NewsCard extends StatelessWidget {
                     news.description,
                     style: GoogleFonts.dmSans(
                       fontSize: 13,
-                      color: Colors.grey[600],
+                      color:
+                          Theme.of(context).textTheme.bodySmall?.color ??
+                          Colors.grey[600],
                       height: 1.5,
                     ),
                     maxLines: 3,
@@ -113,14 +117,18 @@ class NewsCard extends StatelessWidget {
                       Icon(
                         Icons.access_time,
                         size: 14,
-                        color: Colors.grey[500],
+                        color:
+                            Theme.of(context).textTheme.bodySmall?.color ??
+                            Colors.grey[500],
                       ),
                       const SizedBox(width: 4),
                       Text(
                         news.formattedDate,
                         style: GoogleFonts.dmSans(
                           fontSize: 12,
-                          color: Colors.grey[500],
+                          color:
+                              Theme.of(context).textTheme.bodySmall?.color ??
+                              Colors.grey[500],
                         ),
                       ),
                     ],

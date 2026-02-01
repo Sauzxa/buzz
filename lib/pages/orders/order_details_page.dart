@@ -85,7 +85,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         status == 'PRICED' || status == 'AWAITING_PAYMENT_VALIDATION';
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           'Order Details',
@@ -174,7 +174,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -221,7 +221,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                       serviceName,
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -229,7 +229,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                       'Ref: $refNumber',
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
-                        color: Colors.grey,
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                       ),
                     ),
                   ],
@@ -253,14 +253,14 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Center(
           child: Text(
             'Order is pending pricing by admin',
             style: GoogleFonts.dmSans(
-              color: Colors.grey,
+              color: Theme.of(context).textTheme.bodySmall!.color,
               fontSize: 14,
               fontStyle: FontStyle.italic,
             ),
@@ -275,7 +275,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Center(child: CircularProgressIndicator()),
@@ -286,13 +286,16 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Center(
               child: Text(
                 'Unable to load pricing details',
-                style: GoogleFonts.dmSans(color: Colors.grey, fontSize: 14),
+                style: GoogleFonts.dmSans(
+                  color: Theme.of(context).textTheme.bodySmall!.color,
+                  fontSize: 14,
+                ),
               ),
             ),
           );
@@ -303,13 +306,16 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           return Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(20),
             ),
             child: Center(
               child: Text(
                 'No invoice available',
-                style: GoogleFonts.dmSans(color: Colors.grey, fontSize: 14),
+                style: GoogleFonts.dmSans(
+                  color: Theme.of(context).textTheme.bodySmall!.color,
+                  fontSize: 14,
+                ),
               ),
             ),
           );
@@ -317,7 +323,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
 
         return Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
           ),
           child: ListView(
@@ -417,7 +423,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         style: GoogleFonts.dmSans(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: Colors.black87,
+          color: Theme.of(context).textTheme.titleLarge!.color,
         ),
       ),
     );
@@ -433,7 +439,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -463,7 +469,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           width: 100,
           child: Text(
             label,
-            style: GoogleFonts.dmSans(color: Colors.grey, fontSize: 14),
+            style: GoogleFonts.dmSans(
+              color: Theme.of(context).textTheme.bodySmall!.color,
+              fontSize: 14,
+            ),
           ),
         ),
         Expanded(
@@ -495,7 +504,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             style: GoogleFonts.dmSans(
               fontSize: isTotal ? 16 : 14,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.normal,
-              color: Colors.grey[600],
+              color: Theme.of(context).textTheme.bodySmall!.color,
             ),
           ),
           Text(
@@ -504,7 +513,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               fontSize: isTotal ? 16 : 14,
               fontWeight: isTotal ? FontWeight.bold : FontWeight.w500,
               color:
-                  valueColor ?? (isTotal ? AppColors.roseColor : Colors.black),
+                  valueColor ??
+                  (isTotal
+                      ? AppColors.roseColor
+                      : Theme.of(context).textTheme.titleLarge!.color),
             ),
           ),
         ],

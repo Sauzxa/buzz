@@ -139,10 +139,10 @@ class _MessageInputFieldState extends State<MessageInputField> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).shadowColor.withOpacity(0.05),
             blurRadius: 5,
             offset: const Offset(0, -2),
           ),
@@ -162,13 +162,15 @@ class _MessageInputFieldState extends State<MessageInputField> {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? Theme.of(context).colorScheme.surfaceContainerHighest
+                      : Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: TextField(
                   controller: _controller,
                   decoration: const InputDecoration(
-                    hintText: 'Type a message...',
+                    hintText: ' Type a message...',
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 10),
                   ),
@@ -193,7 +195,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
               decoration: BoxDecoration(
                 color: _isComposing && !widget.isSending
                     ? AppColors.roseColor
-                    : Colors.grey[300],
+                    : Theme.of(context).disabledColor,
                 shape: BoxShape.circle,
               ),
               child: IconButton(

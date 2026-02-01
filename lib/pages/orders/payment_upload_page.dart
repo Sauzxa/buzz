@@ -155,9 +155,13 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                       onTap: () => _showImageSourceSheet(context),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.grey[200],
+                          color: Theme.of(
+                            context,
+                          ).dividerColor.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.grey[400]!),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
                         ),
                         child: _imageFile != null
                             ? ClipRRect(
@@ -170,17 +174,23 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                             : Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(
+                                  Icon(
                                     Icons.cloud_upload_outlined,
                                     size: 64,
-                                    color: Colors.grey,
+                                    color: Theme.of(context)
+                                        .textTheme
+                                        .bodySmall!
+                                        .color
+                                        ?.withOpacity(0.5),
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
                                     'Tap to select image',
                                     style: GoogleFonts.dmSans(
                                       fontSize: 16,
-                                      color: Colors.grey[600],
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall!.color,
                                     ),
                                   ),
                                 ],

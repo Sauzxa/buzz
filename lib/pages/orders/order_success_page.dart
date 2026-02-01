@@ -18,7 +18,7 @@ class OrderSuccessPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: _categoryTheme.color,
         elevation: 0,
@@ -77,7 +77,9 @@ class OrderSuccessPage extends StatelessWidget {
                             style: GoogleFonts.dmSans(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.titleLarge!.color,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -87,7 +89,9 @@ class OrderSuccessPage extends StatelessWidget {
                             style: GoogleFonts.dmSans(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.titleLarge!.color,
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -96,7 +100,9 @@ class OrderSuccessPage extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style: GoogleFonts.dmSans(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodySmall!.color,
                               height: 1.5,
                             ),
                           ),

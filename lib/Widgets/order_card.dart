@@ -36,7 +36,7 @@ class OrderCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.white,
+      color: Theme.of(context).cardColor,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -74,7 +74,7 @@ class OrderCard extends StatelessWidget {
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
                     ),
                   ),
                 ],
@@ -131,7 +131,9 @@ class OrderCard extends StatelessWidget {
                           style: GoogleFonts.dmSans(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -142,7 +144,9 @@ class OrderCard extends StatelessWidget {
                             order['serviceName'],
                             style: GoogleFonts.dmSans(
                               fontSize: 12,
-                              color: Colors.grey[600],
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodySmall!.color,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -159,7 +163,7 @@ class OrderCard extends StatelessWidget {
                         style: GoogleFonts.dmSans(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Theme.of(context).textTheme.titleLarge!.color,
                         ),
                       ),
                     ),
@@ -176,7 +180,7 @@ class OrderCard extends StatelessWidget {
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
                     ),
                   ),
                   Text(
@@ -184,7 +188,7 @@ class OrderCard extends StatelessWidget {
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
                     ),
                   ),
                 ],

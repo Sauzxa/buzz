@@ -127,7 +127,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
@@ -142,7 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
         ),
         centerTitle: true,
@@ -159,7 +159,7 @@ class _SignUpPageState extends State<SignUpPage> {
               style: GoogleFonts.dmSans(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
             ),
 
@@ -169,7 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
               'Seems you are new here,\nLet\'s set up your profile.',
               style: GoogleFonts.dmSans(
                 fontSize: 14,
-                color: Colors.grey[400],
+                color: Theme.of(context).textTheme.bodySmall!.color,
                 height: 1.5,
               ),
             ),
@@ -299,7 +299,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       text: TextSpan(
                         style: GoogleFonts.dmSans(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).textTheme.bodySmall!.color,
                         ),
                         children: [
                           const TextSpan(
@@ -347,7 +347,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   'Already have an account? ',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
                 ),
                 GestureDetector(
@@ -386,14 +386,17 @@ class _SignUpPageState extends State<SignUpPage> {
       children: [
         Text(
           label,
-          style: GoogleFonts.dmSans(fontSize: 12, color: Colors.grey[400]),
+          style: GoogleFonts.dmSans(
+            fontSize: 12,
+            color: Theme.of(context).inputDecorationTheme.labelStyle!.color,
+          ),
         ),
         const SizedBox(height: 8),
         Container(
           decoration: BoxDecoration(
-            color: Colors.grey[50],
+            color: Theme.of(context).inputDecorationTheme.fillColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
+            border: Border.all(color: Theme.of(context).dividerColor),
           ),
           child: TextField(
             controller: controller,
@@ -401,7 +404,10 @@ class _SignUpPageState extends State<SignUpPage> {
             obscureText: obscureText,
             inputFormatters: inputFormatters,
             onChanged: (value) => setState(() {}),
-            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.black),
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: Theme.of(context).textTheme.bodyLarge!.color,
+            ),
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
@@ -511,9 +517,9 @@ class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
             child: Container(
               constraints: const BoxConstraints(maxHeight: 250),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
+                border: Border.all(color: Theme.of(context).dividerColor),
               ),
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -578,7 +584,10 @@ class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
         children: [
           Text(
             'Wilaya',
-            style: GoogleFonts.dmSans(fontSize: 12, color: Colors.grey[400]),
+            style: GoogleFonts.dmSans(
+              fontSize: 12,
+              color: Theme.of(context).inputDecorationTheme.labelStyle!.color,
+            ),
           ),
           const SizedBox(height: 8),
           GestureDetector(
@@ -586,11 +595,11 @@ class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: BoxDecoration(
-                color: Colors.grey[50],
+                color: Theme.of(context).inputDecorationTheme.fillColor,
                 borderRadius: BorderRadius.circular(12),
                 border: _isOpen
                     ? Border.all(color: AppColors.roseColor, width: 2)
-                    : Border.all(color: Colors.grey[200]!),
+                    : Border.all(color: Theme.of(context).dividerColor),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -601,8 +610,10 @@ class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
                         color: widget.selectedWilaya != null
-                            ? Colors.black
-                            : Colors.grey[400],
+                            ? Theme.of(context).textTheme.bodyLarge!.color
+                            : Theme.of(
+                                context,
+                              ).inputDecorationTheme.hintStyle!.color,
                       ),
                     ),
                   ),

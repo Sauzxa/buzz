@@ -54,9 +54,9 @@ class _FaqPageState extends State<FaqPage> {
           // Main content
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xFFF5F5F5),
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
@@ -72,7 +72,7 @@ class _FaqPageState extends State<FaqPage> {
                       style: GoogleFonts.dmSans(
                         fontSize: 32,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black,
+                        color: Theme.of(context).textTheme.titleLarge!.color,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -81,7 +81,7 @@ class _FaqPageState extends State<FaqPage> {
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
-                        color: Colors.grey.shade600,
+                        color: Theme.of(context).textTheme.bodySmall!.color,
                         height: 1.5,
                       ),
                     ),
@@ -152,14 +152,16 @@ class _FaqPageState extends State<FaqPage> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: Colors.black,
+                            backgroundColor: Theme.of(context).cardColor,
+                            foregroundColor: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
                             elevation: 0,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                               side: BorderSide(
-                                color: Colors.grey.shade300,
+                                color: Theme.of(context).dividerColor,
                                 width: 1,
                               ),
                             ),
@@ -172,14 +174,16 @@ class _FaqPageState extends State<FaqPage> {
                                 style: GoogleFonts.dmSans(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
-                                  color: Colors.black87,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.titleLarge!.color,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              const Icon(
+                              Icon(
                                 Icons.arrow_forward,
                                 size: 20,
-                                color: Colors.black87,
+                                color: Theme.of(context).iconTheme.color,
                               ),
                             ],
                           ),
@@ -218,7 +222,7 @@ class _FaqPageState extends State<FaqPage> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -238,12 +242,12 @@ class _FaqPageState extends State<FaqPage> {
             style: GoogleFonts.dmSans(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Colors.black87,
+              color: Theme.of(context).textTheme.titleLarge!.color,
             ),
           ),
           trailing: Icon(
             expanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
-            color: Colors.black54,
+            color: Theme.of(context).iconTheme.color,
           ),
           onExpansionChanged: (isExpanding) {
             setState(() {
@@ -260,7 +264,7 @@ class _FaqPageState extends State<FaqPage> {
               style: GoogleFonts.dmSans(
                 fontSize: 13,
                 fontWeight: FontWeight.w400,
-                color: Colors.grey.shade600,
+                color: Theme.of(context).textTheme.bodySmall!.color,
                 height: 1.6,
               ),
             ),
