@@ -288,7 +288,7 @@ class _HomePageState extends State<HomePage> {
                                 return Text(
                                   'Salam ${userProvider.fullName}',
                                   style: GoogleFonts.dmSans(
-                                    fontSize: 28,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
@@ -299,7 +299,8 @@ class _HomePageState extends State<HomePage> {
                             Text(
                               'What are you looking for today?',
                               style: GoogleFonts.dmSans(
-                                fontSize: 15,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
                                 color: Colors.white.withOpacity(0.95),
                               ),
                             ),
