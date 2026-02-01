@@ -139,10 +139,13 @@ class _OTPPageState extends State<OTPPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             Navigator.pushReplacementNamed(context, RouteNames.mobileNumber);
           },
@@ -254,33 +257,47 @@ class _OTPPageState extends State<OTPPage> {
   }
 
   Widget _buildOTPBox(int index) {
-    return Container(
+    return SizedBox(
       width: 60,
       height: 60,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: _otpControllers[index].text.isNotEmpty
-              ? AppColors.roseColor
-              : Colors.grey[300]!,
-          width: 2,
-        ),
-        borderRadius: BorderRadius.circular(12),
-      ),
       child: TextField(
         controller: _otpControllers[index],
         focusNode: _focusNodes[index],
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         maxLength: 1,
+        cursorColor: AppColors.roseColor,
         style: GoogleFonts.dmSans(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Theme.of(context).textTheme.bodyLarge!.color,
+          color: Colors.white,
         ),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-        decoration: const InputDecoration(
-          border: InputBorder.none,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor:
+              Theme.of(context).inputDecorationTheme.fillColor ??
+              (Theme.of(context).brightness == Brightness.dark
+                  ? Colors.grey[850]
+                  : Colors.grey[50]),
           counterText: '',
+          contentPadding: EdgeInsets.zero,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Theme.of(context).dividerColor,
+              width: 2,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: AppColors.roseColor, width: 2),
+          ),
+          hintStyle: TextStyle(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white54
+                : Colors.black38,
+          ),
         ),
         onChanged: (value) {
           _onOTPChanged(index, value);

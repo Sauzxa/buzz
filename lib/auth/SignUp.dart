@@ -129,10 +129,13 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             Navigator.pushReplacementNamed(context, RouteNames.mobileNumber);
           },
@@ -392,30 +395,35 @@ class _SignUpPageState extends State<SignUpPage> {
           ),
         ),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).inputDecorationTheme.fillColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).dividerColor),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          obscureText: obscureText,
+          inputFormatters: inputFormatters,
+          onChanged: (value) => setState(() {}),
+          style: GoogleFonts.dmSans(
+            fontSize: 14,
+            color: Theme.of(context).textTheme.bodyLarge!.color,
           ),
-          child: TextField(
-            controller: controller,
-            keyboardType: keyboardType,
-            obscureText: obscureText,
-            inputFormatters: inputFormatters,
-            onChanged: (value) => setState(() {}),
-            style: GoogleFonts.dmSans(
-              fontSize: 14,
-              color: Theme.of(context).textTheme.bodyLarge!.color,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
             ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).dividerColor,
+                width: 1,
               ),
-              suffixIcon: suffixIcon,
             ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: AppColors.roseColor, width: 2),
+            ),
+            suffixIcon: suffixIcon,
           ),
         ),
       ],
@@ -556,7 +564,9 @@ class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
                             wilayaName,
                             style: GoogleFonts.dmSans(
                               fontSize: 14,
-                              color: Colors.black87,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyLarge!.color,
                               fontWeight: isSelected
                                   ? FontWeight.w600
                                   : FontWeight.w400,
@@ -597,9 +607,12 @@ class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
               decoration: BoxDecoration(
                 color: Theme.of(context).inputDecorationTheme.fillColor,
                 borderRadius: BorderRadius.circular(12),
-                border: _isOpen
-                    ? Border.all(color: AppColors.roseColor, width: 2)
-                    : Border.all(color: Theme.of(context).dividerColor),
+                border: Border.all(
+                  color: _isOpen
+                      ? AppColors.roseColor
+                      : Theme.of(context).dividerColor,
+                  width: _isOpen ? 2 : 1,
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

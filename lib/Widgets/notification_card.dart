@@ -167,56 +167,67 @@ class NotificationCard extends StatelessWidget {
             ),
           ),
           if (showDivider)
-            Divider(height: 1, thickness: 1, color: Colors.grey[200]),
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: Theme.of(context).dividerColor,
+            ),
         ],
       ),
     );
   }
 
   Widget _buildNotificationIcon() {
-    // If notification has a base64 image, decode and display it
-    if (notification.notificationImage != null &&
-        notification.notificationImage!.isNotEmpty) {
-      try {
-        // Remove data URI prefix if present
-        String base64String = notification.notificationImage!;
-        if (base64String.contains(',')) {
-          base64String = base64String.split(',').last;
+    return Builder(
+      builder: (context) {
+        // If notification has a base64 image, decode and display it
+        if (notification.notificationImage != null &&
+            notification.notificationImage!.isNotEmpty) {
+          try {
+            // Remove data URI prefix if present
+            String base64String = notification.notificationImage!;
+            if (base64String.contains(',')) {
+              base64String = base64String.split(',').last;
+            }
+
+            final bytes = base64Decode(base64String);
+
+            return Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Theme.of(context).dividerColor,
+                  width: 1,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.memory(
+                  bytes,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback to icon if image fails to load
+                    return _buildDefaultIcon(context);
+                  },
+                ),
+              ),
+            );
+          } catch (e) {
+            print('Error decoding notification image: $e');
+            // Fallback to icon if decoding fails
+            return _buildDefaultIcon(context);
+          }
         }
 
-        final bytes = base64Decode(base64String);
-
-        return Container(
-          width: 40,
-          height: 40,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey[200]!, width: 1),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Image.memory(
-              bytes,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                // Fallback to icon if image fails to load
-                return _buildDefaultIcon();
-              },
-            ),
-          ),
-        );
-      } catch (e) {
-        print('Error decoding notification image: $e');
-        // Fallback to icon if decoding fails
-        return _buildDefaultIcon();
-      }
-    }
-
-    // Default icon display
-    return _buildDefaultIcon();
+        // Default icon display
+        return _buildDefaultIcon(context);
+      },
+    );
   }
 
-  Widget _buildDefaultIcon() {
+  Widget _buildDefaultIcon(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(

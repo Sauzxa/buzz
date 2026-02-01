@@ -144,10 +144,14 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
             // Phone Number Input
             Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Theme.of(context).dividerColor),
+                color:
+                    Theme.of(context).inputDecorationTheme.fillColor ??
+                    (Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey[850]
+                        : Colors.grey[50]),
                 borderRadius: BorderRadius.circular(12),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               child: Row(
                 children: [
                   Text(
@@ -354,7 +358,9 @@ class _CustomCountryDropdownState extends State<_CustomCountryDropdown> {
                                 country,
                                 style: GoogleFonts.dmSans(
                                   fontSize: 14,
-                                  color: Colors.black87,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color,
                                   fontWeight: isSelected
                                       ? FontWeight.w600
                                       : FontWeight.w400,
@@ -384,11 +390,15 @@ class _CustomCountryDropdownState extends State<_CustomCountryDropdown> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           decoration: BoxDecoration(
-            color: Colors.grey[50],
+            color:
+                Theme.of(context).inputDecorationTheme.fillColor ??
+                (Theme.of(context).brightness == Brightness.dark
+                    ? Colors.grey[850]
+                    : Colors.grey[50]),
             borderRadius: BorderRadius.circular(12),
             border: _isOpen
                 ? Border.all(color: AppColors.roseColor, width: 2)
-                : Border.all(color: Colors.grey[300]!),
+                : Border.all(color: Theme.of(context).dividerColor),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
