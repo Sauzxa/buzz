@@ -212,8 +212,8 @@ class _SignInPageState extends State<SignInPage> {
               suffixIcon: IconButton(
                 icon: Icon(
                   _obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   color: Colors.grey[400],
                   size: 22,
                 ),

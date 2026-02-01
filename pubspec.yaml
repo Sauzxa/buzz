@@ -111,6 +111,7 @@ flutter:
     - assets/CategorySucces/GraphicDesing.png
     - assets/CategorySucces/Printing.png
     - assets/others/ResetEmail.png
+    - assets/others/invoiceSucces.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

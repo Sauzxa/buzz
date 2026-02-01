@@ -533,8 +533,18 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
   OverlayEntry? _overlayEntry;
 
   @override
+  void deactivate() {
+    // Just remove overlay without setState during deactivate
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    super.deactivate();
+  }
+
+  @override
   void dispose() {
-    _removeOverlay();
+    _overlayEntry?.remove();
+    _overlayEntry = null;
     super.dispose();
   }
 
@@ -549,25 +559,32 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() {
-      _isOpen = false;
-    });
+    _isOpen = false;
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _showOverlay() {
+    if (!mounted) return;
     _overlayEntry = _createOverlayEntry();
-    Overlay.of(context).insert(_overlayEntry!);
+    Overlay.of(context, rootOverlay: true).insert(_overlayEntry!);
     setState(() {
       _isOpen = true;
     });
   }
 
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
-    var size = renderBox.size;
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) {
+      // Return a dummy overlay if render box is not ready
+      return OverlayEntry(builder: (_) => const SizedBox.shrink());
+    }
+
+    final size = renderBox.size;
 
     return OverlayEntry(
-      builder: (context) => Positioned(
+      builder: (overlayContext) => Positioned(
         width: size.width,
         child: CompositedTransformFollower(
           link: _layerLink,
@@ -600,8 +617,12 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () {
-                          widget.onChanged(option.value);
+                          // Remove overlay first, then trigger callback
                           _removeOverlay();
+                          // Use post-frame callback to ensure overlay is removed
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            widget.onChanged(option.value);
+                          });
                         },
                         borderRadius: BorderRadius.circular(8),
                         child: Container(

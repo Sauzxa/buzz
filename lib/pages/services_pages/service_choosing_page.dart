@@ -51,7 +51,12 @@ class ServiceChoosingPage extends StatelessWidget {
         currentIndex: 0,
         onTap: (index) {
           if (index == 0) {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            // Use pushNamedAndRemoveUntil for safer navigation
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteNames.home,
+              (route) => false,
+            );
           } else if (index == 4) {
             Navigator.pushNamed(context, RouteNames.chat);
           }

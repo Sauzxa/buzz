@@ -417,54 +417,207 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _buildWilayaDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Wilaya',
-          style: GoogleFonts.dmSans(fontSize: 12, color: Colors.grey[400]),
-        ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
+    return _CustomWilayaDropdown(
+      selectedWilaya: _selectedWilaya,
+      onChanged: (value) {
+        setState(() {
+          _selectedWilaya = value;
+        });
+      },
+    );
+  }
+}
+
+// Custom Dropdown Field Widget for Wilaya
+class _CustomWilayaDropdown extends StatefulWidget {
+  final String? selectedWilaya;
+  final Function(String?) onChanged;
+
+  const _CustomWilayaDropdown({
+    required this.selectedWilaya,
+    required this.onChanged,
+  });
+
+  @override
+  State<_CustomWilayaDropdown> createState() => _CustomWilayaDropdownState();
+}
+
+class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
+  bool _isOpen = false;
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void deactivate() {
+    // Just remove overlay without setState during deactivate
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    super.dispose();
+  }
+
+  void _toggleDropdown() {
+    if (_isOpen) {
+      _removeOverlay();
+    } else {
+      _showOverlay();
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _showOverlay() {
+    if (!mounted) return;
+    _overlayEntry = _createOverlayEntry();
+    Overlay.of(context, rootOverlay: true).insert(_overlayEntry!);
+    setState(() {
+      _isOpen = true;
+    });
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) {
+      // Return a dummy overlay if render box is not ready
+      return OverlayEntry(builder: (_) => const SizedBox.shrink());
+    }
+
+    final size = renderBox.size;
+
+    return OverlayEntry(
+      builder: (overlayContext) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0, size.height + 4),
+          child: Material(
+            elevation: 4,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[200]!),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: _selectedWilaya,
-              isExpanded: true,
-              hint: Text(
-                '',
-                style: GoogleFonts.dmSans(
-                  fontSize: 14,
-                  color: Colors.grey[400],
-                ),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 250),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
               ),
-              icon: Icon(Icons.keyboard_arrow_down, color: Colors.grey[400]),
-              items: algeriaWilayas.map((wilaya) {
-                return DropdownMenuItem<String>(
-                  value: wilaya['name'],
-                  child: Text(
-                    wilaya['name'],
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color: Colors.black,
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                shrinkWrap: true,
+                itemCount: algeriaWilayas.length,
+                itemBuilder: (context, index) {
+                  final wilaya = algeriaWilayas[index];
+                  final wilayaName = wilaya['name'] as String;
+                  final isSelected = widget.selectedWilaya == wilayaName;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
                     ),
-                  ),
-                );
-              }).toList(),
-              onChanged: (value) {
-                setState(() {
-                  _selectedWilaya = value;
-                });
-              },
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          // Remove overlay first, then trigger callback
+                          _removeOverlay();
+                          // Use post-frame callback to ensure overlay is removed
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            widget.onChanged(wilayaName);
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
+                          child: Text(
+                            wilayaName,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 14,
+                              color: Colors.black87,
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ),
-      ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Wilaya',
+            style: GoogleFonts.dmSans(fontSize: 12, color: Colors.grey[400]),
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: _toggleDropdown,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(12),
+                border: _isOpen
+                    ? Border.all(color: AppColors.roseColor, width: 2)
+                    : Border.all(color: Colors.grey[200]!),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.selectedWilaya ?? '',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14,
+                        color: widget.selectedWilaya != null
+                            ? Colors.black
+                            : Colors.grey[400],
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    _isOpen
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: Colors.grey[400],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

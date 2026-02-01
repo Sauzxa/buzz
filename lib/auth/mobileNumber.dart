@@ -129,41 +129,11 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
             const SizedBox(height: 40),
 
             // Country Dropdown
-            Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
-                  value: _selectedCountry,
-                  isExpanded: true,
-                  icon: const Icon(Icons.keyboard_arrow_down),
-                  items: _countries.keys.map((String country) {
-                    return DropdownMenuItem<String>(
-                      value: country,
-                      child: Row(
-                        children: [
-                          Text(
-                            _getCountryFlag(country),
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                          const SizedBox(width: 12),
-                          Text(
-                            country,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 16,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: _onCountryChanged,
-                ),
-              ),
+            _CustomCountryDropdown(
+              selectedCountry: _selectedCountry,
+              countries: _countries,
+              onChanged: _onCountryChanged,
+              getFlagEmoji: _getCountryFlag,
             ),
 
             const SizedBox(height: 20),
@@ -244,5 +214,204 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
     if (country.contains('Tunisia')) return '🇹🇳';
     if (country.contains('USA')) return '🇺🇸';
     return '🌍';
+  }
+}
+
+// Custom Dropdown Field Widget
+class _CustomCountryDropdown extends StatefulWidget {
+  final String selectedCountry;
+  final Map<String, String> countries;
+  final Function(String?) onChanged;
+  final String Function(String) getFlagEmoji;
+
+  const _CustomCountryDropdown({
+    required this.selectedCountry,
+    required this.countries,
+    required this.onChanged,
+    required this.getFlagEmoji,
+  });
+
+  @override
+  State<_CustomCountryDropdown> createState() => _CustomCountryDropdownState();
+}
+
+class _CustomCountryDropdownState extends State<_CustomCountryDropdown> {
+  bool _isOpen = false;
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void deactivate() {
+    // Just remove overlay without setState during deactivate
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    super.dispose();
+  }
+
+  void _toggleDropdown() {
+    if (_isOpen) {
+      _removeOverlay();
+    } else {
+      _showOverlay();
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _showOverlay() {
+    if (!mounted) return;
+    _overlayEntry = _createOverlayEntry();
+    Overlay.of(context, rootOverlay: true).insert(_overlayEntry!);
+    setState(() {
+      _isOpen = true;
+    });
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) {
+      // Return a dummy overlay if render box is not ready
+      return OverlayEntry(builder: (_) => const SizedBox.shrink());
+    }
+
+    final size = renderBox.size;
+
+    return OverlayEntry(
+      builder: (overlayContext) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0, size.height + 4),
+          child: Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 250),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                shrinkWrap: true,
+                itemCount: widget.countries.length,
+                itemBuilder: (context, index) {
+                  final country = widget.countries.keys.elementAt(index);
+                  final isSelected = widget.selectedCountry == country;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          // Remove overlay first, then trigger callback
+                          _removeOverlay();
+                          // Use post-frame callback to ensure overlay is removed
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            widget.onChanged(country);
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                widget.getFlagEmoji(country),
+                                style: const TextStyle(fontSize: 24),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                country,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: GestureDetector(
+        onTap: _toggleDropdown,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: _isOpen
+                ? Border.all(color: AppColors.roseColor, width: 2)
+                : Border.all(color: Colors.grey[300]!),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    widget.getFlagEmoji(widget.selectedCountry),
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    widget.selectedCountry,
+                    style: GoogleFonts.dmSans(
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Icon(
+                _isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                color: Colors.grey[600],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

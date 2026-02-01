@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../services/invoice_service.dart';
 import '../../theme/colors.dart';
 import '../../Widgets/button.dart';
+import 'invoice_uploaded_success.dart';
 
 class PaymentUploadPage extends StatefulWidget {
   final Map<String, dynamic> order;
@@ -91,17 +92,13 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Payment receipt uploaded successfully!'),
-          backgroundColor: AppColors.greenColor,
+      // Navigate to success page
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => InvoiceUploadedSuccess(order: widget.order),
         ),
       );
-
-      // Navigate back to orders list to refresh status
-      Navigator.pop(context); // Pop upload page
-      Navigator.pop(context); // Pop details page (if came from there)
-      // Ideally trigger a refresh on the orders list, but provider should handle if we revisit
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
