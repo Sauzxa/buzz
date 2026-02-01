@@ -157,9 +157,9 @@ class _NotificationBottomSheetState extends State<NotificationBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.7,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -172,7 +172,7 @@ class _NotificationBottomSheetState extends State<NotificationBottomSheet> {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: Theme.of(context).dividerColor,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -189,7 +189,7 @@ class _NotificationBottomSheetState extends State<NotificationBottomSheet> {
                   style: GoogleFonts.dmSans(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: Theme.of(context).textTheme.titleLarge!.color,
                   ),
                 ),
                 const Spacer(),
@@ -287,7 +287,10 @@ class _NotificationBottomSheetState extends State<NotificationBottomSheet> {
           const SizedBox(height: 16),
           Text(
             'Chargement...',
-            style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[600]),
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: Theme.of(context).textTheme.bodySmall!.color,
+            ),
           ),
         ],
       ),
@@ -301,21 +304,28 @@ class _NotificationBottomSheetState extends State<NotificationBottomSheet> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.error_outline, size: 64, color: Colors.red[300]),
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Colors.red.withOpacity(0.6),
+            ),
             const SizedBox(height: 16),
             Text(
               'Erreur',
               style: GoogleFonts.dmSans(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               error,
               textAlign: TextAlign.center,
-              style: GoogleFonts.dmSans(fontSize: 13, color: Colors.grey[500]),
+              style: GoogleFonts.dmSans(
+                fontSize: 13,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
@@ -349,21 +359,28 @@ class _NotificationBottomSheetState extends State<NotificationBottomSheet> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.notifications_none, size: 80, color: Colors.grey[300]),
+            Icon(
+              Icons.notifications_none,
+              size: 80,
+              color: Theme.of(context).iconTheme.color?.withOpacity(0.3),
+            ),
             const SizedBox(height: 20),
             Text(
               'Aucune notification',
               style: GoogleFonts.dmSans(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: Colors.grey[700],
+                color: Theme.of(context).textTheme.titleLarge!.color,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               'Vous serez notifié quand un agent devient\ndisponible',
               textAlign: TextAlign.center,
-              style: GoogleFonts.dmSans(fontSize: 14, color: Colors.grey[500]),
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Theme.of(context).textTheme.bodySmall!.color,
+              ),
             ),
           ],
         ),

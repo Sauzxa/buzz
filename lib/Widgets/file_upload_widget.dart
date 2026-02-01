@@ -87,7 +87,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
           style: GoogleFonts.dmSans(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Theme.of(context).textTheme.titleLarge!.color,
           ),
         ),
         const SizedBox(height: 12),
@@ -100,10 +100,12 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
             decoration: BoxDecoration(
               color: _isDragging
                   ? AppColors.greenColor.withOpacity(0.1)
-                  : const Color(0xFFF5F7FA),
+                  : Theme.of(context).cardColor,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: _isDragging ? AppColors.greenColor : Colors.grey[300]!,
+                color: _isDragging
+                    ? AppColors.greenColor
+                    : Theme.of(context).dividerColor,
                 width: 2,
                 style: BorderStyle.solid,
               ),
@@ -129,7 +131,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                   style: GoogleFonts.dmSans(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: Theme.of(context).textTheme.titleLarge!.color,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -137,7 +139,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                   'Or choose files',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).textTheme.bodySmall!.color,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -145,7 +147,9 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                   'PDF, DOC, JPG, PNG, ZIP (Max 10MB)',
                   style: GoogleFonts.dmSans(
                     fontSize: 12,
-                    color: Colors.grey[500],
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodySmall!.color?.withOpacity(0.7),
                   ),
                 ),
               ],
@@ -161,7 +165,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
             style: GoogleFonts.dmSans(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: Colors.black87,
+              color: Theme.of(context).textTheme.titleLarge!.color,
             ),
           ),
           const SizedBox(height: 12),
@@ -172,7 +176,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F7FA),
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -200,7 +204,9 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
-                            color: Colors.black87,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -210,7 +216,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                           _getFileSize(file),
                           style: GoogleFonts.dmSans(
                             fontSize: 12,
-                            color: Colors.grey[600],
+                            color: Theme.of(context).textTheme.bodySmall!.color,
                           ),
                         ),
                       ],
@@ -218,7 +224,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.close, size: 20),
-                    color: Colors.grey[600],
+                    color: Theme.of(context).iconTheme.color,
                     onPressed: () => _removeFile(index),
                   ),
                 ],

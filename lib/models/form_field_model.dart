@@ -56,6 +56,25 @@ class FormFieldModel {
       columns: json['columns'], // Page number for multi-page forms
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type,
+      'label': label,
+      'placeholder': placeholder,
+      'description': description,
+      'required': required,
+      'order': order,
+      'options': options?.map((opt) => opt.toJson()).toList(),
+      'validation': validation?.toJson(),
+      'multiple': multiple,
+      'accept': accept,
+      'maxFileSize': maxFileSize,
+      'maxFiles': maxFiles,
+      'columns': columns,
+    };
+  }
 }
 
 class FormFieldOption {
@@ -78,6 +97,15 @@ class FormFieldOption {
       image: json['image'],
       description: json['description'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'value': value,
+      'label': label,
+      'image': image,
+      'description': description,
+    };
   }
 }
 
@@ -107,5 +135,16 @@ class FormFieldValidation {
       minDate: json['minDate'],
       maxDate: json['maxDate'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'minLength': minLength,
+      'maxLength': maxLength,
+      'min': min,
+      'max': max,
+      'minDate': minDate,
+      'maxDate': maxDate,
+    };
   }
 }

@@ -3,8 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../theme/colors.dart';
 import '../../providers/saved_services_provider.dart';
+import '../../providers/services_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../Widgets/service_card.dart';
+import '../../Widgets/long_press_service_wrapper.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
 import 'service_choosing_page.dart';
@@ -159,18 +161,32 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
                             ),
                         itemCount: provider.savedServices.length,
                         itemBuilder: (context, index) {
-                          final service = provider.savedServices[index];
-                          return ServiceCard(
-                            service: service,
+                          final savedService = provider.savedServices[index];
+
+                          // Get the full service from ServicesProvider to ensure we have formFields
+                          final servicesProvider = context
+                              .read<ServicesProvider>();
+                          final fullService = servicesProvider.services.firstWhere(
+                            (s) => s.id == savedService.id,
+                            orElse: () =>
+                                savedService, // Fallback to saved service if not found
+                          );
+
+                          return LongPressServiceWrapper(
+                            service: fullService,
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      ServiceChoosingPage(service: service),
+                                      ServiceChoosingPage(service: fullService),
                                 ),
                               );
                             },
+                            child: ServiceCard(
+                              service: fullService,
+                              // onTap is handled by wrapper
+                            ),
                           );
                         },
                       );

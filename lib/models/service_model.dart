@@ -128,6 +128,7 @@ class ServiceModel {
       'mainImage': mainImage,
       'isActive': isActive,
       'color': color,
+      'formFields': formFields?.map((field) => field.toJson()).toList(),
     };
   }
 }
