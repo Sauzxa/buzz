@@ -257,7 +257,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                     Navigator.of(dialogContext).pop(false),
                                 child: Text(
                                   'Cancel',
-                                  style: GoogleFonts.dmSans(color: Colors.grey),
+                                  style: GoogleFonts.dmSans(
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                               TextButton(

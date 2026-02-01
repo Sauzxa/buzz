@@ -79,6 +79,42 @@ class OrderCard extends StatelessWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 8),
+
+              // Status Badge
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _getStatusColor(status),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          _getStatusIcon(status),
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          _getStatusLabel(status),
+                          style: GoogleFonts.dmSans(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
               const SizedBox(height: 12),
 
               // Order Number & Price
@@ -266,5 +302,68 @@ class OrderCard extends StatelessWidget {
       }
     } catch (_) {}
     return fullNumber;
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return Colors.orange;
+      case 'PRICED':
+        return Colors.blue;
+      case 'AWAITING_PAYMENT_VALIDATION':
+        return Colors.purple;
+      case 'IN_PROGRESS':
+        return Colors.teal;
+      case 'COMPLETED':
+        return AppColors.greenColor;
+      case 'CANCELLED':
+        return Colors.red;
+      case 'DELIVERED':
+        return Colors.indigo;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getStatusIcon(String status) {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return Icons.hourglass_empty;
+      case 'PRICED':
+        return Icons.attach_money;
+      case 'AWAITING_PAYMENT_VALIDATION':
+        return Icons.pending_actions;
+      case 'IN_PROGRESS':
+        return Icons.work_outline;
+      case 'COMPLETED':
+        return Icons.check_circle_outline;
+      case 'CANCELLED':
+        return Icons.cancel_outlined;
+      case 'DELIVERED':
+        return Icons.local_shipping_outlined;
+      default:
+        return Icons.info_outline;
+    }
+  }
+
+  String _getStatusLabel(String status) {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return 'Pending';
+      case 'PRICED':
+        return 'Priced';
+      case 'AWAITING_PAYMENT_VALIDATION':
+        return 'Awaiting Payment';
+      case 'IN_PROGRESS':
+        return 'In Progress';
+      case 'COMPLETED':
+        return 'Completed';
+      case 'CANCELLED':
+        return 'Cancelled';
+      case 'DELIVERED':
+        return 'Delivered';
+      default:
+        return status;
+    }
   }
 }

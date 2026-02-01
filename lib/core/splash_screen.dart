@@ -4,8 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../providers/auth_provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/notification_provider.dart';
-import '../routes/route_names.dart';
 import '../services/notification_navigation_service.dart';
+import '../utils/fade_route.dart';
+import '../auth/SignIn.dart';
+import '../onboarding/onb1.dart';
+import 'homePage.dart';
 
 import '../theme/colors.dart';
 
@@ -32,12 +35,13 @@ class _SplashScreenState extends State<SplashScreen> {
     // Try to auto-login (also checks onboarding status)
     final isAuthenticated = await authProvider.tryAutoLogin();
 
-    // Minimal delay for smooth transition
-    await Future.delayed(const Duration(milliseconds: 100));
+    // Add a brief delay to show the loading state completed
+    // This gives better visual feedback that navigation is about to happen
+    await Future.delayed(const Duration(milliseconds: 500));
 
     if (!mounted) return;
 
-    // Enhanced routing logic
+    // Enhanced routing logic with smooth animations
     if (isAuthenticated) {
       // User has valid token → Populate UserProvider and navigate to HomePage
       if (authProvider.user != null) {
@@ -50,7 +54,11 @@ class _SplashScreenState extends State<SplashScreen> {
           notificationProvider.setUserId(authProvider.user!.id!);
         }
       }
-      Navigator.of(context).pushReplacementNamed(RouteNames.home);
+
+      // Navigate with smooth fade transition
+      Navigator.of(
+        context,
+      ).pushAndRemoveUntil(FadeRoute(page: const HomePage()), (route) => false);
 
       // Check for pending notification navigation (app opened from terminated state)
       WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -64,11 +72,16 @@ class _SplashScreenState extends State<SplashScreen> {
         }
       });
     } else if (authProvider.hasSeenOnboarding) {
-      // No token but has seen onboarding → SignIn
-      Navigator.of(context).pushReplacementNamed(RouteNames.signIn);
+      // No token but has seen onboarding → SignIn with smooth transition
+      Navigator.of(context).pushAndRemoveUntil(
+        FadeRoute(page: const SignInPage()),
+        (route) => false,
+      );
     } else {
-      // First time user → Onboarding
-      Navigator.of(context).pushReplacementNamed(RouteNames.onboarding1);
+      // First time user → Onboarding with smooth transition
+      Navigator.of(
+        context,
+      ).pushAndRemoveUntil(FadeRoute(page: const onb1()), (route) => false);
     }
   }
 

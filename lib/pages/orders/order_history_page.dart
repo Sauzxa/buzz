@@ -5,8 +5,8 @@ import '../../providers/orders_provider.dart';
 import '../../providers/user_provider.dart';
 import '../../providers/invoice_provider.dart';
 import '../../Widgets/order_drawer.dart';
+import '../../Widgets/order_card.dart';
 import '../../routes/route_names.dart';
-import '../../theme/colors.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class OrderHistoryPage extends StatefulWidget {
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  final Map<String, Map<String, dynamic>> _invoiceCache = {};
+  final Map<String, String?> _invoiceDeadlineCache = {};
 
   @override
   void initState() {
@@ -65,21 +65,14 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       if (!mounted) return; // Check before each iteration
 
       final orderId = order['id']?.toString();
-      if (orderId != null && !_invoiceCache.containsKey(orderId)) {
+      if (orderId != null && !_invoiceDeadlineCache.containsKey(orderId)) {
         try {
           await invoiceProvider.fetchInvoiceByOrderId(orderId);
           if (!mounted) return; // Check after async operation
 
           if (invoiceProvider.invoice != null) {
-            _invoiceCache[orderId] = {
-              'serviceName': invoiceProvider.invoice!.serviceName,
-              'finalAmount': invoiceProvider.invoice!.finalAmount,
-              'paymentValidatedAt':
-                  invoiceProvider.invoice!.paymentValidatedAt?.isNotEmpty ==
-                      true
-                  ? invoiceProvider.invoice!.paymentValidatedAt!.last
-                  : null,
-            };
+            _invoiceDeadlineCache[orderId] =
+                invoiceProvider.invoice!.paymentDeadline;
           }
         } catch (e) {
           print('⚠️ Failed to fetch invoice for order $orderId: $e');
@@ -178,193 +171,24 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                   itemBuilder: (context, index) {
                     final order = orders[index];
                     final orderId = order['id']?.toString();
-                    final invoiceData = orderId != null
-                        ? _invoiceCache[orderId]
+                    final paymentDeadline = orderId != null
+                        ? _invoiceDeadlineCache[orderId]
                         : null;
-                    return _buildHistoryCard(order, invoiceData);
+                    return OrderCard(
+                      order: order,
+                      paymentDeadline: paymentDeadline,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.orderDetails,
+                          arguments: order,
+                        );
+                      },
+                    );
                   },
                 );
         },
       ),
     );
-  }
-
-  Widget _buildHistoryCard(
-    Map<String, dynamic> order,
-    Map<String, dynamic>? invoiceData,
-  ) {
-    final serviceName =
-        invoiceData?['serviceName'] ?? order['category'] ?? 'Service';
-    final finalAmount = invoiceData?['finalAmount'] ?? order['totalPrice'] ?? 0;
-    final paymentValidatedAt = invoiceData?['paymentValidatedAt'];
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    serviceName,
-                    style: GoogleFonts.dmSans(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  '${finalAmount.toStringAsFixed(2)} DA',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.roseColor,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.roseColor,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    'Commande ${order['id']}', // or orderNumber
-                    style: GoogleFonts.dmSans(
-                      fontSize: 10,
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(order['status']),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        _getStatusDisplay(order['status'] ?? ''),
-                        style: GoogleFonts.dmSans(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      paymentValidatedAt != null
-                          ? 'EST ${_formatDate(paymentValidatedAt)}'
-                          : 'EST ${_formatDate(order['deadline'])}',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 10,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    Text(
-                      _formatDate(order['updatedAt']),
-                      style: GoogleFonts.dmSans(
-                        fontSize: 10,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            // Details Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    RouteNames.orderDetails,
-                    arguments: order,
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.roseColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  'View Details',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatDate(String? dateStr) {
-    if (dateStr == null) return '--/--/----';
-    try {
-      final date = DateTime.parse(dateStr);
-      return '${date.day.toString().padLeft(2, '0')}-${date.month.toString().padLeft(2, '0')}-${date.year}';
-    } catch (e) {
-      return dateStr;
-    }
-  }
-
-  String _getStatusDisplay(String status) {
-    switch (status) {
-      case 'COMPLETED':
-        return 'Delivered';
-      case 'CANCELLED':
-        return 'Cancelled';
-      case 'REFUSED':
-        return 'Refused';
-      default:
-        return status;
-    }
-  }
-
-  Color _getStatusColor(String? status) {
-    switch (status) {
-      case 'COMPLETED':
-        return AppColors.greenColor;
-      case 'CANCELLED':
-        return Colors.grey;
-      case 'REFUSED':
-        return Colors.red;
-      default:
-        return Colors.grey;
-    }
   }
 }

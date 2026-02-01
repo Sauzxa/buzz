@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../pages/chat/chat_screen.dart';
 import '../../Widgets/notification_popup.dart';
+import 'faq_page.dart';
 
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
@@ -36,25 +37,14 @@ class _ContactPageState extends State<ContactPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Menu Icon (4 squares)
+                  // Back Arrow Button
                   IconButton(
                     icon: const Icon(
-                      Icons.grid_view_rounded,
+                      Icons.arrow_back_ios,
                       color: Colors.white,
-                      size: 28,
+                      size: 24,
                     ),
                     onPressed: () {
-                      // In design this might open drawer, but here we probably want to go back?
-                      // If navigated from settings, maybe this is just visual or opens drawer?
-                      // User said "navigate to it from user_settings_page", so Back is expected behavior generally,
-                      // BUT "respect design 100%" shows the grid icon.
-                      // I will put the grid icon but make it pop (go back) or do nothing?
-                      // Let's make it pop for usability, or if it's a drawer, open drawer.
-                      // Given it's a sub-page, usually it should be a back arrow.
-                      // However, strictly following design -> Grid Icon.
-                      // I'll make it function as 'back' if it's a subpage, or just a dummy if strict visual.
-                      // The user said "navigate to it from user_settings_page", implying it's a pushed route.
-                      // I will keep the icon but add a helper to pop.
                       Navigator.pop(context);
                     },
                   ),
@@ -200,11 +190,11 @@ class _ContactPageState extends State<ContactPage> {
                                     0xFFF9F0FC,
                                   ), // Very light purple
                                   title: 'Email',
-                                  subtitle: 'admin@shifty.com',
+                                  subtitle: 'buzz@gmail.com',
                                   onTap: () async {
                                     final Uri launchUri = Uri(
                                       scheme: 'mailto',
-                                      path: 'feraouf91@gmail.com',
+                                      path: 'buzz@gmail.com',
                                     );
                                     try {
                                       if (await canLaunchUrl(launchUri)) {
@@ -223,7 +213,14 @@ class _ContactPageState extends State<ContactPage> {
                                   ), // Very light yellow
                                   title: 'FAQ',
                                   subtitle: '+50 Answers',
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const FaqPage(),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ],
                             );
