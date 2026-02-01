@@ -7,12 +7,18 @@ import '../../Widgets/home_drawer.dart';
 import '../../Widgets/notification_popup.dart';
 import '../../Widgets/notification_badge.dart';
 import '../../routes/route_names.dart';
+import '../settings/profile/edit_profile_settings.dart';
 
-class CategoryPage extends StatelessWidget {
+class CategoryPage extends StatefulWidget {
   final CategoryModel category;
 
   const CategoryPage({Key? key, required this.category}) : super(key: key);
 
+  @override
+  State<CategoryPage> createState() => _CategoryPageState();
+}
+
+class _CategoryPageState extends State<CategoryPage> {
   void _showNotificationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -20,6 +26,28 @@ class CategoryPage extends StatelessWidget {
       backgroundColor: Colors.transparent,
       builder: (context) => const NotificationBottomSheet(),
     );
+  }
+
+  void _onBottomNavTapped(int index) {
+    if (index == 0) {
+      // Home - Go back to home
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    } else if (index == 1) {
+      // Search
+      Navigator.pushNamed(context, RouteNames.search);
+    } else if (index == 2) {
+      // Orders
+      Navigator.pushNamed(context, RouteNames.orderManagement);
+    } else if (index == 3) {
+      // Profile/Settings
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const EditProfileSettings()),
+      );
+    } else if (index == 4) {
+      // Chat
+      Navigator.pushNamed(context, RouteNames.chat);
+    }
   }
 
   @override
@@ -32,22 +60,15 @@ class CategoryPage extends StatelessWidget {
       // Add Bottom Navigation Bar to match design
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 0, // Default to Home for visual consistency
-        onTap: (index) {
-          // For now, we just pop back to home if home is clicked, or show snackbar
-          if (index == 0) {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          } else if (index == 4) {
-            Navigator.pushNamed(context, RouteNames.chat);
-          }
-        },
+        onTap: _onBottomNavTapped,
       ),
       body: Stack(
         fit: StackFit.expand,
         children: [
           // 1. Full-screen background image
-          if (category.categoryImage.isNotEmpty)
+          if (widget.category.categoryImage.isNotEmpty)
             Image.network(
-              category.categoryImage,
+              widget.category.categoryImage,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return Container(
@@ -150,8 +171,8 @@ class CategoryPage extends StatelessWidget {
                       // "Create, Don't hate!" Text
                       Text(
                         // If category has specific styling description, use it, else default
-                        category.description.isNotEmpty
-                            ? category.description
+                        widget.category.description.isNotEmpty
+                            ? widget.category.description
                             : "Create,\nDon't hate!",
                         style: GoogleFonts.playfairDisplay(
                           // Serif font for elegance
@@ -174,8 +195,8 @@ class CategoryPage extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                 builder: (_) => ServicesByCategoryPage(
-                                  categoryId: category.id,
-                                  categoryName: category.categoryName,
+                                  categoryId: widget.category.id,
+                                  categoryName: widget.category.categoryName,
                                 ),
                               ),
                             );
