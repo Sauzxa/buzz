@@ -222,7 +222,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
                     mainAxisSpacing: 16,
-                    childAspectRatio: 0.75,
+                    childAspectRatio: 1.0,
                   ),
                   itemCount: services.length,
                   itemBuilder: (context, index) {
