@@ -10,16 +10,18 @@ import '../providers/services_provider.dart';
 import '../providers/news_provider.dart';
 import '../providers/saved_services_provider.dart';
 import '../models/service_model.dart';
-import '../models/category_model.dart';
+import '../models/discount_model.dart';
+
 import '../Widgets/home_drawer.dart';
 import '../Widgets/notification_popup.dart';
 import '../Widgets/notification_badge.dart';
 import '../Widgets/category_card.dart';
 import '../Widgets/service_card.dart';
+import '../Widgets/discount_service_card.dart';
 import '../Widgets/long_press_service_wrapper.dart';
 import '../Widgets/custom_bottom_nav_bar.dart';
 import '../Widgets/skeleton_loader.dart';
-import '../Widgets/ad_banner.dart';
+
 import '../utils/snackbar_helper.dart';
 import '../utils/static_categories.dart';
 import '../pages/categories/category_page.dart';
@@ -36,7 +38,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
-  String? _selectedFilter; // null means "All" or no filter
+  String?
+  _selectedServiceFilter; // For services section - search by service name
 
   // Search functionality
   final FocusNode _searchFocusNode = FocusNode();
@@ -451,15 +454,20 @@ class _HomePageState extends State<HomePage> {
                           // Categories Section (no title)
                           _buildCategoriesSection(),
 
-                          const SizedBox(height: 32),
-
-                          // News & Offers Section (horizontal with filter chips)
-                          _buildNewsSection(),
-
                           const SizedBox(height: 24),
 
-                          // Pubs/Ads Section
+                          // Limited Offers Section (Discount Services)
+                          _buildDiscountSection(),
+
+                          const SizedBox(height: 32),
+
+                          // Pubs/Ads Section (News)
                           _buildAdsSection(),
+
+                          const SizedBox(height: 32),
+
+                          // Services Section (horizontal with service name filter)
+                          _buildServicesSection(),
 
                           const SizedBox(height: 100),
                         ],
@@ -689,118 +697,277 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNewsSection() {
-    // Dynamic filters based on categories + Promotion
-    final categories = [
-      'Graphic-Design',
-      'Audio-Visual',
-      'Printing',
-      'Promotion',
-    ];
+  Widget _buildDiscountSection() {
+    // Get categories for filtering
+    final categoriesProvider = context.watch<CategoriesProvider>();
+    final categories = categoriesProvider.hasData
+        ? categoriesProvider.categories
+        : [];
 
+    return Consumer<ServicesProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'News & Offers',
+                  style: GoogleFonts.dmSans(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).textTheme.titleLarge!.color,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 120,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: 3,
+                  itemBuilder: (context, index) {
+                    return const Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: SkeletonLoader(width: 320, height: 120),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        }
+
+        // Show nothing if no discounts
+        if (provider.discounts.isEmpty) {
+          return const SizedBox.shrink();
+        }
+
+        // Create a list of discount cards (one card per service name in each discount)
+        // Each item contains: discount, serviceName, and categoryName
+        final List<Map<String, dynamic>> discountCards = [];
+
+        for (var discount in provider.discounts) {
+          for (var serviceName in discount.serviceNames) {
+            // Find the service to get its category
+            final service = provider.services.firstWhere(
+              (s) => s.name == serviceName,
+              orElse: () => ServiceModel(
+                id: '',
+                name: '',
+                description: '',
+                categoryId: '',
+                categoryName: '',
+                imageUrl: '',
+                formFields: [],
+              ),
+            );
+
+            discountCards.add({
+              'discount': discount,
+              'serviceName': serviceName,
+              'categoryName': service.categoryName ?? '',
+              'service': service,
+            });
+          }
+        }
+
+        // Filter discount cards based on selected category
+        final filteredCards = _selectedServiceFilter == null
+            ? discountCards
+            : discountCards.where((card) {
+                return card['categoryName']?.toLowerCase() ==
+                    _selectedServiceFilter!.toLowerCase();
+              }).toList();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title and See All button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'News & Offers',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _selectedServiceFilter = null;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _selectedServiceFilter == null
+                            ? AppColors.roseColor
+                            : Theme.of(context).cardColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: AppColors.roseColor.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                      child: Text(
+                        'See All',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: _selectedServiceFilter == null
+                              ? Colors.white
+                              : AppColors.roseColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+
+            // Filter Chips (by category name)
+            if (categories.isNotEmpty)
+              SizedBox(
+                height: 40,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    final category = categories[index];
+                    final isSelected =
+                        _selectedServiceFilter == category.categoryName;
+
+                    return Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        label: Text(
+                          category.categoryName.replaceAll('-', ' '),
+                          style: GoogleFonts.dmSans(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? Colors.white
+                                : AppColors.roseColor,
+                          ),
+                        ),
+                        selected: isSelected,
+                        selectedColor: AppColors.roseColor,
+                        backgroundColor: Theme.of(context).cardColor,
+                        side: BorderSide(
+                          color: AppColors.roseColor.withOpacity(0.3),
+                          width: 1,
+                        ),
+                        onSelected: (selected) {
+                          setState(() {
+                            _selectedServiceFilter = selected
+                                ? category.categoryName
+                                : null;
+                          });
+                        },
+                        showCheckmark: false,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+            const SizedBox(height: 16),
+
+            // Discount Cards List
+            if (filteredCards.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 40,
+                ),
+                child: Center(
+                  child: Text(
+                    'No offers available',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              )
+            else
+              SizedBox(
+                height:
+                    180, // Matches the new card height set by user (280x120)
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  itemCount: filteredCards.length,
+                  itemBuilder: (context, index) {
+                    final card = filteredCards[index];
+                    final discount = card['discount'] as DiscountModel;
+                    final serviceName = card['serviceName'] as String;
+                    final service = card['service'] as ServiceModel;
+
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: DiscountServiceCard(
+                        discount: discount,
+                        serviceName: serviceName,
+                        onTap: () {
+                          // Navigate to service if we have a valid service
+                          if (service.id.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    ServiceChoosingPage(service: service),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildServicesSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'News & Offers',
-                style: GoogleFonts.dmSans(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.titleLarge!.color,
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    _selectedFilter = null;
-                  });
-                },
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  decoration: BoxDecoration(
-                    color: _selectedFilter == null
-                        ? AppColors.roseColor
-                        : Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: AppColors.roseColor.withOpacity(0.3),
-                      width: 1,
-                    ),
-                  ),
-                  child: Text(
-                    'See All',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: _selectedFilter == null
-                          ? Colors.white
-                          : AppColors.roseColor,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+          child: Text(
+            'Our Services',
+            style: GoogleFonts.dmSans(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.titleLarge!.color,
+            ),
           ),
         ),
-        const SizedBox(height: 12),
-
-        // Filter Chips
-        SizedBox(
-          height: 40,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              final isSelected = _selectedFilter == category;
-
-              return Container(
-                margin: const EdgeInsets.only(right: 8),
-                child: FilterChip(
-                  label: Text(
-                    category.replaceAll('-', ' '),
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : AppColors.roseColor,
-                    ),
-                  ),
-                  selected: isSelected,
-                  selectedColor: AppColors.roseColor,
-                  backgroundColor: Theme.of(context).cardColor,
-                  side: BorderSide(
-                    color: AppColors.roseColor.withOpacity(0.3),
-                    width: 1,
-                  ),
-                  onSelected: (selected) {
-                    setState(() {
-                      _selectedFilter = selected ? category : null;
-                    });
-                  },
-                  showCheckmark: false,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-
         const SizedBox(height: 16),
 
-        // Services List (Horizontal)
+        // Services List (Horizontal - no filtration)
         Consumer<ServicesProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading) {
@@ -825,41 +992,9 @@ class _HomePageState extends State<HomePage> {
               return const SizedBox.shrink();
             }
 
-            // Limit to a reasonable number if needed, or show all
-            // For "News & Offers" section maybe we just show the first few?
             final services = provider.services;
 
-            // Filter services based on selected filter
-            List<ServiceModel> filteredServices;
-            if (_selectedFilter == null) {
-              filteredServices = services;
-            } else if (_selectedFilter == 'Promotion') {
-              filteredServices = provider.getDiscountedServices();
-            } else {
-              // Get category ID from category name, then filter by ID
-              final categoriesProvider = context.read<CategoriesProvider>();
-
-              final category = categoriesProvider.categories.firstWhere(
-                (cat) =>
-                    cat.categoryName.toLowerCase() ==
-                    _selectedFilter!.toLowerCase(),
-                orElse: () => CategoryModel(
-                  id: '',
-                  categoryName: '',
-                  description: '',
-                  categoryColor: '',
-                  categoryImage: '',
-                ),
-              );
-
-              if (category.id.isNotEmpty) {
-                filteredServices = provider.getServicesByCategory(category.id);
-              } else {
-                filteredServices = [];
-              }
-            }
-
-            if (filteredServices.isEmpty) {
+            if (services.isEmpty) {
               return Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -882,9 +1017,9 @@ class _HomePageState extends State<HomePage> {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: filteredServices.length,
+                itemCount: services.length,
                 itemBuilder: (context, index) {
-                  final service = filteredServices[index];
+                  final service = services[index];
                   return Padding(
                     padding: const EdgeInsets.only(right: 16),
                     child: SizedBox(

@@ -57,7 +57,7 @@ class DiscountModel {
       discountImage: json['discountImage']?.toString(),
       serviceId: json['serviceId']?.toString() ?? '',
       serviceNames:
-          (json['servicesNames'] as List<dynamic>?)
+          (json['serviceNames'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
@@ -81,7 +81,7 @@ class DiscountModel {
       'maxDiscountAmount': maxDiscountAmount,
       'discountImage': discountImage,
       'serviceId': serviceId,
-      'servicesNames': serviceNames,
+      'serviceNames': serviceNames,
     };
   }
 
