@@ -12,9 +12,13 @@ import '../../routes/route_names.dart';
 
 class ServiceChoosingPage extends StatelessWidget {
   final ServiceModel service;
+  final Color? categoryColor;
 
-  const ServiceChoosingPage({Key? key, required this.service})
-    : super(key: key);
+  const ServiceChoosingPage({
+    Key? key,
+    required this.service,
+    this.categoryColor,
+  }) : super(key: key);
 
   void _showNotificationBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -26,6 +30,9 @@ class ServiceChoosingPage extends StatelessWidget {
   }
 
   Color _getServiceColor() {
+    if (categoryColor != null) {
+      return categoryColor!;
+    }
     if (service.color == null || service.color!.isEmpty) {
       return AppColors.greenColor;
     }
@@ -44,13 +51,47 @@ class ServiceChoosingPage extends StatelessWidget {
         ? service.mainImage
         : service.imageUrl;
 
+    final themeColor = _getServiceColor();
+
     return Scaffold(
       backgroundColor: Colors.black,
       extendBody: true,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: themeColor,
+        elevation: 0,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.grid_view, color: Colors.white, size: 28),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+        centerTitle: true,
+        title: Image.asset(
+          'assets/Logos/WhiteLogo.png',
+          height: 35,
+          errorBuilder: (_, __, ___) => Text(
+            'BUZZ',
+            style: GoogleFonts.dmSans(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 24,
+            ),
+          ),
+        ),
+        actions: [
+          NotificationIconWithBadge(
+            onPressed: () => _showNotificationBottomSheet(context),
+            iconColor: Colors.white,
+            iconSize: 28,
+          ),
+          const SizedBox(width: 16),
+        ],
+      ),
       drawer: const HomeDrawer(),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 0,
-        selectedItemColor: _getServiceColor(),
+        selectedItemColor: themeColor,
         onTap: (index) {
           if (index == 0) {
             // Use pushNamedAndRemoveUntil for safer navigation
@@ -106,50 +147,18 @@ class ServiceChoosingPage extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                // Header (Menu, Logo, Notification)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Menu
-                      Builder(
-                        builder: (context) => IconButton(
-                          icon: const Icon(
-                            Icons.grid_view,
-                            color: Colors.white,
-                            size: 28,
-                          ),
-                          onPressed: () => Scaffold.of(context).openDrawer(),
-                        ),
-                      ),
-
-                      // Logo
-                      Image.asset(
-                        'assets/Logos/WhiteLogo.png',
-                        height: 35,
-                        errorBuilder: (_, __, ___) => Text(
-                          'BUZZ',
-                          style: GoogleFonts.dmSans(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ),
-
-                      // Notification
-                      NotificationIconWithBadge(
-                        onPressed: () => _showNotificationBottomSheet(context),
-                        iconColor: Colors.white,
-                        iconSize: 28,
-                      ),
-                    ],
-                  ),
-                ),
+                // Spacer for AppBar since we removed the custom header
+                // But SafeArea handles the top notch.
+                // Since we have an AppBar with extendBodyBehindAppBar: true,
+                // the body goes behind it. SafeArea will push content down below the notch.
+                // BUT AppBar is also consuming space.
+                // Standard AppBar height is usually handled by Scaffold body unless extending.
+                // When extending, we might need a transparent spacer if the visual design requires it,
+                // OR just let the content center.
+                // The original code had a custom header in column. We removed it.
+                // We want the content to be centered vertically mostly?
+                // The original code had Expanded -> Center -> Container.
+                // So it should be fine.
 
                 // Centered Service Name with Colored Background
                 Expanded(
@@ -161,7 +170,7 @@ class ServiceChoosingPage extends StatelessWidget {
                       ),
                       margin: const EdgeInsets.symmetric(horizontal: 24),
                       decoration: BoxDecoration(
-                        color: _getServiceColor().withOpacity(
+                        color: themeColor.withOpacity(
                           0.9,
                         ), // Slightly transparent
                         borderRadius: BorderRadius.circular(24),
@@ -192,7 +201,7 @@ class ServiceChoosingPage extends StatelessWidget {
                   padding: const EdgeInsets.all(24),
                   child: PrimaryButton(
                     text: 'Get Started',
-                    backgroundColor: _getServiceColor(),
+                    backgroundColor: themeColor,
                     onPressed: () {
                       if (service.formFields == null ||
                           service.formFields!.isEmpty) {

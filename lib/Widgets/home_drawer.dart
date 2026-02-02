@@ -82,10 +82,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
   @override
   Widget build(BuildContext context) {
     final userProvider = context.watch<UserProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
+    final isDarkMode = themeProvider.isDarkMode;
 
     return Drawer(
       child: Container(
-        color: AppColors.roseColor,
+        color: isDarkMode ? AppColors.darkBackground : AppColors.roseColor,
         child: Column(
           children: [
             // Header
@@ -98,20 +100,14 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   Positioned(
                     top: 0,
                     right: 0,
-                    child: Consumer<ThemeProvider>(
-                      builder: (context, themeProvider, _) {
-                        return IconButton(
-                          icon: Icon(
-                            themeProvider.isDarkMode
-                                ? Icons.nightlight_round
-                                : Icons.wb_sunny,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                          onPressed: () {
-                            themeProvider.toggleTheme();
-                          },
-                        );
+                    child: IconButton(
+                      icon: Icon(
+                        isDarkMode ? Icons.nightlight_round : Icons.wb_sunny,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                      onPressed: () {
+                        themeProvider.toggleTheme();
                       },
                     ),
                   ),
@@ -122,7 +118,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       // User Avatar
                       CircleAvatar(
                         radius: 35,
-                        backgroundColor: Colors.white,
+                        backgroundColor: isDarkMode
+                            ? AppColors.darkCard
+                            : Colors.white,
                         child: ClipOval(
                           child:
                               userProvider.user.profilePicture != null &&
@@ -336,8 +334,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: isDarkMode ? Colors.black : Colors.white,
                   borderRadius: BorderRadius.circular(30),
+                  border: isDarkMode
+                      ? Border.all(color: Colors.white12, width: 1)
+                      : null,
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -351,21 +352,25 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         vertical: 12,
                       ),
                       child: _isLoggingOut
-                          ? const Center(
+                          ? Center(
                               child: SizedBox(
                                 height: 24,
                                 width: 24,
                                 child: CircularProgressIndicator(
-                                  color: AppColors.roseColor,
+                                  color: isDarkMode
+                                      ? Colors.white
+                                      : AppColors.roseColor,
                                   strokeWidth: 2.5,
                                 ),
                               ),
                             )
                           : Row(
                               children: [
-                                const Icon(
+                                Icon(
                                   Icons.logout,
-                                  color: AppColors.roseColor,
+                                  color: isDarkMode
+                                      ? Colors.white
+                                      : AppColors.roseColor,
                                   size: 24,
                                 ),
                                 const SizedBox(width: 16),
@@ -374,7 +379,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                   style: GoogleFonts.dmSans(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.roseColor,
+                                    color: isDarkMode
+                                        ? Colors.white
+                                        : AppColors.roseColor,
                                   ),
                                 ),
                               ],

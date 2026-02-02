@@ -50,10 +50,15 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
 
   void _proceedToServiceDetails() {
     if (_selectedService != null) {
+      final categoryTheme = CategoryTheme.fromCategoryName(widget.categoryName);
+
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ServiceChoosingPage(service: _selectedService!),
+          builder: (_) => ServiceChoosingPage(
+            service: _selectedService!,
+            categoryColor: categoryTheme.color,
+          ),
         ),
       );
     }
@@ -96,6 +101,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: categoryTheme.color,
         elevation: 0,

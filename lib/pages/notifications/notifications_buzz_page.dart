@@ -225,7 +225,7 @@ class _NotificationsBuzzPageState extends State<NotificationsBuzzPage> {
             color: AppColors.roseColor,
             child: ListView.builder(
               controller: _scrollController,
-              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount:
                   provider.notifications.length + (_isLoadingMore ? 1 : 0),
               itemBuilder: (context, index) {
@@ -234,17 +234,13 @@ class _NotificationsBuzzPageState extends State<NotificationsBuzzPage> {
                 }
 
                 final notification = provider.notifications[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: NotificationCard(
-                    notification: notification,
-                    showDivider: index < provider.notifications.length - 1,
-                    onTap: () => _handleNotificationTap(
-                      notification.id,
-                      notification.isRead,
-                    ),
-                    onDelete: () => _handleNotificationDelete(notification.id),
+                return NotificationCard(
+                  notification: notification,
+                  onTap: () => _handleNotificationTap(
+                    notification.id,
+                    notification.isRead,
                   ),
+                  onDelete: () => _handleNotificationDelete(notification.id),
                 );
               },
             ),

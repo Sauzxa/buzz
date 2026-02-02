@@ -24,6 +24,7 @@ import '../Widgets/skeleton_loader.dart';
 
 import '../utils/snackbar_helper.dart';
 import '../utils/static_categories.dart';
+import '../utils/category_theme.dart';
 import '../pages/categories/category_page.dart';
 import '../pages/services_pages/service_choosing_page.dart';
 import '../pages/settings/profile/edit_profile_settings.dart';
@@ -126,9 +127,16 @@ class _HomePageState extends State<HomePage> {
     _searchFocusNode.unfocus();
 
     // Navigate to service page
+    // Navigate to service page
+    final categoryTheme = CategoryTheme.fromCategoryName(service.categoryName);
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => ServiceChoosingPage(service: service)),
+      MaterialPageRoute(
+        builder: (_) => ServiceChoosingPage(
+          service: service,
+          categoryColor: categoryTheme.color,
+        ),
+      ),
     );
   }
 
@@ -924,11 +932,17 @@ class _HomePageState extends State<HomePage> {
                         onTap: () {
                           // Navigate to service if we have a valid service
                           if (service.id.isNotEmpty) {
+                            final categoryTheme =
+                                CategoryTheme.fromCategoryName(
+                                  service.categoryName,
+                                );
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    ServiceChoosingPage(service: service),
+                                builder: (_) => ServiceChoosingPage(
+                                  service: service,
+                                  categoryColor: categoryTheme.color,
+                                ),
                               ),
                             );
                           }
@@ -1015,10 +1029,16 @@ class _HomePageState extends State<HomePage> {
                 return LongPressServiceWrapper(
                   service: service,
                   onTap: () {
+                    final categoryTheme = CategoryTheme.fromCategoryName(
+                      service.categoryName,
+                    );
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => ServiceChoosingPage(service: service),
+                        builder: (_) => ServiceChoosingPage(
+                          service: service,
+                          categoryColor: categoryTheme.color,
+                        ),
                       ),
                     );
                   },

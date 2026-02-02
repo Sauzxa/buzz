@@ -9,23 +9,21 @@ class NotificationCard extends StatelessWidget {
   final NotificationModel notification;
   final VoidCallback onTap;
   final VoidCallback onDelete;
-  final bool showDivider;
-
   const NotificationCard({
     Key? key,
     required this.notification,
     required this.onTap,
     required this.onDelete,
-    this.showDivider = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Dismissible(
       key: ValueKey(notification.id),
       direction: DismissDirection.endToStart,
       confirmDismiss: (direction) async {
-        // Show confirmation dialog
         return await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
@@ -73,32 +71,47 @@ class NotificationCard extends StatelessWidget {
       },
       background: Container(
         alignment: Alignment.centerRight,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: const EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
           color: Colors.red,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: const Icon(Icons.delete_outline, color: Colors.white, size: 28),
       ),
-      child: Column(
-        children: [
-          InkWell(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isDark ? AppColors.darkCard : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
             onTap: () {
               HapticFeedback.lightImpact();
               onTap();
             },
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(16),
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: notification.isRead
                     ? Colors.transparent
                     : AppColors.roseColor.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(16),
                 border: notification.isRead
                     ? null
-                    : Border(
-                        left: BorderSide(color: AppColors.roseColor, width: 3),
+                    : Border.all(
+                        color: AppColors.roseColor.withOpacity(0.3),
+                        width: 1,
                       ),
               ),
               child: Row(
@@ -118,8 +131,8 @@ class NotificationCard extends StatelessWidget {
                               child: Text(
                                 notification.title,
                                 style: GoogleFonts.dmSans(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
                                   color: Theme.of(
                                     context,
                                   ).textTheme.titleLarge!.color,
@@ -134,16 +147,18 @@ class NotificationCard extends StatelessWidget {
                                 color: Theme.of(
                                   context,
                                 ).textTheme.bodySmall!.color,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           notification.message,
                           style: GoogleFonts.dmSans(
                             fontSize: 13,
                             color: Theme.of(context).textTheme.bodySmall!.color,
+                            height: 1.4,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
@@ -160,19 +175,20 @@ class NotificationCard extends StatelessWidget {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         color: AppColors.roseColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.roseColor.withOpacity(0.4),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                     ),
                 ],
               ),
             ),
           ),
-          if (showDivider)
-            Divider(
-              height: 1,
-              thickness: 1,
-              color: Theme.of(context).dividerColor,
-            ),
-        ],
+        ),
       ),
     );
   }

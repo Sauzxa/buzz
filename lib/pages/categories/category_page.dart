@@ -209,9 +209,7 @@ class _CategoryPageState extends State<CategoryPage> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(
-                              0xFF4FBF67,
-                            ), // Green color
+                            backgroundColor: categoryTheme.color,
                             foregroundColor: Colors.white,
                             elevation: 0,
                             shape: RoundedRectangleBorder(

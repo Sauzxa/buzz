@@ -257,7 +257,6 @@ class _NotificationBottomSheetState extends State<NotificationBottomSheet> {
                       final notification = provider.notifications[index];
                       return NotificationCard(
                         notification: notification,
-                        showDivider: index < provider.notifications.length - 1,
                         onTap: () => _handleNotificationTap(
                           notification.id,
                           notification.isRead,
