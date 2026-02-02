@@ -318,6 +318,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
     return FileUploadWidget(
       uploadedFiles: _page2Files,
       onFilesChanged: _onFilesChanged,
+      buttonColor: widget.categoryTheme.color,
     );
   }
 }

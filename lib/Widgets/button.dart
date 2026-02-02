@@ -7,6 +7,7 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
   final double fontSize;
   final bool isLoading;
+  final Color? backgroundColor;
 
   const PrimaryButton({
     Key? key,
@@ -14,6 +15,7 @@ class PrimaryButton extends StatelessWidget {
     required this.onPressed,
     this.fontSize = 18,
     this.isLoading = false,
+    this.backgroundColor,
   }) : super(key: key);
 
   @override
@@ -24,8 +26,9 @@ class PrimaryButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed, // Disable while loading
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.roseColor,
-          disabledBackgroundColor: AppColors.roseColor.withOpacity(0.7),
+          backgroundColor: backgroundColor ?? AppColors.roseColor,
+          disabledBackgroundColor: (backgroundColor ?? AppColors.roseColor)
+              .withOpacity(0.7),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(28),
           ),

@@ -50,17 +50,194 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: widget.formFields.length,
-      itemBuilder: (context, index) {
-        final field = widget.formFields[index];
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 20),
-          child: _buildField(field),
-        );
-      },
+    // Check if we have H and L fields (for printing services)
+    final hField = widget.formFields.firstWhere(
+      (f) => f.id.toLowerCase() == 'h' || f.label.toLowerCase() == 'h',
+      orElse: () => FormFieldModel(
+        id: '',
+        label: '',
+        type: '',
+        required: false,
+        order: 0,
+      ),
+    );
+    final lField = widget.formFields.firstWhere(
+      (f) => f.id.toLowerCase() == 'l' || f.label.toLowerCase() == 'l',
+      orElse: () => FormFieldModel(
+        id: '',
+        label: '',
+        type: '',
+        required: false,
+        order: 0,
+      ),
+    );
+
+    final hasHAndL = hField.id.isNotEmpty && lField.id.isNotEmpty;
+    final fieldsToRender = hasHAndL
+        ? widget.formFields
+              .where((f) => f.id != hField.id && f.id != lField.id)
+              .toList()
+        : widget.formFields;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Render H and L fields together if they exist
+        if (hasHAndL) ...[
+          _buildHLFields(hField, lField),
+          const SizedBox(height: 20),
+        ],
+
+        // Render other fields
+        ...fieldsToRender.asMap().entries.map((entry) {
+          final field = entry.value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: _buildField(field),
+          );
+        }).toList(),
+      ],
+    );
+  }
+
+  // Build H and L fields side by side with "Size" label
+  Widget _buildHLFields(FormFieldModel hField, FormFieldModel lField) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // "Size" label
+        Text(
+          'Size',
+          style: GoogleFonts.dmSans(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color:
+                Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // H and L fields in a row
+        Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'H',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color:
+                          Theme.of(context).textTheme.bodyMedium?.color ??
+                          Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: _controllers[hField.id],
+                    focusNode: _focusNodes[hField.id],
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) =>
+                        widget.onFieldChanged(hField.id, value),
+                    decoration: InputDecoration(
+                      hintText: '',
+                      filled: true,
+                      fillColor:
+                          Theme.of(context).inputDecorationTheme.fillColor ??
+                          const Color(0xFFF5F7FA),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: widget.focusColor ?? AppColors.greenColor,
+                          width: 2,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                    ),
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color:
+                          Theme.of(context).textTheme.bodyLarge?.color ??
+                          Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'L',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color:
+                          Theme.of(context).textTheme.bodyMedium?.color ??
+                          Colors.black54,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: _controllers[lField.id],
+                    focusNode: _focusNodes[lField.id],
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) =>
+                        widget.onFieldChanged(lField.id, value),
+                    decoration: InputDecoration(
+                      hintText: '',
+                      filled: true,
+                      fillColor:
+                          Theme.of(context).inputDecorationTheme.fillColor ??
+                          const Color(0xFFF5F7FA),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(
+                          color: widget.focusColor ?? AppColors.greenColor,
+                          width: 2,
+                        ),
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 12,
+                      ),
+                    ),
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color:
+                          Theme.of(context).textTheme.bodyLarge?.color ??
+                          Colors.black87,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 

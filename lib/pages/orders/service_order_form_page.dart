@@ -344,6 +344,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
     return FileUploadWidget(
       uploadedFiles: _uploadedFiles,
       onFilesChanged: _onFilesChanged,
+      buttonColor: _categoryTheme.color,
     );
   }
 

@@ -7,11 +7,13 @@ import '../theme/colors.dart';
 class FileUploadWidget extends StatefulWidget {
   final List<File> uploadedFiles;
   final Function(List<File>) onFilesChanged;
+  final Color? buttonColor;
 
   const FileUploadWidget({
     Key? key,
     required this.uploadedFiles,
     required this.onFilesChanged,
+    this.buttonColor,
   }) : super(key: key);
 
   @override
@@ -19,8 +21,6 @@ class FileUploadWidget extends StatefulWidget {
 }
 
 class _FileUploadWidgetState extends State<FileUploadWidget> {
-  bool _isDragging = false;
-
   Future<void> _pickFiles() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -79,81 +79,30 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Attachments',
-          style: GoogleFonts.dmSans(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Theme.of(context).textTheme.titleLarge!.color,
-          ),
-        ),
-        const SizedBox(height: 12),
+    final uploadButtonColor = widget.buttonColor ?? AppColors.greenColor;
 
-        // Upload Area
-        GestureDetector(
-          onTap: _pickFiles,
-          child: Container(
-            padding: const EdgeInsets.all(32),
-            decoration: BoxDecoration(
-              color: _isDragging
-                  ? AppColors.greenColor.withOpacity(0.1)
-                  : Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: _isDragging
-                    ? AppColors.greenColor
-                    : Theme.of(context).dividerColor,
-                width: 2,
-                style: BorderStyle.solid,
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Upload Button
+        ElevatedButton.icon(
+          onPressed: _pickFiles,
+          icon: const Icon(Icons.upload_file, color: Colors.white),
+          label: Text(
+            'Upload files',
+            style: GoogleFonts.dmSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
-            child: Column(
-              children: [
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: AppColors.greenColor.withOpacity(0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.cloud_upload_outlined,
-                    size: 30,
-                    color: AppColors.greenColor,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Drop your file here',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Theme.of(context).textTheme.titleLarge!.color,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Or choose files',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 14,
-                    color: Theme.of(context).textTheme.bodySmall!.color,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'PDF, DOC, JPG, PNG, ZIP (Max 10MB)',
-                  style: GoogleFonts.dmSans(
-                    fontSize: 12,
-                    color: Theme.of(
-                      context,
-                    ).textTheme.bodySmall!.color?.withOpacity(0.7),
-                  ),
-                ),
-              ],
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: uploadButtonColor,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
+            elevation: 0,
           ),
         ),
 

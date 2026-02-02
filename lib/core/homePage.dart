@@ -325,14 +325,8 @@ class _HomePageState extends State<HomePage> {
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).cardColor,
                                   borderRadius: BorderRadius.circular(25),
-                                  boxShadow: _isSearchFocused
-                                      ? [
-                                          BoxShadow(
-                                            color: AppColors.roseColor
-                                                .withOpacity(0.3),
-                                            blurRadius: 12,
-                                            offset: const Offset(0, 4),
-                                          ),
+                                  boxShadow: _isSearchFocused ? [
+                                        
                                         ]
                                       : [],
                                 ),
@@ -503,7 +497,7 @@ class _HomePageState extends State<HomePage> {
                   _isSearching ||
                   _searchController.text.length >= 1))
             Positioned(
-              top: MediaQuery.of(context).padding.top + 260,
+              top: MediaQuery.of(context).padding.top + 270,
               left: 16,
               right: 16,
               child: Material(
