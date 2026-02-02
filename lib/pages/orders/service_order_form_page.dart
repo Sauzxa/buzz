@@ -6,8 +6,13 @@ import '../../models/form_field_model.dart';
 import '../../Widgets/button.dart';
 import '../../Widgets/dynamic_form_builder.dart';
 import '../../Widgets/file_upload_widget.dart';
+import '../../Widgets/notification_badge.dart';
+import '../../Widgets/notification_popup.dart';
+import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../services/order_service.dart';
 import '../../utils/category_theme.dart';
+import '../../routes/route_names.dart';
+import '../../pages/settings/profile/edit_profile_settings.dart';
 import 'order_success_page.dart';
 import 'service_order_form_page2.dart';
 
@@ -26,6 +31,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
   final List<File> _uploadedFiles = [];
   final OrderService _orderService = OrderService();
   bool _isSubmitting = false;
+  int _bottomNavIndex = 0;
 
   // Get category theme colors
   CategoryTheme get _categoryTheme =>
@@ -69,6 +75,37 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
       _uploadedFiles.clear();
       _uploadedFiles.addAll(files);
     });
+  }
+
+  void _showNotificationBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const NotificationBottomSheet(),
+    );
+  }
+
+  void _onBottomNavTapped(int index) {
+    if (index == 0) {
+      // Home - pop back to home
+      Navigator.popUntil(context, (route) => route.isFirst);
+    } else if (index == 1) {
+      // Search
+      Navigator.pushNamed(context, RouteNames.search);
+    } else if (index == 2) {
+      // Orders
+      Navigator.pushNamed(context, RouteNames.orderManagement);
+    } else if (index == 3) {
+      // Profile
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const EditProfileSettings()),
+      );
+    } else if (index == 4) {
+      // Chat
+      Navigator.pushNamed(context, RouteNames.chat);
+    }
   }
 
   bool _validatePage(List<FormFieldModel> fields) {
@@ -221,7 +258,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          _isMultiPage ? 'Place Order - Page 1' : 'Place Order',
+          widget.service.name,
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -229,12 +266,24 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          NotificationIconWithBadge(
+            onPressed: _showNotificationBottomSheet,
+            iconColor: Colors.white,
+            iconSize: 28,
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body:
           widget.service.formFields == null ||
               widget.service.formFields!.isEmpty
           ? _buildEmptyState()
           : _buildForm(),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _bottomNavIndex,
+        onTap: _onBottomNavTapped,
+      ),
     );
   }
 
@@ -493,6 +542,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           text: _isMultiPage
               ? 'Next'
               : (_isSubmitting ? 'Submitting...' : 'Submit Order'),
+          backgroundColor: _categoryTheme.color,
           onPressed: () {
             if (!_isSubmitting) {
               _isMultiPage ? _goToNextPage() : _submitOrder();

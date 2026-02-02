@@ -6,8 +6,13 @@ import '../../models/form_field_model.dart';
 import '../../Widgets/button.dart';
 import '../../Widgets/dynamic_form_builder.dart';
 import '../../Widgets/file_upload_widget.dart';
+import '../../Widgets/notification_badge.dart';
+import '../../Widgets/notification_popup.dart';
+import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../services/order_service.dart';
 import '../../utils/category_theme.dart';
+import '../../routes/route_names.dart';
+import '../../pages/settings/profile/edit_profile_settings.dart';
 import 'order_success_page.dart';
 
 class ServiceOrderFormPage2 extends StatefulWidget {
@@ -33,6 +38,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
   final List<File> _page2Files = [];
   final OrderService _orderService = OrderService();
   bool _isSubmitting = false;
+  int _bottomNavIndex = 0;
 
   List<FormFieldModel> get _page2Fields {
     if (widget.service.formFields == null) return [];
@@ -60,6 +66,37 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
       _page2Files.clear();
       _page2Files.addAll(files);
     });
+  }
+
+  void _showNotificationBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const NotificationBottomSheet(),
+    );
+  }
+
+  void _onBottomNavTapped(int index) {
+    if (index == 0) {
+      // Home - pop back to home
+      Navigator.popUntil(context, (route) => route.isFirst);
+    } else if (index == 1) {
+      // Search
+      Navigator.pushNamed(context, RouteNames.search);
+    } else if (index == 2) {
+      // Orders
+      Navigator.pushNamed(context, RouteNames.orderManagement);
+    } else if (index == 3) {
+      // Profile
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const EditProfileSettings()),
+      );
+    } else if (index == 4) {
+      // Chat
+      Navigator.pushNamed(context, RouteNames.chat);
+    }
   }
 
   bool _validatePage2() {
@@ -198,7 +235,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Place Order - Page 2',
+          widget.service.name,
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -206,6 +243,14 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           ),
         ),
         centerTitle: true,
+        actions: [
+          NotificationIconWithBadge(
+            onPressed: _showNotificationBottomSheet,
+            iconColor: Colors.white,
+            iconSize: 28,
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -249,6 +294,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
               // Submit Button
               PrimaryButton(
                 text: _isSubmitting ? 'Submitting...' : 'Submit Order',
+                backgroundColor: widget.categoryTheme.color,
                 onPressed: () {
                   if (!_isSubmitting) {
                     _submitOrder();
@@ -260,6 +306,10 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
             ],
           ),
         ),
+      ),
+      bottomNavigationBar: CustomBottomNavBar(
+        currentIndex: _bottomNavIndex,
+        onTap: _onBottomNavTapped,
       ),
     );
   }
