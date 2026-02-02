@@ -17,6 +17,7 @@ import '../core/homePage.dart';
 import '../pages/chat/chat_screen.dart';
 import '../core/splash_screen.dart';
 import '../pages/settings/general_settings.dart';
+import '../pages/settings/bug_report_page.dart';
 import '../pages/orders/order_management_page.dart';
 import '../pages/orders/order_history_page.dart';
 import '../pages/orders/order_tracking_page.dart';
@@ -92,6 +93,9 @@ class RouteGenerator {
 
       case RouteNames.search:
         return MaterialPageRoute(builder: (_) => const SearchPage());
+
+      case RouteNames.bugReport:
+        return MaterialPageRoute(builder: (_) => const BugReportPage());
 
       // Order Management Routes
       case RouteNames.orderManagement:

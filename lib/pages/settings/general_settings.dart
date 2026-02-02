@@ -159,11 +159,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                           icon: Icons.bug_report_outlined,
                           title: 'Report a bug',
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Bug report page coming soon!'),
-                              ),
-                            );
+                            Navigator.pushNamed(context, RouteNames.bugReport);
                           },
                         ),
                         _buildMenuItem(

@@ -94,6 +94,23 @@ class ApiEndpoints {
   static String markChatAsRead(int chatId) =>
       '$apiPrefix/chats/$chatId/messages/read-all';
 
+  // Support endpoints
+  static String get submitSupportMessage => '$apiPrefix/supportMessage';
+  static String getAllSupportMessages({
+    int page = 0,
+    int size = 10,
+    String? messageType,
+  }) {
+    String url = '$apiPrefix/supportMessage/get-all?page=$page&size=$size';
+    if (messageType != null) {
+      url += '&messageType=$messageType';
+    }
+    return url;
+  }
+
+  static String markSupportMessageAsRead(int messageId) =>
+      '$apiPrefix/supportMessage/$messageId/read';
+
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {
     return '$baseUrl$endpoint';
