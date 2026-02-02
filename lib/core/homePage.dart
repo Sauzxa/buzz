@@ -397,7 +397,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               child: IconButton(
                                 icon: const Icon(
-                                  Icons.tune,
+                                  Icons.tune_sharp,
                                   color: AppColors.roseColor,
                                   size: 22,
                                 ),
@@ -420,7 +420,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                               child: IconButton(
                                 icon: const Icon(
-                                  Icons.location_on_outlined,
+                                  Icons.gps_fixed,
                                   color: AppColors.roseColor,
                                   size: 22,
                                 ),
@@ -503,7 +503,7 @@ class _HomePageState extends State<HomePage> {
                   _isSearching ||
                   _searchController.text.length >= 1))
             Positioned(
-              top: MediaQuery.of(context).padding.top + 220,
+              top: MediaQuery.of(context).padding.top + 260,
               left: 16,
               right: 16,
               child: Material(
@@ -954,36 +954,29 @@ class _HomePageState extends State<HomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            'Our Services',
-            style: GoogleFonts.dmSans(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).textTheme.titleLarge!.color,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 5),
 
         // Services List (Horizontal - no filtration)
         Consumer<ServicesProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading) {
-              return SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    return const Padding(
-                      padding: EdgeInsets.only(right: 16),
-                      child: SkeletonLoader(width: 200, height: 120),
-                    );
-                  },
+              return GridView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                  childAspectRatio: 1.0,
                 ),
+                itemCount: 4,
+                itemBuilder: (context, index) {
+                  return const SkeletonLoader(
+                    width: double.infinity,
+                    height: double.infinity,
+                  );
+                },
               );
             }
 
@@ -1012,38 +1005,35 @@ class _HomePageState extends State<HomePage> {
               );
             }
 
-            return SizedBox(
-              height: 120,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: services.length,
-                itemBuilder: (context, index) {
-                  final service = services[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 16),
-                    child: SizedBox(
-                      width: 200,
-                      child: LongPressServiceWrapper(
-                        service: service,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  ServiceChoosingPage(service: service),
-                            ),
-                          );
-                        },
-                        child: ServiceCard(
-                          service: service,
-                          // onTap is handled by wrapper
-                        ),
-                      ),
-                    ),
-                  );
-                },
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 1.0, // Square cards
               ),
+              itemCount: services.length,
+              itemBuilder: (context, index) {
+                final service = services[index];
+                return LongPressServiceWrapper(
+                  service: service,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ServiceChoosingPage(service: service),
+                      ),
+                    );
+                  },
+                  child: ServiceCard(
+                    service: service,
+                    // onTap is handled by wrapper
+                  ),
+                );
+              },
             );
           },
         ),

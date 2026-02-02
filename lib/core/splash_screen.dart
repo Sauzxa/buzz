@@ -9,8 +9,7 @@ import '../utils/fade_route.dart';
 import '../auth/SignIn.dart';
 import '../onboarding/onb1.dart';
 import 'homePage.dart';
-
-import '../theme/colors.dart';
+import '../Widgets/bouncing_dots_indicator.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -88,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.roseColor,
+      backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -96,24 +95,22 @@ class _SplashScreenState extends State<SplashScreen> {
             // Logo
             Image.asset(
               'assets/Logos/WhiteLogo.png',
-              height: 120,
+              height: 80,
               errorBuilder: (context, error, stackTrace) {
                 return Text(
-                  'BUZZ',
+                  'Buzz',
                   style: GoogleFonts.dmSans(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
-                    fontSize: 48,
+                    fontSize: 32,
                   ),
                 );
               },
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 20),
 
             // Loading indicator
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-            ),
+            const BouncingDotsIndicator(color: Colors.white, size: 15.0),
             const SizedBox(height: 16),
 
             // Loading text

@@ -116,7 +116,7 @@ class DiscountServiceCard extends StatelessWidget {
                   children: [
                     // Service Name (Top Left)
                     Text(
-                      serviceName,
+                      serviceName.replaceAll('-', ' ').toUpperCase(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.dmSans(

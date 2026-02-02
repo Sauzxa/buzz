@@ -110,9 +110,9 @@ class ServiceModel {
       isActive: json['isActive'] as bool? ?? true,
       formFields: fields,
       color:
+          json['serviceColor']?.toString() ??
           json['color']?.toString() ??
-          json['backgroundColor']
-              ?.toString(), // Support both naming conventions
+          json['backgroundColor']?.toString(), // Support all naming conventions
     );
   }
 

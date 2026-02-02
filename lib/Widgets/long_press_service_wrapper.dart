@@ -211,7 +211,7 @@ class _PreviewOverlayState extends State<_PreviewOverlay>
                   ),
                 ],
               ),
-              child: widget.child,
+              child: Material(color: Colors.transparent, child: widget.child),
             ),
           ),
         ),
