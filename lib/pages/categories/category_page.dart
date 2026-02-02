@@ -6,6 +6,7 @@ import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/home_drawer.dart';
 import '../../Widgets/notification_popup.dart';
 import '../../Widgets/notification_badge.dart';
+import '../../utils/category_theme.dart';
 import '../../routes/route_names.dart';
 import '../settings/profile/edit_profile_settings.dart';
 
@@ -19,6 +20,7 @@ class CategoryPage extends StatefulWidget {
 }
 
 class _CategoryPageState extends State<CategoryPage> {
+  // ... existing methods ...
   void _showNotificationBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -52,6 +54,10 @@ class _CategoryPageState extends State<CategoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryTheme = CategoryTheme.fromCategoryName(
+      widget.category.categoryName,
+    );
+
     return Scaffold(
       backgroundColor: Theme.of(context).brightness == Brightness.dark
           ? Colors.black
@@ -61,6 +67,7 @@ class _CategoryPageState extends State<CategoryPage> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 0, // Default to Home for visual consistency
         onTap: _onBottomNavTapped,
+        selectedItemColor: categoryTheme.color,
       ),
       body: Stack(
         fit: StackFit.expand,

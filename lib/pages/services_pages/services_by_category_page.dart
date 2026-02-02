@@ -288,6 +288,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _bottomNavIndex,
         onTap: _onBottomNavTapped,
+        selectedItemColor: categoryTheme.color,
       ),
     );
   }

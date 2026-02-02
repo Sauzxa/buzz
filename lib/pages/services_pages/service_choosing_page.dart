@@ -46,9 +46,11 @@ class ServiceChoosingPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      extendBody: true,
       drawer: const HomeDrawer(),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: 0,
+        selectedItemColor: _getServiceColor(),
         onTap: (index) {
           if (index == 0) {
             // Use pushNamedAndRemoveUntil for safer navigation
@@ -190,6 +192,7 @@ class ServiceChoosingPage extends StatelessWidget {
                   padding: const EdgeInsets.all(24),
                   child: PrimaryButton(
                     text: 'Get Started',
+                    backgroundColor: _getServiceColor(),
                     onPressed: () {
                       if (service.formFields == null ||
                           service.formFields!.isEmpty) {

@@ -310,6 +310,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _bottomNavIndex,
         onTap: _onBottomNavTapped,
+        selectedItemColor: widget.categoryTheme.color,
       ),
     );
   }

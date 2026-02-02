@@ -5,11 +5,13 @@ import '../theme/colors.dart';
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
+  final Color? selectedItemColor;
 
   const CustomBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    this.selectedItemColor,
   });
 
   @override
@@ -17,10 +19,7 @@ class CustomBottomNavBar extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(30),
-        topRight: Radius.circular(30),
-      ),
+      borderRadius: const BorderRadius.all(Radius.circular(30)),
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
@@ -61,11 +60,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 Icons.business_center_outlined,
               ),
               _buildNavItem(3, Icons.person_rounded, Icons.person_outline),
-              _buildNavItem(
-                4,
-                Icons.chat_bubble_rounded,
-                Icons.chat_bubble_outline,
-              ),
+              _buildNavItem(4, Icons.chat_rounded, Icons.chat_rounded),
             ],
           ),
         ),
@@ -75,6 +70,8 @@ class CustomBottomNavBar extends StatelessWidget {
 
   Widget _buildNavItem(int index, IconData activeIcon, IconData inactiveIcon) {
     final bool isSelected = currentIndex == index;
+    final activeColor = selectedItemColor ?? AppColors.roseColor;
+
     return Builder(
       builder: (context) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -88,7 +85,7 @@ class CustomBottomNavBar extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: isSelected
                 ? BoxDecoration(
-                    color: AppColors.roseColor.withOpacity(0.15),
+                    color: activeColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(20),
                   )
                 : BoxDecoration(
@@ -98,7 +95,7 @@ class CustomBottomNavBar extends StatelessWidget {
             child: Icon(
               isSelected ? activeIcon : inactiveIcon,
               color: isSelected
-                  ? AppColors.roseColor
+                  ? activeColor
                   : isDark
                   ? AppColors.darkTextSecondary
                   : Colors.grey[600],
