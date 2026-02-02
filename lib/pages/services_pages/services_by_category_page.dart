@@ -200,7 +200,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
-                      widget.categoryName,
+                      widget.categoryName.replaceAll('-', ' '),
                       style: GoogleFonts.abrilFatface(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,

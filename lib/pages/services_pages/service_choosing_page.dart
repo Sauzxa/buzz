@@ -183,7 +183,7 @@ class ServiceChoosingPage extends StatelessWidget {
                         ],
                       ),
                       child: Text(
-                        service.name,
+                        service.name.replaceAll('-', ' '),
                         textAlign: TextAlign.center,
                         style: GoogleFonts.dmSans(
                           fontSize: 24,

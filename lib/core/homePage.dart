@@ -106,16 +106,18 @@ class _HomePageState extends State<HomePage> {
     final servicesProvider = context.read<ServicesProvider>();
     final allServices = servicesProvider.services;
 
-    // Filter services by name prefix (case-insensitive)
+    // Filter services by name or description (case-insensitive)
     final results = allServices.where((service) {
-      return service.name.toLowerCase().startsWith(query.toLowerCase());
+      final queryLower = query.toLowerCase();
+      return service.name.toLowerCase().contains(queryLower) ||
+          service.description.toLowerCase().contains(queryLower);
     }).toList();
 
     // Sort by name and take top 3
     results.sort((a, b) => a.name.compareTo(b.name));
 
     setState(() {
-      _searchResults = results.take(3).toList();
+      _searchResults = results.take(10).toList();
       _isSearching = false;
     });
   }
@@ -127,7 +129,6 @@ class _HomePageState extends State<HomePage> {
     _searchFocusNode.unfocus();
 
     // Navigate to service page
-    // Navigate to service page
     final categoryTheme = CategoryTheme.fromCategoryName(service.categoryName);
     Navigator.push(
       context,
@@ -138,6 +139,52 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
+  }
+
+  // Helper method to parse service colors safely (handles slashes for gradients)
+  Color _getServiceColor(String? colorString) {
+    if (colorString == null || colorString.isEmpty) {
+      return AppColors.roseColor.withOpacity(0.2);
+    }
+    try {
+      final firstColor = colorString
+          .split('/')
+          .first
+          .trim()
+          .replaceAll('#', '');
+      return Color(int.parse('0xFF$firstColor'));
+    } catch (e) {
+      return AppColors.roseColor.withOpacity(0.2);
+    }
+  }
+
+  // Helper method to get gradient for service icon background
+  LinearGradient? _getServiceGradient(String? colorString) {
+    if (colorString == null || colorString.isEmpty) return null;
+
+    try {
+      final colors = colorString.split('/').map((c) {
+        final hex = c.trim().replaceAll('#', '');
+        return Color(int.parse('0xFF$hex'));
+      }).toList();
+
+      if (colors.isEmpty) return null;
+      if (colors.length == 1) {
+        return LinearGradient(
+          colors: [colors.first, colors.first.withOpacity(0.8)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        );
+      }
+
+      return LinearGradient(
+        colors: colors,
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+      );
+    } catch (e) {
+      return null;
+    }
   }
 
   void _onBottomNavTapped(int index) {
@@ -329,12 +376,19 @@ class _HomePageState extends State<HomePage> {
                               child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
                                 curve: Curves.easeInOut,
-                                height: _isSearchFocused ? 56 : 48,
+                                height: 52,
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(25),
-                                  boxShadow: _isSearchFocused ? [
-                                        
+                                  borderRadius: BorderRadius.circular(26),
+                                  boxShadow: _isSearchFocused
+                                      ? [
+                                          BoxShadow(
+                                            color: Colors.black.withOpacity(
+                                              0.08,
+                                            ),
+                                            blurRadius: 15,
+                                            offset: const Offset(0, 4),
+                                          ),
                                         ]
                                       : [],
                                 ),
@@ -354,7 +408,7 @@ class _HomePageState extends State<HomePage> {
                                           : AppColors.roseColor.withOpacity(
                                               0.7,
                                             ),
-                                      size: _isSearchFocused ? 24 : 22,
+                                      size: 22,
                                     ),
                                     suffixIcon:
                                         _searchController.text.isNotEmpty
@@ -373,9 +427,11 @@ class _HomePageState extends State<HomePage> {
                                           )
                                         : null,
                                     border: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
                                     contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 20,
-                                      vertical: 14,
+                                      vertical: 15,
                                     ),
                                   ),
                                   style: GoogleFonts.dmSans(
@@ -575,16 +631,13 @@ class _HomePageState extends State<HomePage> {
                                 height: 50,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
-                                  color: service.color != null
-                                      ? Color(
-                                          int.parse(
-                                            service.color!.replaceAll(
-                                              '#',
-                                              '0xFF',
-                                            ),
-                                          ),
-                                        )
-                                      : AppColors.roseColor.withOpacity(0.2),
+                                  gradient: _getServiceGradient(service.color),
+                                  color:
+                                      _getServiceGradient(service.color) == null
+                                      ? _getServiceColor(
+                                          service.color,
+                                        ).withOpacity(0.2)
+                                      : null,
                                 ),
                                 child:
                                     service.imageUrl != null &&

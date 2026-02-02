@@ -235,7 +235,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.service.name,
+          widget.service.name.replaceAll('-', ' '),
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -260,7 +260,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
             children: [
               // Service Name
               Text(
-                widget.service.name,
+                widget.service.name.replaceAll('-', ' '),
                 style: GoogleFonts.dmSans(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

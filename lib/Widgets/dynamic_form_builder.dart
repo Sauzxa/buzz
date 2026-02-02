@@ -21,6 +21,187 @@ class DynamicFormBuilder extends StatefulWidget {
   State<DynamicFormBuilder> createState() => _DynamicFormBuilderState();
 }
 
+class _SideBySideDropdown extends StatefulWidget {
+  final FormFieldModel field;
+  final String? selectedValue;
+  final Function(String) onChanged;
+  final Color? focusColor;
+
+  const _SideBySideDropdown({
+    required this.field,
+    required this.selectedValue,
+    required this.onChanged,
+    this.focusColor,
+  });
+
+  @override
+  State<_SideBySideDropdown> createState() => _SideBySideDropdownState();
+}
+
+class _SideBySideDropdownState extends State<_SideBySideDropdown> {
+  bool _isOpen = false;
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void deactivate() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    super.dispose();
+  }
+
+  void _toggleDropdown() {
+    if (_isOpen) {
+      _removeOverlay();
+    } else {
+      _showOverlay();
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _showOverlay() {
+    if (!mounted) return;
+    _overlayEntry = _createOverlayEntry();
+    Overlay.of(context, rootOverlay: true).insert(_overlayEntry!);
+    setState(() {
+      _isOpen = true;
+    });
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) {
+      return OverlayEntry(builder: (_) => const SizedBox.shrink());
+    }
+
+    final size = renderBox.size;
+
+    return OverlayEntry(
+      builder: (overlayContext) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0, size.height + 4),
+          child: Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(8),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 200),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Theme.of(context).dividerColor),
+              ),
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                shrinkWrap: true,
+                itemCount: widget.field.options?.length ?? 0,
+                itemBuilder: (context, index) {
+                  final option = widget.field.options![index];
+                  final isSelected = widget.selectedValue == option.value;
+
+                  return InkWell(
+                    onTap: () {
+                      _removeOverlay();
+                      widget.onChanged(option.value);
+                    },
+                    borderRadius: BorderRadius.circular(4),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        option.label,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                          fontWeight: isSelected
+                              ? FontWeight.w600
+                              : FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedOption = widget.field.options?.firstWhere(
+      (opt) => opt.value == widget.selectedValue,
+      orElse: () => widget.field.options!.first,
+    );
+    final displayLabel = widget.selectedValue != null
+        ? (selectedOption?.label ?? widget.selectedValue)
+        : (widget.field.placeholder ?? 'Select');
+
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: GestureDetector(
+        onTap: _toggleDropdown,
+        child: Container(
+          decoration: BoxDecoration(
+            color:
+                Theme.of(context).inputDecorationTheme.fillColor ??
+                (Theme.of(context).brightness == Brightness.dark
+                    ? AppColors.darkInputFill
+                    : Colors.white),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          alignment: Alignment.centerLeft,
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  displayLabel!,
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    color: widget.selectedValue != null
+                        ? Theme.of(context).textTheme.bodyLarge?.color
+                        : Theme.of(context).hintColor,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Icon(
+                _isOpen ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                color: Theme.of(context).iconTheme.color ?? Colors.grey,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
   final Map<String, TextEditingController> _controllers = {};
   final Map<String, FocusNode> _focusNodes = {};
@@ -73,11 +254,40 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     );
 
     final hasHAndL = hField.id.isNotEmpty && lField.id.isNotEmpty;
-    final fieldsToRender = hasHAndL
-        ? widget.formFields
-              .where((f) => f.id != hField.id && f.id != lField.id)
-              .toList()
-        : widget.formFields;
+    // Check if we have Quantity and Type fields
+    final quantityField = widget.formFields.firstWhere(
+      (f) =>
+          f.label.toLowerCase() == 'quantity' ||
+          f.label.toLowerCase() == 'quantité' ||
+          f.id.toLowerCase() == 'quantity',
+      orElse: () => FormFieldModel(
+        id: '',
+        label: '',
+        type: '',
+        required: false,
+        order: 0,
+      ),
+    );
+
+    final typeField = widget.formFields.firstWhere(
+      (f) => f.label.toLowerCase() == 'type' || f.id.toLowerCase() == 'type',
+      orElse: () => FormFieldModel(
+        id: '',
+        label: '',
+        type: '',
+        required: false,
+        order: 0,
+      ),
+    );
+
+    final fieldsToRender = widget.formFields
+        .where(
+          (f) =>
+              (hasHAndL ? (f.id != hField.id && f.id != lField.id) : true) &&
+              (quantityField.id.isNotEmpty ? f.id != quantityField.id : true) &&
+              (typeField.id.isNotEmpty ? f.id != typeField.id : true),
+        )
+        .toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +295,19 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
         // Render H and L fields together if they exist
         if (hasHAndL) ...[
           _buildHLFields(hField, lField),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
+        ],
+
+        // Render Quantity field if exists
+        if (quantityField.id.isNotEmpty) ...[
+          _buildSideBySideField(quantityField),
+          const SizedBox(height: 16),
+        ],
+
+        // Render Type field if exists
+        if (typeField.id.isNotEmpty) ...[
+          _buildSideBySideField(typeField),
+          const SizedBox(height: 16),
         ],
 
         // Render other fields
@@ -100,144 +322,168 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     );
   }
 
-  // Build H and L fields side by side with "Size" label
+  // Build H and L fields side by side with "Size" label on left
   Widget _buildHLFields(FormFieldModel hField, FormFieldModel lField) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // "Size" label
         Text(
           'Size',
           style: GoogleFonts.dmSans(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color:
-                Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black87,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white,
           ),
         ),
-        const SizedBox(height: 8),
 
-        // H and L fields in a row
+        // H and L inputs
         Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'H',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color:
-                          Theme.of(context).textTheme.bodyMedium?.color ??
-                          Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  TextField(
-                    controller: _controllers[hField.id],
-                    focusNode: _focusNodes[hField.id],
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) =>
-                        widget.onFieldChanged(hField.id, value),
-                    decoration: InputDecoration(
-                      hintText: '',
-                      filled: true,
-                      fillColor:
-                          Theme.of(context).inputDecorationTheme.fillColor ??
-                          const Color(0xFFF5F7FA),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: widget.focusColor ?? AppColors.greenColor,
-                          width: 2,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 12,
-                      ),
-                    ),
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color:
-                          Theme.of(context).textTheme.bodyLarge?.color ??
-                          Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildSmallInput(hField, 'H'),
             const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'L',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color:
-                          Theme.of(context).textTheme.bodyMedium?.color ??
-                          Colors.black54,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  TextField(
-                    controller: _controllers[lField.id],
-                    focusNode: _focusNodes[lField.id],
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) =>
-                        widget.onFieldChanged(lField.id, value),
-                    decoration: InputDecoration(
-                      hintText: '',
-                      filled: true,
-                      fillColor:
-                          Theme.of(context).inputDecorationTheme.fillColor ??
-                          const Color(0xFFF5F7FA),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(
-                          color: widget.focusColor ?? AppColors.greenColor,
-                          width: 2,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 12,
-                      ),
-                    ),
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      color:
-                          Theme.of(context).textTheme.bodyLarge?.color ??
-                          Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildSmallInput(lField, 'L'),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildSmallInput(FormFieldModel field, String label) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.dmSans(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color:
+                Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.color?.withOpacity(0.7) ??
+                Colors.white70,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Container(
+          width: 60, // Minimized width
+          height: 40,
+          child: TextField(
+            controller: _controllers[field.id],
+            focusNode: _focusNodes[field.id],
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            onChanged: (value) => widget.onFieldChanged(field.id, value),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor:
+                  Theme.of(context).inputDecorationTheme.fillColor ??
+                  Colors.white,
+              contentPadding: EdgeInsets.zero,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(
+                  color: widget.focusColor ?? AppColors.greenColor,
+                  width: 2,
+                ),
+              ),
+            ),
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Build field with label on left and input on right
+  Widget _buildSideBySideField(FormFieldModel field) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          field.label,
+          style: GoogleFonts.dmSans(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Container(
+          width: 150, // Fixed width for right aligned inputs
+          height: 40,
+          child: field.type == 'dropdown'
+              ? _buildSideBySideDropdown(field)
+              : _buildSideBySideTextField(field),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSideBySideTextField(FormFieldModel field) {
+    return TextField(
+      controller: _controllers[field.id],
+      focusNode: _focusNodes[field.id],
+      keyboardType: field.type == 'number'
+          ? TextInputType.number
+          : TextInputType.text,
+      textAlign: TextAlign.start,
+      onChanged: (value) => widget.onFieldChanged(field.id, value),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor:
+            Theme.of(context).inputDecorationTheme.fillColor ??
+            (Theme.of(context).brightness == Brightness.dark
+                ? AppColors.darkInputFill
+                : Colors.white),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(
+            color: widget.focusColor ?? AppColors.greenColor,
+            width: 2,
+          ),
+        ),
+      ),
+      style: GoogleFonts.dmSans(
+        fontSize: 14,
+        color: Theme.of(context).textTheme.bodyLarge?.color,
+      ),
+    );
+  }
+
+  Widget _buildSideBySideDropdown(FormFieldModel field) {
+    final selectedValue = widget.formData[field.id];
+
+    return _SideBySideDropdown(
+      field: field,
+      selectedValue: selectedValue,
+      onChanged: (value) => widget.onFieldChanged(field.id, value),
+      focusColor: widget.focusColor,
     );
   }
 
@@ -706,7 +952,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
         children: [
           if (field.required)
             const TextSpan(
-              text: ' *',
+              text: ' ',
               style: TextStyle(color: Colors.red),
             ),
         ],
@@ -939,7 +1185,7 @@ class _CustomDropdownFieldState extends State<_CustomDropdownField> {
         children: [
           if (widget.field.required)
             const TextSpan(
-              text: ' *',
+              text: ' ',
               style: TextStyle(color: Colors.red),
             ),
         ],

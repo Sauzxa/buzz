@@ -87,7 +87,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
 
     return Drawer(
       child: Container(
-        color: isDarkMode ? AppColors.darkBackground : AppColors.roseColor,
+        color: AppColors.roseColor,
         child: Column(
           children: [
             // Header
@@ -118,9 +118,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       // User Avatar
                       CircleAvatar(
                         radius: 35,
-                        backgroundColor: isDarkMode
-                            ? AppColors.darkCard
-                            : Colors.white,
+                        backgroundColor: Colors.white.withOpacity(0.2),
                         child: ClipOval(
                           child:
                               userProvider.user.profilePicture != null &&
@@ -139,7 +137,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                       style: GoogleFonts.dmSans(
                                         fontSize: 32,
                                         fontWeight: FontWeight.bold,
-                                        color: AppColors.roseColor,
+                                        color: Colors.white,
                                       ),
                                     );
                                   },
@@ -151,7 +149,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                   style: GoogleFonts.dmSans(
                                     fontSize: 32,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.roseColor,
+                                    color: Colors.white,
                                   ),
                                 ),
                         ),
@@ -228,9 +226,12 @@ class _HomeDrawerState extends State<HomeDrawer> {
                     },
                   ),
 
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                    child: Divider(color: Colors.white24, height: 1),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 8,
+                    ),
+                    child: const Divider(color: Colors.white24, height: 1),
                   ),
 
                   _buildMenuItem(
@@ -271,11 +272,16 @@ class _HomeDrawerState extends State<HomeDrawer> {
                               'Open in Browser',
                               style: GoogleFonts.dmSans(
                                 fontWeight: FontWeight.bold,
+                                color: isDarkMode ? Colors.white : Colors.black,
                               ),
                             ),
                             content: Text(
                               'This will open www.buzz-apex.com in your browser.',
-                              style: GoogleFonts.dmSans(),
+                              style: GoogleFonts.dmSans(
+                                color: isDarkMode
+                                    ? Colors.white70
+                                    : Colors.black87,
+                              ),
                             ),
                             actions: [
                               TextButton(
@@ -284,7 +290,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 child: Text(
                                   'Cancel',
                                   style: GoogleFonts.dmSans(
-                                    color: Colors.black,
+                                    color: isDarkMode
+                                        ? Colors.white70
+                                        : Colors.black,
                                   ),
                                 ),
                               ),
@@ -300,6 +308,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 ),
                               ),
                             ],
+                            backgroundColor: isDarkMode
+                                ? AppColors.darkCard
+                                : Colors.white,
                           );
                         },
                       );
@@ -334,11 +345,8 @@ class _HomeDrawerState extends State<HomeDrawer> {
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
               child: Container(
                 decoration: BoxDecoration(
-                  color: isDarkMode ? Colors.black : Colors.white,
+                  color: Colors.white,
                   borderRadius: BorderRadius.circular(30),
-                  border: isDarkMode
-                      ? Border.all(color: Colors.white12, width: 1)
-                      : null,
                 ),
                 child: Material(
                   color: Colors.transparent,
@@ -352,25 +360,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         vertical: 12,
                       ),
                       child: _isLoggingOut
-                          ? Center(
+                          ? const Center(
                               child: SizedBox(
                                 height: 24,
                                 width: 24,
                                 child: CircularProgressIndicator(
-                                  color: isDarkMode
-                                      ? Colors.white
-                                      : AppColors.roseColor,
+                                  color: AppColors.roseColor,
                                   strokeWidth: 2.5,
                                 ),
                               ),
                             )
                           : Row(
                               children: [
-                                Icon(
+                                const Icon(
                                   Icons.logout,
-                                  color: isDarkMode
-                                      ? Colors.white
-                                      : AppColors.roseColor,
+                                  color: AppColors.roseColor,
                                   size: 24,
                                 ),
                                 const SizedBox(width: 16),
@@ -379,9 +383,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                   style: GoogleFonts.dmSans(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: isDarkMode
-                                        ? Colors.white
-                                        : AppColors.roseColor,
+                                    color: AppColors.roseColor,
                                   ),
                                 ),
                               ],
