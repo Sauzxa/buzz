@@ -373,74 +373,65 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             // Search Input
                             Expanded(
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
+                              child: Container(
                                 height: 52,
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(26),
-                                  boxShadow: _isSearchFocused
-                                      ? [
-                                          BoxShadow(
-                                            color: Colors.black.withOpacity(
-                                              0.08,
-                                            ),
-                                            blurRadius: 15,
-                                            offset: const Offset(0, 4),
-                                          ),
-                                        ]
-                                      : [],
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                                child: TextField(
-                                  controller: _searchController,
-                                  focusNode: _searchFocusNode,
-                                  decoration: InputDecoration(
-                                    hintText: 'Search services...',
-                                    hintStyle: GoogleFonts.dmSans(
-                                      color: Theme.of(context).hintColor,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(30),
+                                  child: TextField(
+                                    controller: _searchController,
+                                    focusNode: _searchFocusNode,
+                                    decoration: InputDecoration(
+                                      filled: true,
+                                      fillColor: Colors.transparent,
+                                      hintText: 'Search services...',
+                                      hintStyle: GoogleFonts.dmSans(
+                                        color: Theme.of(context).hintColor,
+                                        fontSize: 14,
+                                      ),
+                                      prefixIcon: const Icon(
+                                        Icons.search,
+                                        color: AppColors.roseColor,
+                                        size: 22,
+                                      ),
+                                      suffixIcon:
+                                          _searchController.text.isNotEmpty
+                                          ? IconButton(
+                                              icon: const Icon(
+                                                Icons.clear,
+                                                color: Colors.grey,
+                                                size: 20,
+                                              ),
+                                              onPressed: () {
+                                                _searchController.clear();
+                                                setState(() {
+                                                  _searchResults.clear();
+                                                });
+                                              },
+                                            )
+                                          : null,
+                                      border: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      errorBorder: InputBorder.none,
+                                      disabledBorder: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 15,
+                                          ),
+                                    ),
+                                    style: GoogleFonts.dmSans(
                                       fontSize: 14,
+                                      color: Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge!.color,
                                     ),
-                                    prefixIcon: Icon(
-                                      Icons.search,
-                                      color: _isSearchFocused
-                                          ? AppColors.roseColor
-                                          : AppColors.roseColor.withOpacity(
-                                              0.7,
-                                            ),
-                                      size: 22,
-                                    ),
-                                    suffixIcon:
-                                        _searchController.text.isNotEmpty
-                                        ? IconButton(
-                                            icon: const Icon(
-                                              Icons.clear,
-                                              color: Colors.grey,
-                                              size: 20,
-                                            ),
-                                            onPressed: () {
-                                              _searchController.clear();
-                                              setState(() {
-                                                _searchResults.clear();
-                                              });
-                                            },
-                                          )
-                                        : null,
-                                    border: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                      vertical: 15,
-                                    ),
+                                    onChanged: _onSearchChanged,
                                   ),
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 14,
-                                    color: Theme.of(
-                                      context,
-                                    ).textTheme.bodyLarge!.color,
-                                  ),
-                                  onChanged: _onSearchChanged,
                                 ),
                               ),
                             ),
