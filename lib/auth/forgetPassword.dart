@@ -94,10 +94,13 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -152,7 +155,6 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                     decoration: BoxDecoration(
                       color: Theme.of(context).inputDecorationTheme.fillColor,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Theme.of(context).dividerColor),
                     ),
                     child: TextField(
                       controller: _emailController,
