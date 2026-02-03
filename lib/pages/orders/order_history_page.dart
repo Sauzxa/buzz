@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../providers/orders_provider.dart';
 import '../../providers/user_provider.dart';
-import '../../providers/invoice_provider.dart';
+import '../../services/invoice_service.dart';
 import '../../Widgets/order_drawer.dart';
 import '../../Widgets/order_card.dart';
 import '../../routes/route_names.dart';
@@ -56,10 +56,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
     if (!mounted) return;
 
     final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
-    final invoiceProvider = Provider.of<InvoiceProvider>(
-      context,
-      listen: false,
-    );
+    final invoiceService = InvoiceService();
 
     for (final order in ordersProvider.archivedOrders) {
       if (!mounted) return; // Check before each iteration
@@ -67,12 +64,11 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
       final orderId = order['id']?.toString();
       if (orderId != null && !_invoiceDeadlineCache.containsKey(orderId)) {
         try {
-          await invoiceProvider.fetchInvoiceByOrderId(orderId);
+          final invoice = await invoiceService.getInvoiceByOrderId(orderId);
           if (!mounted) return; // Check after async operation
 
-          if (invoiceProvider.invoice != null) {
-            _invoiceDeadlineCache[orderId] =
-                invoiceProvider.invoice!.paymentDeadline;
+          if (invoice != null) {
+            _invoiceDeadlineCache[orderId] = invoice.paymentDeadline;
           }
         } catch (e) {
           print('⚠️ Failed to fetch invoice for order $orderId: $e');

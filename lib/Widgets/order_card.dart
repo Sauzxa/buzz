@@ -32,186 +32,46 @@ class OrderCard extends StatelessWidget {
       order['serviceCategory'] ?? '',
     );
 
-    final cardWidget = Card(
+    final cardWidget = Container(
       margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Theme.of(context).cardColor,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header: Category Badge + Date
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: categoryColor,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      (order['serviceCategory'] ?? 'Service')
-                          .toString()
-                          .toUpperCase(),
-                      style: GoogleFonts.dmSans(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    _formatDate(order['createdAt']),
-                    style: GoogleFonts.dmSans(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.titleLarge!.color,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // Status Badge
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(status),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          _getStatusIcon(status),
-                          size: 14,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          _getStatusLabel(status),
-                          style: GoogleFonts.dmSans(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Order Number & Price
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          order['title'] ??
-                              'COMMANDE N ${_getOrderNumber(order['orderNumber'])}',
-                          style: GoogleFonts.dmSans(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(
-                              context,
-                            ).textTheme.titleLarge!.color,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (order['serviceName'] != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            order['serviceName'],
-                            style: GoogleFonts.dmSans(
-                              fontSize: 12,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodySmall!.color,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  if (order['totalPrice'] != null)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: Text(
-                        '${order['totalPrice']} DA',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.titleLarge!.color,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              // Sub-info (RDV / Deadline)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Deadline',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.titleLarge!.color,
-                    ),
-                  ),
-                  Text(
-                    _formatDate(paymentDeadline ?? order['deadline']),
-                    style: GoogleFonts.dmSans(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).textTheme.titleLarge!.color,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // Action Buttons
-              Row(
-                children: [
-                  // Details Button
-                  GestureDetector(
-                    onTap: onTap,
-                    child: Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header: Category Badge + Date
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
+                        horizontal: 8,
+                        vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.roseColor,
+                        color: categoryColor,
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'Details',
+                        (order['serviceCategory'] ?? 'Service')
+                            .toString()
+                            .toUpperCase(),
                         style: GoogleFonts.dmSans(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -219,39 +79,192 @@ class OrderCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
+                    Text(
+                      _formatDate(order['createdAt']),
+                      style: GoogleFonts.dmSans(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.titleLarge!.color,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
 
-                  // Upload Receipt Button (Only if applicable)
-                  if (canUpload && onUploadReceipt != null)
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: onUploadReceipt,
-                        child: Container(
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 6,
+                // Status Badge
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(status),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getStatusIcon(status),
+                            size: 14,
+                            color: Colors.white,
                           ),
-                          decoration: BoxDecoration(
-                            color: AppColors.roseColor,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            'upload ur payment reciept',
+                          const SizedBox(width: 4),
+                          Text(
+                            _getStatusLabel(status),
                             style: GoogleFonts.dmSans(
-                              fontSize: 10,
+                              fontSize: 11,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+
+                // Order Number & Price
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            order['title'] ??
+                                'COMMANDE N ${_getOrderNumber(order['orderNumber'])}',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.titleLarge!.color,
+                            ),
+                            maxLines: 2,
                             overflow: TextOverflow.ellipsis,
+                          ),
+                          if (order['serviceName'] != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              order['serviceName'],
+                              style: GoogleFonts.dmSans(
+                                fontSize: 12,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall!.color,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    if (order['totalPrice'] != null)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          '${order['totalPrice']} DA',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                // Sub-info (RDV / Deadline)
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Deadline',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.titleLarge!.color,
+                      ),
+                    ),
+                    Text(
+                      _formatDate(paymentDeadline ?? order['deadline']),
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).textTheme.titleLarge!.color,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // Action Buttons
+                Row(
+                  children: [
+                    // Details Button
+                    GestureDetector(
+                      onTap: onTap,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.roseColor,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          'Details',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),
                     ),
-                ],
-              ),
-            ],
+                    const SizedBox(width: 8),
+
+                    // Upload Receipt Button (Only if applicable)
+                    if (canUpload && onUploadReceipt != null)
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: onUploadReceipt,
+                          child: Container(
+                            alignment: Alignment.center,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.roseColor,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'upload ur payment reciept',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

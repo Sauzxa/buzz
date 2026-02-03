@@ -270,7 +270,7 @@ class _OTPPageState extends State<OTPPage> {
         style: GoogleFonts.dmSans(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: Colors.black,
         ),
         inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         decoration: InputDecoration(
@@ -283,7 +283,7 @@ class _OTPPageState extends State<OTPPage> {
           counterText: '',
           contentPadding: EdgeInsets.zero,
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(10),
             borderSide: BorderSide(
               color: Theme.of(context).dividerColor,
               width: 2,
