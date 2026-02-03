@@ -21,6 +21,8 @@ import '../Widgets/discount_service_card.dart';
 import '../Widgets/long_press_service_wrapper.dart';
 import '../Widgets/custom_bottom_nav_bar.dart';
 import '../Widgets/skeleton_loader.dart';
+import '../Widgets/multi_select_category_dropdown.dart';
+import '../Widgets/search_scope_toggle.dart';
 
 import '../utils/snackbar_helper.dart';
 import '../utils/static_categories.dart';
@@ -41,6 +43,10 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   String?
   _selectedServiceFilter; // For services section - search by service name
+
+  // Filter functionality
+  List<String> _selectedCategories = []; // Empty = show all
+  SearchScope _searchScope = SearchScope.allServices;
 
   // Search functionality
   final FocusNode _searchFocusNode = FocusNode();
@@ -104,16 +110,31 @@ class _HomePageState extends State<HomePage> {
 
   void _performSearch(String query) {
     final servicesProvider = context.read<ServicesProvider>();
-    final allServices = servicesProvider.services;
+
+    // Determine which services to search based on scope
+    List<ServiceModel> searchPool;
+    if (_searchScope == SearchScope.allServices) {
+      searchPool = servicesProvider.services; // All services
+    } else {
+      // Only services from selected categories
+      searchPool = _selectedCategories.isEmpty
+          ? servicesProvider.services
+          : servicesProvider.services
+                .where(
+                  (service) =>
+                      _selectedCategories.contains(service.categoryName),
+                )
+                .toList();
+    }
 
     // Filter services by name or description (case-insensitive)
-    final results = allServices.where((service) {
+    final results = searchPool.where((service) {
       final queryLower = query.toLowerCase();
       return service.name.toLowerCase().contains(queryLower) ||
           service.description.toLowerCase().contains(queryLower);
     }).toList();
 
-    // Sort by name and take top 3
+    // Sort by name and take top 10
     results.sort((a, b) => a.name.compareTo(b.name));
 
     setState(() {
@@ -436,50 +457,57 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            // Filter Button
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.tune_sharp,
-                                  color: AppColors.roseColor,
-                                  size: 22,
-                                ),
-                                onPressed: () {
-                                  SnackBarHelper.showInfoSnackBar(
-                                    context,
-                                    'Filter coming soon!',
-                                  );
-                                },
-                              ),
+                            // Category Filter Dropdown
+                            Consumer<CategoriesProvider>(
+                              builder: (context, categoriesProvider, child) {
+                                final allCategoryNames = categoriesProvider
+                                    .categories
+                                    .map((cat) => cat.categoryName)
+                                    .toList();
+
+                                return MultiSelectCategoryDropdown(
+                                  allCategories: allCategoryNames,
+                                  selectedCategories: _selectedCategories,
+                                  onSelectionChanged: (selected) {
+                                    setState(() {
+                                      _selectedCategories = selected;
+                                    });
+                                  },
+                                );
+                              },
                             ),
                             const SizedBox(width: 8),
-                            // Location Button
-                            Container(
-                              width: 48,
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).cardColor,
-                                shape: BoxShape.circle,
-                              ),
-                              child: IconButton(
-                                icon: const Icon(
-                                  Icons.gps_fixed,
-                                  color: AppColors.roseColor,
-                                  size: 22,
-                                ),
-                                onPressed: () {
-                                  SnackBarHelper.showInfoSnackBar(
-                                    context,
-                                    'Location coming soon!',
-                                  );
-                                },
-                              ),
+                            // Search Scope Toggle
+                            SearchScopeToggle(
+                              currentScope: _searchScope,
+                              hasActiveFilter: _selectedCategories.isNotEmpty,
+                              onScopeChanged: (scope) {
+                                setState(() {
+                                  _searchScope = scope;
+                                });
+
+                                final message = scope == SearchScope.allServices
+                                    ? 'Search Scope: All Services'
+                                    : 'Search Scope: Selected Categories Only';
+
+                                ScaffoldMessenger.of(context).clearSnackBars();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      message,
+                                      style: GoogleFonts.dmSans(
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    backgroundColor: AppColors.roseColor,
+                                    duration: const Duration(seconds: 2),
+                                    behavior: SnackBarBehavior.floating,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -717,14 +745,24 @@ class _HomePageState extends State<HomePage> {
             ? provider.categories
             : staticCategories;
 
+        // Apply category filter if active
+        final filteredCategories = _selectedCategories.isEmpty
+            ? categoriesToShow
+            : categoriesToShow.where((cat) {
+                final categoryName = provider.hasData
+                    ? cat.categoryName
+                    : (cat as dynamic).name as String;
+                return _selectedCategories.contains(categoryName);
+              }).toList();
+
         return SizedBox(
           height: 150,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: categoriesToShow.length,
+            itemCount: filteredCategories.length,
             itemBuilder: (context, index) {
-              final category = categoriesToShow[index];
+              final category = filteredCategories[index];
               return CategoryCard(
                 category: category,
                 onTap: () {
@@ -1039,7 +1077,17 @@ class _HomePageState extends State<HomePage> {
 
             final services = provider.services;
 
-            if (services.isEmpty) {
+            // Apply category filter if active
+            final filteredServices = _selectedCategories.isEmpty
+                ? services
+                : services
+                      .where(
+                        (service) =>
+                            _selectedCategories.contains(service.categoryName),
+                      )
+                      .toList();
+
+            if (filteredServices.isEmpty) {
               return Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -1047,7 +1095,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Center(
                   child: Text(
-                    'No services available',
+                    _selectedCategories.isNotEmpty
+                        ? 'No services matching filters'
+                        : 'No services available',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -1067,9 +1117,9 @@ class _HomePageState extends State<HomePage> {
                 mainAxisSpacing: 16,
                 childAspectRatio: 1.0, // Square cards
               ),
-              itemCount: services.length,
+              itemCount: filteredServices.length,
               itemBuilder: (context, index) {
-                final service = services[index];
+                final service = filteredServices[index];
                 return LongPressServiceWrapper(
                   service: service,
                   onTap: () {
