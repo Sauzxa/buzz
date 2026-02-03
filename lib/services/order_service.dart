@@ -12,6 +12,8 @@ class OrderService {
     required Map<String, dynamic> formData,
     List<File>? files,
   }) async {
+    int? createdOrderId;
+
     try {
       // Step 1: Create Order (JSON)
       // Prepare the request body
@@ -89,17 +91,53 @@ class OrderService {
         throw Exception('Order created but ID was missing in response');
       }
 
+      // Store the created order ID for potential rollback
+      createdOrderId = orderId;
+
       print('\n✅ Order created successfully. ID: $orderId');
       print('⏳ Backend should now send ORDER_CREATED notification...\n');
 
-      // Step 2: Upload Files (Multipart)
+      // Step 2: Upload Files (Multipart) - SYNCHRONIZED WITH ORDER CREATION
+      // If file upload fails, the order will be rolled back (deleted/cancelled)
       if (files != null && files.isNotEmpty) {
-        await _uploadFiles(orderId.toString(), files);
+        print('📤 Starting file upload for order $orderId...');
+        print(
+          '⚠️  If file upload fails, order $orderId will be cancelled automatically.\n',
+        );
+
+        try {
+          await _uploadFiles(orderId.toString(), files);
+          print('\n✅ All files uploaded successfully for order $orderId');
+        } catch (fileUploadError) {
+          print('\n❌ File upload failed for order $orderId: $fileUploadError');
+          print('🔄 Rolling back: Cancelling order $orderId...\n');
+
+          // ROLLBACK: Cancel/Delete the created order since file upload failed
+          await _rollbackOrder(orderId.toString());
+
+          // Re-throw the error with a clear message
+          throw Exception(
+            'File upload failed. Order has been cancelled. Error: $fileUploadError',
+          );
+        }
       }
 
+      print('\n🎉 Order $orderId created and synchronized successfully!\n');
       return orderId;
     } catch (e) {
-      print('Error in createOrder: $e');
+      print('❌ Error in createOrder: $e');
+
+      // If we have a created order ID and the error wasn't from rollback itself,
+      // ensure we attempt rollback
+      if (createdOrderId != null &&
+          !e.toString().contains('Order has been cancelled')) {
+        try {
+          await _rollbackOrder(createdOrderId.toString());
+        } catch (rollbackError) {
+          print('⚠️  Rollback also failed: $rollbackError');
+        }
+      }
+
       rethrow;
     }
   }
@@ -142,6 +180,33 @@ class OrderService {
           'Failed to upload file ${file.path.split('/').last}: $e',
         );
       }
+    }
+  }
+
+  /// Rollback (cancel/delete) an order if file upload fails
+  /// This ensures no incomplete orders exist in the system
+  Future<void> _rollbackOrder(String orderId) async {
+    try {
+      print(
+        '🔄 Attempting to cancel order $orderId due to file upload failure...',
+      );
+
+      final response = await _apiClient.delete(
+        ApiEndpoints.cancelOrder(orderId),
+      );
+
+      if (response.statusCode != null &&
+          (response.statusCode! >= 200 && response.statusCode! < 300)) {
+        print('✅ Order $orderId successfully cancelled (rolled back)');
+      } else {
+        print('⚠️  Failed to cancel order $orderId: ${response.statusCode}');
+        throw Exception('Rollback failed: Could not cancel order $orderId');
+      }
+    } catch (e) {
+      print('❌ Error during order rollback: $e');
+      // Don't rethrow here - we want to preserve the original file upload error
+      // Just log that rollback failed
+      throw Exception('Failed to rollback order $orderId: $e');
     }
   }
 
