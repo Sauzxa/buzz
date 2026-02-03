@@ -41,12 +41,16 @@ class _MultiSelectCategoryDropdownState
     });
   }
 
-  void _closeDropdown() {
+  void _closeDropdown({bool isDisposing = false}) {
     _overlayEntry?.remove();
     _overlayEntry = null;
-    setState(() {
-      _isOpen = false;
-    });
+    if (!isDisposing) {
+      if (mounted) {
+        setState(() {
+          _isOpen = false;
+        });
+      }
+    }
   }
 
   OverlayEntry _createOverlayEntry() {
@@ -152,7 +156,7 @@ class _MultiSelectCategoryDropdownState
 
   @override
   void dispose() {
-    _closeDropdown();
+    _closeDropdown(isDisposing: true);
     super.dispose();
   }
 
