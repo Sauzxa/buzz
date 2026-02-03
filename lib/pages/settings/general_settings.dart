@@ -166,11 +166,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                           icon: Icons.feedback_outlined,
                           title: 'Send Feedback',
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Feedback page coming soon!'),
-                              ),
-                            );
+                            Navigator.pushNamed(context, RouteNames.feedback);
                           },
                         ),
                       ],

@@ -15,6 +15,7 @@ class BugReportService {
     required String deviceModel,
     List<String>? steps,
     String? filePath,
+    String messageType = 'BUG_REPORT',
   }) async {
     try {
       // Construct the message object
@@ -34,7 +35,7 @@ class BugReportService {
       // Backend expects 'message' as a JSON-encoded STRING, not an object
       final data = {
         'message': jsonEncode(messageData),
-        'messageType': 'BUG_REPORT',
+        'messageType': messageType,
       };
 
       // NOTE: File upload is not supported by the current /api/supportMessage endpoint

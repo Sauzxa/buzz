@@ -25,6 +25,7 @@ class RouteNames {
   static const String chat = '/chat';
   static const String settings = '/settings';
   static const String bugReport = '/bug-report';
+  static const String feedback = '/feedback';
   static const String servicesBuzz = '/services-buzz';
   static const String notificationsBuzz = '/notifications-buzz';
 

@@ -17,7 +17,7 @@ import '../core/homePage.dart';
 import '../pages/chat/chat_screen.dart';
 import '../core/splash_screen.dart';
 import '../pages/settings/general_settings.dart';
-import '../pages/settings/bug_report_page.dart';
+import '../pages/settings/support_message_page.dart';
 import '../pages/orders/order_management_page.dart';
 import '../pages/orders/order_history_page.dart';
 import '../pages/orders/order_tracking_page.dart';
@@ -95,7 +95,14 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const SearchPage());
 
       case RouteNames.bugReport:
-        return MaterialPageRoute(builder: (_) => const BugReportPage());
+        return MaterialPageRoute(
+          builder: (_) => const SupportMessagePage(messageType: 'BUG_REPORT'),
+        );
+
+      case RouteNames.feedback:
+        return MaterialPageRoute(
+          builder: (_) => const SupportMessagePage(messageType: 'SUPPORT'),
+        );
 
       // Order Management Routes
       case RouteNames.orderManagement:

@@ -12,14 +12,16 @@ import '../../Widgets/notification_popup.dart';
 import '../../Widgets/notification_badge.dart'; // Assuming this exists based on homePage usage
 import '../../routes/route_names.dart';
 
-class BugReportPage extends StatefulWidget {
-  const BugReportPage({super.key});
+class SupportMessagePage extends StatefulWidget {
+  final String messageType;
+
+  const SupportMessagePage({super.key, this.messageType = 'BUG_REPORT'});
 
   @override
-  State<BugReportPage> createState() => _BugReportPageState();
+  State<SupportMessagePage> createState() => _SupportMessagePageState();
 }
 
-class _BugReportPageState extends State<BugReportPage> {
+class _SupportMessagePageState extends State<SupportMessagePage> {
   final BugReportService _bugReportService = BugReportService();
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _sentMessages = [];
@@ -96,8 +98,9 @@ class _BugReportPageState extends State<BugReportPage> {
 
       await _bugReportService.submitBugReport(
         user: user,
+        messageType: widget.messageType,
         title:
-            "Bug Report from mobile app", // Default title as we only have message input
+            "${_getPageTitle()} from mobile app", // Default title as we only have message input
         description: message,
         platform: platform,
         appVersion: "1.0.0", // Hardcoded as we don't have package_info_plus
@@ -150,6 +153,10 @@ class _BugReportPageState extends State<BugReportPage> {
     }
   }
 
+  String _getPageTitle() {
+    return widget.messageType == 'SUPPORT' ? 'Send Feedback' : 'Report a Bug';
+  }
+
   Widget _buildEmptyState() {
     return Center(
       child: Padding(
@@ -164,14 +171,16 @@ class _BugReportPageState extends State<BugReportPage> {
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                Icons.bug_report_outlined,
+                widget.messageType == 'SUPPORT'
+                    ? Icons.feedback_outlined
+                    : Icons.bug_report_outlined,
                 size: 60,
                 color: AppColors.roseColor,
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              'Report a Bug',
+              _getPageTitle(),
               style: GoogleFonts.dmSans(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -180,7 +189,9 @@ class _BugReportPageState extends State<BugReportPage> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Describe the issue you\'re facing and we\'ll get back to you as soon as possible.',
+              widget.messageType == 'SUPPORT'
+                  ? 'We would love to hear your thoughts, suggestions, or concerns.'
+                  : 'Describe the issue you\'re facing and we\'ll get back to you as soon as possible.',
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 fontSize: 16,
@@ -333,12 +344,19 @@ class _BugReportPageState extends State<BugReportPage> {
             Image.asset(
               'assets/Logos/WhiteLogo.png',
               height: 24,
-              errorBuilder: (context, error, stackTrace) =>
-                  const Icon(Icons.bug_report, color: Colors.white, size: 24),
+              errorBuilder: (context, error, stackTrace) => Icon(
+                widget.messageType == 'SUPPORT'
+                    ? Icons.feedback
+                    : Icons.bug_report,
+                color: Colors.white,
+                size: 24,
+              ),
             ),
             const SizedBox(height: 2),
             Text(
-              'Buzz Support',
+              widget.messageType == 'SUPPORT'
+                  ? 'Buzz Feedback'
+                  : 'Buzz Support',
               style: GoogleFonts.dmSans(
                 color: Colors.white,
                 fontSize: 12,
