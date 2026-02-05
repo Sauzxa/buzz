@@ -1,29 +1,29 @@
 {
-  "project_info": {
-    "project_number": "409367514064",
-    "project_id": "buzz-notifications-9960f",
-    "storage_bucket": "buzz-notifications-9960f.firebasestorage.app"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:409367514064:android:a2ffabc45a183f7322c7d5",
-        "android_client_info": {
-          "package_name": "com.example.buzz"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
+    "project_info": {
+        "project_number": "409367514064",
+        "project_id": "buzz-notifications-9960f",
+        "storage_bucket": "buzz-notifications-9960f.firebasestorage.app"
+    },
+    "client": [
         {
-          "current_key": "AIzaSyAyrYZyy0ifrbjxW1_URwPXe3hY_Ca_gnQ"
+            "client_info": {
+                "mobilesdk_app_id": "1:409367514064:android:a2ffabc45a183f7322c7d5",
+                "android_client_info": {
+                    "package_name": "com.example.buzz"
+                }
+            },
+            "oauth_client": [],
+            "api_key": [
+                {
+                    "current_key": "AIzaSyAyrYZyy0ifrbjxW1_URwPXe3hY_Ca_gnQ"
+                }
+            ],
+            "services": {
+                "appinvite_service": {
+                    "other_platform_oauth_client": []
+                }
+            }
         }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+    ],
+    "configuration_version": "1"
 }

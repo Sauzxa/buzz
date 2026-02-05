@@ -60,7 +60,7 @@ prompt.md
 DYNAMIC_PAGES_README.md
 README.md
 DROPDOWN_IMPLEMENTATION.md
-
+GOOGLE_SIGNIN_IMPLEMENTATION.md
 #backend src
 buzz_back/
 lib/firebase_options.dart

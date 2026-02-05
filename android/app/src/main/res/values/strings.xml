@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Fallback client ID for Google Sign-In -->
+    <string name="default_web_client_id">448332066445-vld0n14t786j5aq13q2l93kofjk954uj.apps.googleusercontent.com</string>
+</resources>

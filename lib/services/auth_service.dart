@@ -152,6 +152,56 @@ class AuthService {
     }
   }
 
+  /// Authenticate with Google OAuth
+  /// Sends Google ID token to backend for validation
+  /// Returns UserModel with JWT tokens on success
+  Future<UserModel> googleAuth(String idToken) async {
+    try {
+      print('🔵 Sending Google ID token to backend for validation...');
+
+      final response = await _apiClient.post(
+        ApiEndpoints.googleAuth,
+        data: {'idToken': idToken},
+      );
+
+      // Check for server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          'Server error (${response.statusCode}). Please try again later.',
+        );
+      }
+
+      // Check for authentication errors (401, 403)
+      if (response.statusCode == 401 || response.statusCode == 403) {
+        String message = 'Google authentication failed';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Check for other client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        String message = 'Google authentication failed';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Success response (2xx)
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ Google authentication successful');
+        return UserModel.fromJson(response.data);
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    } catch (e) {
+      print('❌ Google authentication error: $e');
+      rethrow;
+    }
+  }
+
   /// Request password reset link via email
   /// Sends a password reset email to the provided email address
   Future<void> forgotPassword(String email) async {

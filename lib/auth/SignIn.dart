@@ -23,6 +23,7 @@ class _SignInPageState extends State<SignInPage> {
   bool _obscurePassword = true;
   bool _rememberMe = false;
   bool _isLoggingIn = false; // Local loading state for entire login flow
+  bool _isGoogleSigningIn = false; // Loading state for Google Sign-In
 
   @override
   void initState() {
@@ -116,9 +117,59 @@ class _SignInPageState extends State<SignInPage> {
     }
   }
 
-  void _onGoogleSignIn() {
-    // TODO: Implement Google Sign In
-    print('Google Sign In');
+  Future<void> _onGoogleSignIn() async {
+    setState(() {
+      _isGoogleSigningIn = true;
+    });
+
+    try {
+      final authProvider = context.read<AuthProvider>();
+      await authProvider.signInWithGoogle();
+
+      if (!mounted) return;
+
+      // Check if Google Sign-In was successful
+      if (authProvider.isAuthenticated && authProvider.user != null) {
+        final userProvider = context.read<UserProvider>();
+
+        // Update UserProvider with user data from Google login response
+        userProvider.updateUser(authProvider.user!);
+
+        // Fetch complete profile if userId is available
+        if (authProvider.user!.id != null) {
+          await userProvider.fetchUserById(authProvider.user!.id!);
+        }
+
+        if (!mounted) return;
+
+        // Add a brief delay for visual feedback
+        await Future.delayed(const Duration(milliseconds: 500));
+
+        if (!mounted) return;
+
+        // Navigate to HomePage
+        Navigator.pushReplacement(context, FadeRoute(page: const HomePage()));
+      } else {
+        // Google Sign-In failed - stop loading and show error
+        setState(() {
+          _isGoogleSigningIn = false;
+        });
+
+        // Show error message (but not if user cancelled)
+        if (authProvider.error != null &&
+            !authProvider.error!.contains('cancelled')) {
+          _showError(authProvider.error!);
+        }
+      }
+    } catch (e) {
+      // Handle any unexpected errors
+      if (mounted) {
+        setState(() {
+          _isGoogleSigningIn = false;
+        });
+        _showError('Google Sign-In failed. Please try again.');
+      }
+    }
   }
 
   void _onForgotPassword() {
@@ -328,34 +379,51 @@ class _SignInPageState extends State<SignInPage> {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: _onGoogleSignIn,
+                  onTap: _isGoogleSigningIn
+                      ? null
+                      : _onGoogleSignIn, // Disable when loading
                   borderRadius: BorderRadius.circular(28),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/icons/googleIcon.png',
-                        height: 24,
-                        width: 24,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Icon(
-                            Icons.g_mobiledata,
-                            size: 24,
-                            color: Colors.grey[600],
-                          );
-                        },
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Continue with Google',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                  child: _isGoogleSigningIn
+                      ? Center(
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.roseColor,
+                              ),
+                            ),
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/icons/googleIcon.png',
+                              height: 24,
+                              width: 24,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(
+                                  Icons.g_mobiledata,
+                                  size: 24,
+                                  color: Colors.grey[600],
+                                );
+                              },
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              'Continue with Google',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyLarge!.color,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),

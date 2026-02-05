@@ -3,6 +3,7 @@ import '../models/user.model.dart';
 import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../services/fcm_service.dart';
+import '../services/google_auth_service.dart';
 import '../api/api_client.dart';
 import '../utils/jwt_decoder.dart';
 
@@ -11,6 +12,7 @@ class AuthProvider with ChangeNotifier {
   final StorageService _storageService = StorageService();
   final ApiClient _apiClient = ApiClient();
   final FcmService _fcmService = FcmService();
+  final GoogleAuthService _googleAuthService = GoogleAuthService();
 
   UserModel? _user;
   bool _isLoading = false;
@@ -120,6 +122,86 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       _error = 'Signup failed: ${e.toString()}';
       _isAuthenticated = false;
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  /// Sign in with Google OAuth
+  Future<void> signInWithGoogle() async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      print('🔵 Starting Google Sign-In process...');
+
+      // Step 1: Get Google ID token from GoogleAuthService
+      final String? idToken = await _googleAuthService.signInWithGoogle();
+
+      if (idToken == null) {
+        // User cancelled the sign-in
+        _error = 'Google Sign-In cancelled';
+        _isAuthenticated = false;
+        _setLoading(false);
+        return;
+      }
+
+      print('🔵 Google ID token received, authenticating with backend...');
+
+      // Step 2: Authenticate with backend using the ID token
+      _user = await _authService.googleAuth(idToken);
+
+      // Step 3: Save tokens and user data (same as email login)
+      if (_user?.token != null) {
+        await _storageService.saveToken(_user!.token!);
+        // Save refresh token if available
+        if (_user?.refreshToken != null) {
+          await _storageService.saveRefreshToken(_user!.refreshToken!);
+        }
+        _apiClient.setAuthToken(_user!.token!);
+        _isAuthenticated = true;
+
+        // Save user ID and complete user data
+        if (_user?.id != null) {
+          await _storageService.saveUserId(_user!.id!);
+        }
+        await _storageService.saveUserData(_user!);
+
+        // Register FCM token with backend after successful login
+        await _registerFcmToken();
+
+        print('✅ Google Sign-In successful!');
+      }
+    } catch (e) {
+      // Extract clean error message
+      String errorMessage = e.toString();
+
+      // Remove "Exception: " prefix if present
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+
+      // Check for specific error types
+      if (errorMessage.contains('cancelled') ||
+          errorMessage.toLowerCase().contains('cancel')) {
+        _error = 'Google Sign-In cancelled';
+      } else if (errorMessage.contains('401') ||
+          errorMessage.contains('Unauthorized') ||
+          errorMessage.contains('Invalid')) {
+        _error = 'Google authentication failed. Please try again.';
+      } else if (errorMessage.contains('500') ||
+          errorMessage.contains('Server error')) {
+        _error = 'Server error. Please try again later.';
+      } else if (errorMessage.contains('Connection') ||
+          errorMessage.contains('internet') ||
+          errorMessage.contains('timeout')) {
+        _error = 'Connection error. Please check your internet.';
+      } else {
+        _error = 'Google Sign-In failed: $errorMessage';
+      }
+
+      _isAuthenticated = false;
+      print('❌ Google Sign-In error: $_error');
     } finally {
       _setLoading(false);
     }
@@ -278,6 +360,9 @@ class AuthProvider with ChangeNotifier {
     try {
       // Remove FCM token from backend
       await _removeFcmToken();
+
+      // Sign out from Google if signed in
+      await _googleAuthService.signOut();
 
       // Call server logout
       await _authService.logout();
