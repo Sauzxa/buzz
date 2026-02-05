@@ -64,4 +64,5 @@ GOOGLE_SIGNIN_IMPLEMENTATION.md
 #backend src
 buzz_back/
 lib/firebase_options.dart
+android/app/google-services.json
 
