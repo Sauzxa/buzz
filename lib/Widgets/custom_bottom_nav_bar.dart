@@ -18,50 +18,53 @@ class CustomBottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.all(Radius.circular(30)),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-        child: Container(
-          height: 70,
-          decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.darkCard.withOpacity(0.9)
-                : Colors.white.withOpacity(0.7),
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
+    return SafeArea(
+      top: false,
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(30)),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            height: 70,
+            decoration: BoxDecoration(
+              color: isDark
+                  ? AppColors.darkCard.withOpacity(0.9)
+                  : Colors.white.withOpacity(0.7),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(30),
+                topRight: Radius.circular(30),
+              ),
+              border: Border(
+                top: BorderSide(
+                  color: isDark
+                      ? AppColors.darkBorder.withOpacity(0.3)
+                      : Colors.white.withOpacity(0.2),
+                  width: 1.5,
+                ),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                  offset: const Offset(0, -5),
+                ),
+              ],
             ),
-            border: Border(
-              top: BorderSide(
-                color: isDark
-                    ? AppColors.darkBorder.withOpacity(0.3)
-                    : Colors.white.withOpacity(0.2),
-                width: 1.5,
-              ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(0, Icons.home_rounded, Icons.home_outlined),
+                _buildNavItem(1, Icons.search, Icons.search),
+                _buildNavItem(
+                  2,
+                  Icons.business_center_rounded,
+                  Icons.business_center_outlined,
+                ),
+                _buildNavItem(3, Icons.person_rounded, Icons.person_outline),
+                _buildNavItem(4, Icons.chat_rounded, Icons.chat_rounded),
+              ],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
-                blurRadius: 20,
-                spreadRadius: 2,
-                offset: const Offset(0, -5),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(0, Icons.home_rounded, Icons.home_outlined),
-              _buildNavItem(1, Icons.search, Icons.search),
-              _buildNavItem(
-                2,
-                Icons.business_center_rounded,
-                Icons.business_center_outlined,
-              ),
-              _buildNavItem(3, Icons.person_rounded, Icons.person_outline),
-              _buildNavItem(4, Icons.chat_rounded, Icons.chat_rounded),
-            ],
           ),
         ),
       ),

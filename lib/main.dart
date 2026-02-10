@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -30,6 +31,18 @@ ChatProvider? _globalChatProvider;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Configure system UI overlay style for edge-to-edge display
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      systemNavigationBarIconBrightness: Brightness.dark,
+      statusBarColor: Colors.transparent,
+    ),
+  );
+
+  // Enable edge-to-edge mode
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   // Load environment variables
   try {
