@@ -11,6 +11,7 @@ import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/notification_popup.dart';
 import '../../Widgets/notification_badge.dart'; // Assuming this exists based on homePage usage
 import '../../routes/route_names.dart';
+import '../../l10n/app_localizations.dart';
 
 class SupportMessagePage extends StatefulWidget {
   final String messageType;
@@ -117,7 +118,10 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Report submitted successfully',
+              AppLocalizations.of(
+                    context,
+                  )?.translate('support_report_success') ??
+                  'Report submitted successfully',
               style: GoogleFonts.dmSans(),
             ),
             backgroundColor: Colors.green,
@@ -136,7 +140,10 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Failed to submit report: ${e.toString().replaceAll("Exception:", "")}',
+              AppLocalizations.of(
+                    context,
+                  )?.translate('support_report_failed') ??
+                  'Failed to submit report',
               style: GoogleFonts.dmSans(),
             ),
             backgroundColor: Colors.red,
@@ -154,7 +161,11 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
   }
 
   String _getPageTitle() {
-    return widget.messageType == 'SUPPORT' ? 'Send Feedback' : 'Report a Bug';
+    return widget.messageType == 'SUPPORT'
+        ? (AppLocalizations.of(context)?.translate('settings_send_feedback') ??
+              'Send Feedback')
+        : (AppLocalizations.of(context)?.translate('settings_report_bug') ??
+              'Report a Bug');
   }
 
   Widget _buildEmptyState() {
@@ -190,8 +201,14 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
             const SizedBox(height: 12),
             Text(
               widget.messageType == 'SUPPORT'
-                  ? 'We would love to hear your thoughts, suggestions, or concerns.'
-                  : 'Describe the issue you\'re facing and we\'ll get back to you as soon as possible.',
+                  ? (AppLocalizations.of(
+                          context,
+                        )?.translate('support_feedback_desc') ??
+                        'We would love to hear your thoughts, suggestions, or concerns.')
+                  : (AppLocalizations.of(
+                          context,
+                        )?.translate('support_bug_desc') ??
+                        'Describe the issue you\'re facing and we\'ll get back to you as soon as possible.'),
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 fontSize: 16,
@@ -300,7 +317,8 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
               Padding(
                 padding: const EdgeInsets.only(top: 4),
                 child: Text(
-                  'Failed to send',
+                  AppLocalizations.of(context)?.translate('failed_to_send') ??
+                      'Failed to send',
                   style: GoogleFonts.dmSans(
                     fontSize: 12,
                     color: Colors.red[700],
@@ -318,13 +336,19 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
     final difference = now.difference(dateTime);
 
     if (difference.inSeconds < 60) {
-      return 'Just now';
+      return AppLocalizations.of(context)?.translate('just_now') ?? 'Just now';
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
+      return (AppLocalizations.of(context)?.translate('time_m_ago') ??
+              '{time}m ago')
+          .replaceAll('{time}', difference.inMinutes.toString());
     } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
+      return (AppLocalizations.of(context)?.translate('time_h_ago') ??
+              '{time}h ago')
+          .replaceAll('{time}', difference.inHours.toString());
     } else {
-      return '${difference.inDays}d ago';
+      return (AppLocalizations.of(context)?.translate('time_d_ago') ??
+              '{time}d ago')
+          .replaceAll('{time}', difference.inDays.toString());
     }
   }
 
@@ -355,8 +379,10 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
             const SizedBox(height: 2),
             Text(
               widget.messageType == 'SUPPORT'
-                  ? 'Buzz Feedback'
-                  : 'Buzz Support',
+                  ? (AppLocalizations.of(context)?.translate('buzz_feedback') ??
+                        'Buzz Feedback')
+                  : (AppLocalizations.of(context)?.translate('buzz_support') ??
+                        'Buzz Support'),
               style: GoogleFonts.dmSans(
                 color: Colors.white,
                 fontSize: 12,

@@ -9,6 +9,7 @@ import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../Widgets/home_drawer.dart';
 import '../../routes/route_names.dart';
 import '../settings/profile/edit_profile_settings.dart';
+import '../../l10n/app_localizations.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -81,9 +82,13 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load chat: $e'),
+            content: Text(
+              '${AppLocalizations.of(context)?.translate('chat_failed_load') ?? 'Failed to load chat'}: $e',
+            ),
             action: SnackBarAction(
-              label: 'Retry',
+              label:
+                  AppLocalizations.of(context)?.translate('retry_btn') ??
+                  'Retry',
               onPressed: () {
                 setState(() {
                   _isInitialized = false;
@@ -139,8 +144,9 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
             },
           ),
         ),
-        title: const Text(
-          'Support Chat',
+        title: Text(
+          AppLocalizations.of(context)?.translate('chat_support_title') ??
+              'Support Chat',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -188,7 +194,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   Icon(Icons.error_outline, size: 60, color: Colors.red[300]),
                   const SizedBox(height: 16),
                   Text(
-                    'Failed to load chat',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('chat_failed_load') ??
+                        'Failed to load chat',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -216,7 +225,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                       _initializeChat();
                     },
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Retry'),
+                    label: Text(
+                      AppLocalizations.of(context)?.translate('retry_btn') ??
+                          'Retry',
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
                       foregroundColor: Colors.white,
@@ -244,7 +256,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                 child: Column(
                   children: [
                     Text(
-                      'Support Chat',
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('chat_support_title') ??
+                          'Support Chat',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 20,
@@ -254,7 +269,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Please wait our support team will reply you\nas soon as possible.',
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('chat_waiting_message') ??
+                          'Please wait our support team will reply you\nas soon as possible.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 13,
@@ -379,7 +397,8 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           ),
           const SizedBox(height: 16),
           Text(
-            'No messages yet',
+            AppLocalizations.of(context)?.translate('chat_no_messages') ??
+                'No messages yet',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -388,7 +407,10 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
           ),
           const SizedBox(height: 8),
           Text(
-            'Start a conversation with our support team',
+            AppLocalizations.of(
+                  context,
+                )?.translate('chat_start_conversation') ??
+                'Start a conversation with our support team',
             style: TextStyle(
               fontSize: 14,
               color: Theme.of(context).textTheme.bodySmall!.color,

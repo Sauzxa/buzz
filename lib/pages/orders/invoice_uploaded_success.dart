@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../theme/colors.dart';
 import '../../Widgets/button.dart';
+import '../../l10n/app_localizations.dart';
 import '../chat/chat_screen.dart';
 
 class InvoiceUploadedSuccess extends StatelessWidget {
@@ -34,7 +35,10 @@ class InvoiceUploadedSuccess extends StatelessWidget {
                     },
                   ),
                   Text(
-                    'Confirmation',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('confirmation_title') ??
+                        'Confirmation',
                     style: GoogleFonts.dmSans(
                       color: Colors.white,
                       fontSize: 18,
@@ -88,7 +92,10 @@ class InvoiceUploadedSuccess extends StatelessWidget {
 
                         // Title
                         Text(
-                          'Invoice Uploaded',
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('invoice_uploaded_title') ??
+                              'Invoice Uploaded',
                           style: GoogleFonts.dmSans(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
@@ -102,7 +109,10 @@ class InvoiceUploadedSuccess extends StatelessWidget {
 
                         // Success Message
                         Text(
-                          'Your invoice has been successfully uploaded.',
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('invoice_uploaded_msg') ??
+                              'Your invoice has been successfully uploaded.',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
@@ -115,7 +125,10 @@ class InvoiceUploadedSuccess extends StatelessWidget {
 
                         // Contact Info
                         Text(
-                          'For any info call (+1) 999 999 999',
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('call_info_msg') ??
+                              'For any info call (+1) 999 999 999',
                           textAlign: TextAlign.center,
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
@@ -135,7 +148,10 @@ class InvoiceUploadedSuccess extends StatelessWidget {
 
                         // Working Hours
                         Text(
-                          'Working Hour: 7PM - 8AM',
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('working_hours') ??
+                              'Working Hour: 7PM - 8AM',
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
@@ -217,7 +233,11 @@ class InvoiceUploadedSuccess extends StatelessWidget {
 
                         // Go to Homepage Button
                         PrimaryButton(
-                          text: 'Go to Homepage',
+                          text:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('go_home_btn') ??
+                              'Go to Homepage',
                           onPressed: () {
                             // Navigate to home and remove all previous routes
                             Navigator.of(

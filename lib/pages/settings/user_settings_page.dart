@@ -12,6 +12,7 @@ import 'widgets/settings_tile.dart';
 import 'widgets/notification_toggle_tile.dart';
 import 'contact_page.dart';
 import 'profile/edit_profile_settings.dart';
+import '../../l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -88,7 +89,10 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ),
                       Text(
-                        'Edit Profile',
+                        AppLocalizations.of(
+                              context,
+                            )?.translate('settings_edit_profile') ??
+                            'Edit Profile',
                         style: GoogleFonts.dmSans(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -219,7 +223,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ),
                                 ),
                                 child: Text(
-                                  'Edit',
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('settings_edit_btn') ??
+                                      'Edit',
                                   style: GoogleFonts.dmSans(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
@@ -231,16 +238,34 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                         ),
                         // GENERAL Section
-                        _buildSectionHeader('GENERAL'),
+                        _buildSectionHeader(
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('settings_general_title') ??
+                              'GENERAL',
+                        ),
                         SettingsTile(
                           icon: Icons.card_giftcard,
-                          title: 'Refer to Friends',
-                          subtitle: 'Get 10-5 / for referring friends',
+                          title:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('settings_refer_friends') ??
+                              'Refer to Friends',
+                          subtitle:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('settings_refer_subtitle') ??
+                              'Get 10-5 / for referring friends',
                           onTap: () {
                             // TODO: Navigate to referral page
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Referral page coming soon!'),
+                              SnackBar(
+                                content: Text(
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('settings_refer_soon') ??
+                                      'Referral page coming soon!',
+                                ),
                               ),
                             );
                           },
@@ -249,11 +274,24 @@ class _SettingsPageState extends State<SettingsPage> {
                         const SizedBox(height: 24),
 
                         // NOTIFICATIONS Section
-                        _buildSectionHeader('NOTIFICATIONS'),
+                        _buildSectionHeader(
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('settings_notifications') ??
+                              'NOTIFICATIONS',
+                        ),
                         NotificationToggleTile(
                           icon: Icons.notifications_outlined,
-                          title: 'Push Notifications',
-                          subtitle: 'For daily update and others',
+                          title:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('settings_push_notif') ??
+                              'Push Notifications',
+                          subtitle:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('settings_push_subtitle') ??
+                              'For daily update and others',
                           value: _pushNotifications,
                           onChanged: (value) async {
                             setState(() {
@@ -276,7 +314,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      'Push notifications enabled',
+                                      AppLocalizations.of(context)?.translate(
+                                            'settings_push_enabled',
+                                          ) ??
+                                          'Push notifications enabled',
                                       style: GoogleFonts.dmSans(),
                                     ),
                                     backgroundColor: Colors.green,
@@ -293,7 +334,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                      'Push notifications disabled',
+                                      AppLocalizations.of(context)?.translate(
+                                            'settings_push_disabled',
+                                          ) ??
+                                          'Push notifications disabled',
                                       style: GoogleFonts.dmSans(),
                                     ),
                                     backgroundColor: Colors.orange,
@@ -305,8 +349,16 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                         NotificationToggleTile(
                           icon: Icons.notifications_active_outlined,
-                          title: 'Promotional Notifications',
-                          subtitle: 'New Campaign & Offers',
+                          title:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('settings_promo_notif') ??
+                              'Promotional Notifications',
+                          subtitle:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('settings_promo_subtitle') ??
+                              'New Campaign & Offers',
                           value: _promotionalNotifications,
                           onChanged: (value) {
                             setState(() {
@@ -318,11 +370,24 @@ class _SettingsPageState extends State<SettingsPage> {
                         const SizedBox(height: 24),
 
                         // MORE Section
-                        _buildSectionHeader('MORE'),
+                        _buildSectionHeader(
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('settings_more_title') ??
+                              'MORE',
+                        ),
                         SettingsTile(
                           icon: Icons.headset_mic_outlined,
-                          title: 'Contact Us',
-                          subtitle: 'For more information',
+                          title:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('settings_contact_us') ??
+                              'Contact Us',
+                          subtitle:
+                              AppLocalizations.of(
+                                context,
+                              )?.translate('settings_contact_subtitle') ??
+                              'For more information',
                           onTap: () {
                             Navigator.push(
                               context,

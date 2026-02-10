@@ -5,6 +5,7 @@ import '../../Widgets/home_drawer.dart';
 import '../../Widgets/notification_popup.dart';
 import '../../Widgets/notification_badge.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
+import '../../l10n/app_localizations.dart';
 
 class ServicesBuzzPage extends StatefulWidget {
   const ServicesBuzzPage({super.key});
@@ -119,7 +120,10 @@ class _ServicesBuzzPageState extends State<ServicesBuzzPage> {
                           vertical: 20,
                         ),
                         child: Text(
-                          'Services',
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('drawer_services') ??
+                              'Services',
                           style: GoogleFonts.dmSans(
                             fontSize: 32,
                             fontWeight: FontWeight.bold,
@@ -154,11 +158,24 @@ class _ServicesBuzzPageState extends State<ServicesBuzzPage> {
                   const SizedBox(height: 40),
 
                   // Service items
-                  _buildServiceItem('Printing'),
+                  _buildServiceItem(
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('printing_service') ??
+                        'Printing',
+                  ),
                   const SizedBox(height: 24),
-                  _buildServiceItem('Audio Visual'),
+                  _buildServiceItem(
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('audiovisual_service') ??
+                        'Audio Visual',
+                  ),
                   const SizedBox(height: 24),
-                  _buildServiceItem('Design'),
+                  _buildServiceItem(
+                    AppLocalizations.of(context)?.translate('design_service') ??
+                        'Design',
+                  ),
                   const SizedBox(height: 60),
 
                   // Divider line
@@ -175,7 +192,10 @@ class _ServicesBuzzPageState extends State<ServicesBuzzPage> {
                   // Contact section
                   Center(
                     child: Text(
-                      'More contact us on',
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('more_contact_us_on') ??
+                          'More contact us on',
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
@@ -192,7 +212,10 @@ class _ServicesBuzzPageState extends State<ServicesBuzzPage> {
                       Column(
                         children: [
                           Text(
-                            'SOCIAL :',
+                            AppLocalizations.of(
+                                  context,
+                                )?.translate('social_label') ??
+                                'SOCIAL :',
                             style: GoogleFonts.dmSans(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
@@ -229,7 +252,10 @@ class _ServicesBuzzPageState extends State<ServicesBuzzPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Telephone:',
+                            AppLocalizations.of(
+                                  context,
+                                )?.translate('telephone_label') ??
+                                'Telephone:',
                             style: GoogleFonts.dmSans(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,

@@ -22,7 +22,10 @@ import 'providers/theme_provider.dart';
 import 'services/fcm_service.dart';
 import 'services/notification_navigation_service.dart';
 import 'theme/colors.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'l10n/app_localizations.dart';
+import 'providers/language_provider.dart';
 
 // Global FCM Service instance for access throughout app
 late FcmService globalFcmService;
@@ -187,10 +190,21 @@ class _BuzzState extends State<Buzz> {
             return provider;
           },
         ),
+        ChangeNotifierProvider(
+          create: (_) => LanguageProvider()..fetchLocale(),
+        ),
       ],
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, child) {
+      child: Consumer2<ThemeProvider, LanguageProvider>(
+        builder: (context, themeProvider, languageProvider, child) {
           return MaterialApp(
+            locale: languageProvider.appLocale,
+            supportedLocales: const [Locale('en', 'US'), Locale('fr', 'FR')],
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
             navigatorKey: NotificationNavigationService.navigatorKey,
             initialRoute: AppRoutes.initialRoute,
             onGenerateRoute: AppRoutes.onGenerateRoute,

@@ -10,6 +10,7 @@ import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
 import '../../theme/colors.dart';
 import '../settings/profile/edit_profile_settings.dart';
+import '../../l10n/app_localizations.dart';
 
 class OrderManagementPage extends StatefulWidget {
   const OrderManagementPage({Key? key}) : super(key: key);
@@ -143,7 +144,8 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
           },
         ),
         title: Text(
-          'My orders',
+          AppLocalizations.of(context)?.translate('my_orders_title') ??
+              'My orders',
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -173,7 +175,10 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'User not logged in',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('user_not_logged_in') ??
+                        'User not logged in',
                     style: GoogleFonts.dmSans(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -182,7 +187,10 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Please log in to view your orders',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('login_view_orders') ??
+                        'Please log in to view your orders',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: Theme.of(
@@ -200,7 +208,11 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                 }
 
                 if (ordersProvider.error != null) {
-                  return Center(child: Text('Error: ${ordersProvider.error}'));
+                  return Center(
+                    child: Text(
+                      '${AppLocalizations.of(context)?.translate('error_label') ?? 'Error'}: ${ordersProvider.error}',
+                    ),
+                  );
                 }
 
                 final orders = ordersProvider.allOrders;
@@ -219,7 +231,10 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          'No orders',
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('no_orders') ??
+                              'No orders',
                           style: GoogleFonts.dmSans(
                             fontSize: 16,
                             color: Theme.of(context).textTheme.bodySmall!.color,
@@ -247,7 +262,10 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'swipe on an item to delete',
+                            AppLocalizations.of(
+                                  context,
+                                )?.translate('swipe_to_delete') ??
+                                'swipe on an item to delete',
                             style: GoogleFonts.dmSans(
                               fontSize: 12,
                               color: Theme.of(
@@ -307,7 +325,12 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                           24,
                                         ),
                                         title: Text(
-                                          'Cancel Order',
+                                          AppLocalizations.of(
+                                                context,
+                                              )?.translate(
+                                                'cancel_order_title',
+                                              ) ??
+                                              'Cancel Order',
                                           style: GoogleFonts.dmSans(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 20,
@@ -317,7 +340,12 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                           ),
                                         ),
                                         content: Text(
-                                          'Are you sure you want to cancel this order?',
+                                          AppLocalizations.of(
+                                                context,
+                                              )?.translate(
+                                                'cancel_order_confirm',
+                                              ) ??
+                                              'Are you sure you want to cancel this order?',
                                           style: GoogleFonts.dmSans(
                                             fontSize: 16,
                                             color: Theme.of(
@@ -364,7 +392,12 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                                     ),
                                                   ),
                                                   child: Text(
-                                                    'No',
+                                                    AppLocalizations.of(
+                                                          context,
+                                                        )?.translate(
+                                                          'no_btn',
+                                                        ) ??
+                                                        'No',
                                                     style: GoogleFonts.dmSans(
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -399,7 +432,12 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                                     ),
                                                   ),
                                                   child: Text(
-                                                    'Yes, Cancel',
+                                                    AppLocalizations.of(
+                                                          context,
+                                                        )?.translate(
+                                                          'yes_cancel_btn',
+                                                        ) ??
+                                                        'Yes, Cancel',
                                                     style: GoogleFonts.dmSans(
                                                       fontWeight:
                                                           FontWeight.bold,
@@ -434,25 +472,38 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
 
                                 if (success) {
                                   messenger.showSnackBar(
-                                    const SnackBar(
+                                    SnackBar(
                                       content: Text(
-                                        'Order cancelled successfully',
+                                        AppLocalizations.of(context)?.translate(
+                                              'order_cancelled_success',
+                                            ) ??
+                                            'Order cancelled successfully',
                                       ),
                                       backgroundColor: AppColors.greenColor,
                                     ),
                                   );
                                 } else {
                                   messenger.showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Failed to cancel order'),
+                                    SnackBar(
+                                      content: Text(
+                                        AppLocalizations.of(context)?.translate(
+                                              'order_cancel_failed',
+                                            ) ??
+                                            'Failed to cancel order',
+                                      ),
                                       backgroundColor: Colors.red,
                                     ),
                                   );
                                 }
                               } else {
                                 messenger.showSnackBar(
-                                  const SnackBar(
-                                    content: Text('User not logged in'),
+                                  SnackBar(
+                                    content: Text(
+                                      AppLocalizations.of(
+                                            context,
+                                          )?.translate('user_not_logged_in') ??
+                                          'User not logged in',
+                                    ), // Already localized locally if needed, but not critical
                                     backgroundColor: Colors.red,
                                   ),
                                 );

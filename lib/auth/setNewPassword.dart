@@ -4,6 +4,7 @@ import '../Widgets/button.dart';
 import '../services/auth_service.dart';
 import '../auth/SignIn.dart';
 import '../utils/fade_route.dart';
+import '../l10n/app_localizations.dart';
 
 class SetNewPasswordPage extends StatefulWidget {
   final String token;
@@ -36,17 +37,26 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
     final confirmPassword = _confirmPasswordController.text.trim();
 
     if (password.isEmpty || confirmPassword.isEmpty) {
-      _showError('Please fill all fields');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_fill_all_simple') ??
+            'Please fill all fields',
+      );
       return;
     }
 
     if (password.length < 8) {
-      _showError('Password must be at least 8 characters');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_password_length_8') ??
+            'Password must be at least 8 characters',
+      );
       return;
     }
 
     if (password != confirmPassword) {
-      _showError('Passwords do not match');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_passwords_mismatch') ??
+            'Passwords do not match',
+      );
       return;
     }
 
@@ -62,8 +72,11 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Password reset successfully! Please login.'),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)?.translate('success_password_reset') ??
+                'Password reset successfully! Please login.',
+          ),
           backgroundColor: Colors.green,
         ),
       );
@@ -102,7 +115,8 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
             children: [
               const SizedBox(height: 20),
               Text(
-                'Set new password',
+                AppLocalizations.of(context)?.translate('set_new_pass_title') ??
+                    'Set new password',
                 style: GoogleFonts.dmSans(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -111,7 +125,8 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Create your new secure\npassword.',
+                AppLocalizations.of(context)?.translate('set_new_pass_desc') ??
+                    'Create your new secure\npassword.',
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   color: Theme.of(context).textTheme.bodySmall!.color,
@@ -122,7 +137,9 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
 
               _buildPasswordField(
                 controller: _passwordController,
-                label: 'New Password',
+                label:
+                    AppLocalizations.of(context)?.translate('new_pass_label') ??
+                    'New Password',
                 obscureText: _obscurePassword,
                 onToggle: () =>
                     setState(() => _obscurePassword = !_obscurePassword),
@@ -131,7 +148,11 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
 
               _buildPasswordField(
                 controller: _confirmPasswordController,
-                label: 'Confirm Password',
+                label:
+                    AppLocalizations.of(
+                      context,
+                    )?.translate('confirm_password_label') ??
+                    'Confirm Password',
                 obscureText: _obscureConfirm,
                 onToggle: () =>
                     setState(() => _obscureConfirm = !_obscureConfirm),
@@ -139,7 +160,9 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
               const SizedBox(height: 30),
 
               PrimaryButton(
-                text: 'Set Password',
+                text:
+                    AppLocalizations.of(context)?.translate('set_pass_btn') ??
+                    'Set Password',
                 isLoading: _isProcessing,
                 onPressed: _isProcessing ? () {} : _onSetPassword,
               ),

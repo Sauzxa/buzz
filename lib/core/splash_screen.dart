@@ -10,6 +10,7 @@ import '../auth/SignIn.dart';
 import '../onboarding/onb1.dart';
 import 'homePage.dart';
 import '../Widgets/bouncing_dots_indicator.dart';
+import '../l10n/app_localizations.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -98,7 +99,7 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 80,
               errorBuilder: (context, error, stackTrace) {
                 return Text(
-                  'Buzz',
+                  AppLocalizations.of(context)?.translate('app_name') ?? 'Buzz',
                   style: GoogleFonts.dmSans(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -115,7 +116,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
             // Loading text
             Text(
-              'Loading...',
+              AppLocalizations.of(context)?.translate('loading_text') ??
+                  'Loading...',
               style: GoogleFonts.dmSans(color: Colors.white, fontSize: 16),
             ),
           ],

@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../pages/chat/chat_screen.dart';
 import '../../Widgets/notification_popup.dart';
 import 'faq_page.dart';
+import '../../l10n/app_localizations.dart';
 
 class ContactPage extends StatefulWidget {
   const ContactPage({super.key});
@@ -49,7 +50,10 @@ class _ContactPageState extends State<ContactPage> {
                     },
                   ),
                   Text(
-                    'Contact Us',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('settings_contact_us') ??
+                        'Contact Us',
                     style: GoogleFonts.dmSans(
                       color: Colors.white,
                       fontSize: 18,
@@ -105,7 +109,10 @@ class _ContactPageState extends State<ContactPage> {
                       const SizedBox(height: 30),
                       // Title
                       Text(
-                        'Contact Us',
+                        AppLocalizations.of(
+                              context,
+                            )?.translate('settings_contact_us') ??
+                            'Contact Us',
                         style: GoogleFonts.dmSans(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -115,7 +122,10 @@ class _ContactPageState extends State<ContactPage> {
                       const SizedBox(height: 12),
                       // Subtitle
                       Text(
-                        'Please choose what types of support do you\nneed and let us know.',
+                        AppLocalizations.of(
+                              context,
+                            )?.translate('contact_us_subtitle') ??
+                            'Please choose what types of support do you\nneed and let us know.',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.dmSans(
                           color: Theme.of(context).textTheme.bodySmall!.color,
@@ -149,8 +159,16 @@ class _ContactPageState extends State<ContactPage> {
                                   bgColor: const Color(
                                     0xFFEBFAEB,
                                   ), // Very light green
-                                  title: 'Support Chat',
-                                  subtitle: '24x7 Online Support',
+                                  title:
+                                      AppLocalizations.of(
+                                        context,
+                                      )?.translate('chat_support_title') ??
+                                      'Support Chat',
+                                  subtitle:
+                                      AppLocalizations.of(
+                                        context,
+                                      )?.translate('online_support_subtitle') ??
+                                      '24x7 Online Support',
                                   onTap: () {
                                     Navigator.push(
                                       context,
@@ -167,8 +185,16 @@ class _ContactPageState extends State<ContactPage> {
                                   bgColor: const Color(
                                     0xFFFFF5F2,
                                   ), // Very light orange/peach
-                                  title: 'Call Center',
-                                  subtitle: '24x7 Customer Service',
+                                  title:
+                                      AppLocalizations.of(
+                                        context,
+                                      )?.translate('call_center_title') ??
+                                      'Call Center',
+                                  subtitle:
+                                      AppLocalizations.of(context)?.translate(
+                                        'customer_service_subtitle',
+                                      ) ??
+                                      '24x7 Customer Service',
                                   onTap: () async {
                                     final Uri launchUri = Uri(
                                       scheme: 'tel',
@@ -189,7 +215,11 @@ class _ContactPageState extends State<ContactPage> {
                                   bgColor: const Color(
                                     0xFFF9F0FC,
                                   ), // Very light purple
-                                  title: 'Email',
+                                  title:
+                                      AppLocalizations.of(
+                                        context,
+                                      )?.translate('email_title') ??
+                                      'Email',
                                   subtitle: 'buzz@gmail.com',
                                   onTap: () async {
                                     final Uri launchUri = Uri(
@@ -211,8 +241,16 @@ class _ContactPageState extends State<ContactPage> {
                                   bgColor: const Color(
                                     0xFFFFFDE7,
                                   ), // Very light yellow
-                                  title: 'FAQ',
-                                  subtitle: '+50 Answers',
+                                  title:
+                                      AppLocalizations.of(
+                                        context,
+                                      )?.translate('settings_faq') ??
+                                      'FAQ',
+                                  subtitle:
+                                      AppLocalizations.of(
+                                        context,
+                                      )?.translate('faq_subtitle') ??
+                                      '+50 Answers',
                                   onTap: () {
                                     Navigator.push(
                                       context,
@@ -253,7 +291,10 @@ class _ContactPageState extends State<ContactPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Go to Homepage',
+                                AppLocalizations.of(
+                                      context,
+                                    )?.translate('go_home_btn') ??
+                                    'Go to Homepage',
                                 style: GoogleFonts.dmSans(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,

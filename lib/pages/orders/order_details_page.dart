@@ -7,6 +7,7 @@ import '../../providers/invoice_provider.dart';
 import '../../routes/route_names.dart';
 import '../../theme/colors.dart';
 import '../../Widgets/button.dart';
+import '../../l10n/app_localizations.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   final Map<String, dynamic> order;
@@ -88,7 +89,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          'Order Details',
+          AppLocalizations.of(context)?.translate('order_details_title') ??
+              'Order Details',
           style: GoogleFonts.dmSans(
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -118,7 +120,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _loadOrderDetails,
-                    child: const Text('Retry'),
+                    child: Text(
+                      AppLocalizations.of(context)?.translate('retry_btn') ??
+                          'Retry',
+                    ),
                   ),
                 ],
               ),
@@ -149,14 +154,18 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
 
   Widget _buildServiceInfoCard(Map<String, dynamic> order, dynamic invoice) {
     // Extract title or fallback
-    final title = order['title'] ?? 'Order';
+    final title =
+        order['title'] ??
+        (AppLocalizations.of(context)?.translate('default_order_title') ??
+            'Order');
 
     // Extract service name from serviceCategory or serviceName field
     final serviceName =
         order['serviceName'] ??
         order['serviceCategory'] ??
         order['category'] ??
-        'Service';
+        (AppLocalizations.of(context)?.translate('default_service_name') ??
+            'Service');
 
     // Get reference number
     final refNumber = order['orderNumber'] ?? 'ORD-${order['id']}';
@@ -166,7 +175,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         order['objectives'] ??
         order['description'] ??
         order['designerName'] ??
-        'No description';
+        (AppLocalizations.of(context)?.translate('no_description') ??
+            'No description');
 
     // Get deadline from invoice if available, otherwise from order
     final deadline = invoice?.paymentDeadline ?? order['deadline'];
@@ -238,11 +248,22 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ],
           ),
           const SizedBox(height: 20),
-          _buildInfoRow('Description', description),
+          _buildInfoRow(
+            AppLocalizations.of(context)?.translate('description_label') ??
+                'Description',
+            description,
+          ),
           const SizedBox(height: 12),
-          _buildInfoRow('Payment Deadline', _formatDate(deadline)),
+          _buildInfoRow(
+            AppLocalizations.of(context)?.translate('payment_deadline_label') ??
+                'Payment Deadline',
+            _formatDate(deadline),
+          ),
           const SizedBox(height: 12),
-          _buildInfoRow('Status', _formatStatus(order['status'])),
+          _buildInfoRow(
+            AppLocalizations.of(context)?.translate('status_label') ?? 'Status',
+            _formatStatus(order['status']),
+          ),
         ],
       ),
     );
@@ -258,7 +279,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         ),
         child: Center(
           child: Text(
-            'Order is pending pricing by admin',
+            AppLocalizations.of(context)?.translate('order_pending_pricing') ??
+                'Order is pending pricing by admin',
             style: GoogleFonts.dmSans(
               color: Theme.of(context).textTheme.bodySmall!.color,
               fontSize: 14,
@@ -291,7 +313,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ),
             child: Center(
               child: Text(
-                'Unable to load pricing details',
+                AppLocalizations.of(
+                      context,
+                    )?.translate('unable_load_pricing') ??
+                    'Unable to load pricing details',
                 style: GoogleFonts.dmSans(
                   color: Theme.of(context).textTheme.bodySmall!.color,
                   fontSize: 14,
@@ -311,7 +336,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ),
             child: Center(
               child: Text(
-                'No invoice available',
+                AppLocalizations.of(
+                      context,
+                    )?.translate('no_invoice_available') ??
+                    'No invoice available',
                 style: GoogleFonts.dmSans(
                   color: Theme.of(context).textTheme.bodySmall!.color,
                   fontSize: 14,
@@ -333,7 +361,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             children: [
               // Header
               Text(
-                'Service Charges & Payments',
+                AppLocalizations.of(
+                      context,
+                    )?.translate('service_charges_title') ??
+                    'Service Charges & Payments',
                 style: GoogleFonts.dmSans(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -343,23 +374,31 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               const Divider(),
 
               // Pricing Breakdown Section
-              _buildSectionHeader('💰 Pricing Breakdown'),
+              _buildSectionHeader(
+                AppLocalizations.of(
+                      context,
+                    )?.translate('pricing_breakdown_title') ??
+                    '💰 Pricing Breakdown',
+              ),
               _buildPriceRow(
-                'Subtotal',
+                AppLocalizations.of(context)?.translate('subtotal_label') ??
+                    'Subtotal',
                 '${invoice.subtotal?.toStringAsFixed(2) ?? '0.00'} DA',
               ),
               _buildPriceRow(
-                'Discount',
+                AppLocalizations.of(context)?.translate('discount_label') ??
+                    'Discount',
                 '-${invoice.discountAmount?.toStringAsFixed(2) ?? '0.00'} DA',
                 valueColor: AppColors.greenColor,
               ),
               _buildPriceRow(
-                'Fee',
+                AppLocalizations.of(context)?.translate('fee_label') ?? 'Fee',
                 '+${invoice.fee?.toStringAsFixed(2) ?? '0.00'} DA',
               ),
               const Divider(),
               _buildPriceRow(
-                'Total Amount',
+                AppLocalizations.of(context)?.translate('total_amount_label') ??
+                    'Total Amount',
                 '${invoice.totalAmount?.toStringAsFixed(2) ?? '0.00'} DA',
                 isTotal: true,
               ),
@@ -368,13 +407,24 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               // Payment Details Section (if split payment)
               if (invoice.isSplitPayment) ...[
                 const Divider(),
-                _buildSectionHeader('📋 Payment Plan'),
+                _buildSectionHeader(
+                  AppLocalizations.of(
+                        context,
+                      )?.translate('payment_plan_title') ??
+                      '📋 Payment Plan',
+                ),
                 _buildPriceRow(
-                  'First Payment (Versement)',
+                  AppLocalizations.of(
+                        context,
+                      )?.translate('first_payment_label') ??
+                      'First Payment (Versement)',
                   '${invoice.initialAmount?.toStringAsFixed(2) ?? '0.00'} DA',
                 ),
                 _buildPriceRow(
-                  'Remaining Payment',
+                  AppLocalizations.of(
+                        context,
+                      )?.translate('remaining_payment_label') ??
+                      'Remaining Payment',
                   '${invoice.finalAmount?.toStringAsFixed(2) ?? '0.00'} DA',
                 ),
                 const SizedBox(height: 16),
@@ -382,26 +432,37 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
 
               // Payment Status Section
               const Divider(),
-              _buildSectionHeader('✅ Payment Status'),
+              _buildSectionHeader(
+                AppLocalizations.of(
+                      context,
+                    )?.translate('payment_status_header') ??
+                    '✅ Payment Status',
+              ),
               if (invoice.isSplitPayment) ...[
                 _buildPriceRow(
-                  'Initial Paid',
+                  AppLocalizations.of(
+                        context,
+                      )?.translate('initial_paid_label') ??
+                      'Initial Paid',
                   '${invoice.initialAmountPaid?.toStringAsFixed(2) ?? '0.00'} DA',
                   valueColor: AppColors.greenColor,
                 ),
                 _buildPriceRow(
-                  'Final Paid',
+                  AppLocalizations.of(context)?.translate('final_paid_label') ??
+                      'Final Paid',
                   '${invoice.finalAmountPaid?.toStringAsFixed(2) ?? '0.00'} DA',
                   valueColor: AppColors.greenColor,
                 ),
               ],
               _buildPriceRow(
-                'Total Paid',
+                AppLocalizations.of(context)?.translate('total_paid_label') ??
+                    'Total Paid',
                 '${invoice.totalPaidAmount?.toStringAsFixed(2) ?? '0.00'} DA',
                 valueColor: AppColors.greenColor,
               ),
               _buildPriceRow(
-                'Still Owed',
+                AppLocalizations.of(context)?.translate('still_owed_label') ??
+                    'Still Owed',
                 '${invoice.remainingAmount?.toStringAsFixed(2) ?? '0.00'} DA',
                 valueColor: (invoice.remainingAmount ?? 0) > 0
                     ? Colors.orange
@@ -449,7 +510,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         ],
       ),
       child: PrimaryButton(
-        text: 'Upload Payment Receipt',
+        text:
+            AppLocalizations.of(context)?.translate('upload_receipt_btn') ??
+            'Upload Payment Receipt',
         onPressed: () {
           Navigator.pushNamed(
             context,
@@ -534,27 +597,14 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     }
   }
 
-  bool _isDeadlinePassed(String? dateStr) {
-    if (dateStr == null) return false;
-    try {
-      final deadline = DateTime.parse(dateStr);
-      return DateTime.now().isAfter(deadline);
-    } catch (e) {
-      return false;
-    }
-  }
-
   String _formatStatus(String? status) {
-    if (status == null) return 'Unknown';
-    // Convert PRICED to "Priced", AWAITING_PAYMENT_VALIDATION to "Awaiting Payment"
-    return status
-        .replaceAll('_', ' ')
-        .toLowerCase()
-        .split(' ')
-        .map((word) {
-          return word[0].toUpperCase() + word.substring(1);
-        })
-        .join(' ');
+    if (status == null)
+      return AppLocalizations.of(context)?.translate('unknown_status') ??
+          'Unknown';
+    return AppLocalizations.of(
+          context,
+        )?.translate('status_${status.toLowerCase()}') ??
+        status;
   }
 
   Color _getCategoryColor(String? category) {

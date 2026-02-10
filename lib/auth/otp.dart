@@ -7,6 +7,7 @@ import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../providers/user_provider.dart';
 import '../routes/route_names.dart';
+import '../l10n/app_localizations.dart';
 
 class OTPPage extends StatefulWidget {
   const OTPPage({Key? key}) : super(key: key);
@@ -83,7 +84,10 @@ class _OTPPageState extends State<OTPPage> {
     final otp = _otpControllers.map((c) => c.text).join();
 
     if (otp.length != 4) {
-      _showError('Please enter the complete 4-digit code');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_otp_length') ??
+            'Please enter the complete 4-digit code',
+      );
       return;
     }
 
@@ -114,8 +118,11 @@ class _OTPPageState extends State<OTPPage> {
     _focusNodes[0].requestFocus();
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Verification code sent!'),
+      SnackBar(
+        content: Text(
+          AppLocalizations.of(context)?.translate('otp_sent_success') ??
+              'Verification code sent!',
+        ),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
       ),
@@ -151,7 +158,8 @@ class _OTPPageState extends State<OTPPage> {
           },
         ),
         title: Text(
-          'OTP Verification',
+          AppLocalizations.of(context)?.translate('otp_title') ??
+              'OTP Verification',
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -170,7 +178,8 @@ class _OTPPageState extends State<OTPPage> {
 
               // Info text
               Text(
-                'An Authentication code has been sent to',
+                AppLocalizations.of(context)?.translate('otp_code_sent') ??
+                    'An Authentication code has been sent to',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
@@ -206,7 +215,12 @@ class _OTPPageState extends State<OTPPage> {
               const SizedBox(height: 40),
 
               // Submit Button
-              PrimaryButton(text: 'Submit', onPressed: _onSubmit),
+              PrimaryButton(
+                text:
+                    AppLocalizations.of(context)?.translate('submit_btn') ??
+                    'Submit',
+                onPressed: _onSubmit,
+              ),
 
               const SizedBox(height: 20),
 
@@ -215,7 +229,8 @@ class _OTPPageState extends State<OTPPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Code Sent. Resend Code in ',
+                    AppLocalizations.of(context)?.translate('otp_resend_in') ??
+                        'Code Sent. Resend Code in ',
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
                       color: Theme.of(context).textTheme.bodySmall!.color,
@@ -241,7 +256,8 @@ class _OTPPageState extends State<OTPPage> {
                 TextButton(
                   onPressed: _onResendCode,
                   child: Text(
-                    'Resend Code',
+                    AppLocalizations.of(context)?.translate('otp_resend_btn') ??
+                        'Resend Code',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

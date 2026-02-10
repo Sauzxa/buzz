@@ -11,6 +11,7 @@ import '../../../Widgets/custom_bottom_nav_bar.dart';
 import '../../../Widgets/button.dart';
 import '../../../providers/user_provider.dart';
 import '../../../routes/route_names.dart';
+import '../../../l10n/app_localizations.dart';
 
 class EditProfileSettings extends StatefulWidget {
   const EditProfileSettings({Key? key}) : super(key: key);
@@ -143,7 +144,8 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Change Profile Picture',
+              AppLocalizations.of(context)?.translate('change_profile_pic') ??
+                  'Change Profile Picture',
               style: GoogleFonts.dmSans(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -152,7 +154,11 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
             const SizedBox(height: 20),
             ListTile(
               leading: const Icon(Icons.camera_alt, color: AppColors.roseColor),
-              title: Text('Take a photo', style: GoogleFonts.dmSans()),
+              title: Text(
+                AppLocalizations.of(context)?.translate('take_photo') ??
+                    'Take a photo',
+                style: GoogleFonts.dmSans(),
+              ),
               onTap: () async {
                 Navigator.pop(context);
                 final XFile? image = await _picker.pickImage(
@@ -199,7 +205,11 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                 Icons.photo_library,
                 color: AppColors.roseColor,
               ),
-              title: Text('Choose from gallery', style: GoogleFonts.dmSans()),
+              title: Text(
+                AppLocalizations.of(context)?.translate('choose_gallery') ??
+                    'Choose from gallery',
+                style: GoogleFonts.dmSans(),
+              ),
               onTap: () async {
                 Navigator.pop(context);
                 final XFile? image = await _picker.pickImage(
@@ -293,8 +303,13 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
 
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully!'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(
+                    context,
+                  )?.translate('profile_updated_success') ??
+                  'Profile updated successfully!',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -302,7 +317,11 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(userProvider.errorMessage ?? 'Update failed'),
+            content: Text(
+              userProvider.errorMessage ??
+                  AppLocalizations.of(context)?.translate('update_failed') ??
+                  'Update failed',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -310,7 +329,9 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('An error occurred: $e'),
+          content: Text(
+            '${AppLocalizations.of(context)?.translate('error_label') ?? 'Error'}: $e',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -348,7 +369,10 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      'Edit Profile',
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('settings_edit_profile') ??
+                          'Edit Profile',
                       style: GoogleFonts.dmSans(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -486,14 +510,22 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _buildLabeledField(
-                            label: 'Full Name',
+                            label:
+                                AppLocalizations.of(
+                                  context,
+                                )?.translate('fullname_label') ??
+                                'Full Name',
                             controller: _fullNameController,
                             hint: 'Oussama Aba',
                           ),
                           const SizedBox(height: 20),
 
                           _buildLabeledField(
-                            label: 'Email Address',
+                            label:
+                                AppLocalizations.of(
+                                  context,
+                                )?.translate('email_label') ??
+                                'Email Address',
                             controller: _emailController,
                             hint: 'oussama.aba@email.com',
                             keyboardType: TextInputType.emailAddress,
@@ -507,7 +539,11 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                           const SizedBox(height: 20),
 
                           _buildLabeledField(
-                            label: 'Current Address',
+                            label:
+                                AppLocalizations.of(
+                                  context,
+                                )?.translate('current_address_label') ??
+                                'Current Address',
                             controller: _addressController,
                             hint: '0558 Alger centre, Alger',
                           ),
@@ -519,7 +555,11 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                               Expanded(
                                 flex: 4,
                                 child: _buildLabeledField(
-                                  label: 'Zip Code',
+                                  label:
+                                      AppLocalizations.of(
+                                        context,
+                                      )?.translate('postal_code_label') ??
+                                      'Zip Code',
                                   controller: _zipCodeController,
                                   hint: '16016',
                                   keyboardType: TextInputType.number,
@@ -529,7 +569,11 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                               Expanded(
                                 flex: 6,
                                 child: _buildDropdownField(
-                                  label: 'State',
+                                  label:
+                                      AppLocalizations.of(
+                                        context,
+                                      )?.translate('wilaya_label') ??
+                                      'State',
                                   value: _selectedState,
                                   items: _wilayas, // Use our dynamic list
                                   onChanged: (val) =>
@@ -543,7 +587,11 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
 
                           // Password (Read only / Change button)
                           _buildLabeledField(
-                            label: 'Password',
+                            label:
+                                AppLocalizations.of(
+                                  context,
+                                )?.translate('password_label') ??
+                                'Password',
                             controller: TextEditingController(text: '••••••'),
                             readOnly: true,
                           ),
@@ -582,7 +630,10 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Change Password',
+                                        AppLocalizations.of(
+                                              context,
+                                            )?.translate('change_pass_title') ??
+                                            'Change Password',
                                         style: GoogleFonts.dmSans(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
@@ -609,7 +660,11 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
 
                           // Save Button
                           PrimaryButton(
-                            text: 'Save Changes',
+                            text:
+                                AppLocalizations.of(
+                                  context,
+                                )?.translate('save_changes_btn') ??
+                                'Save Changes',
                             onPressed: _saveChanges,
                             isLoading: _isLoading,
                           ),
@@ -688,11 +743,17 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
           ),
           validator: (value) {
             if (label == 'Full Name' && (value == null || value.isEmpty)) {
-              return 'Please enter your name';
+              return AppLocalizations.of(
+                    context,
+                  )?.translate('please_enter_name') ??
+                  'Please enter your name';
             }
             if (label == 'Email Address' &&
                 (value == null || !value.contains('@'))) {
-              return 'Please enter a valid email';
+              return AppLocalizations.of(
+                    context,
+                  )?.translate('please_enter_valid_email') ??
+                  'Please enter a valid email';
             }
             return null;
           },
@@ -714,7 +775,9 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
             color: Theme.of(context).textTheme.titleLarge!.color,
           ),
           decoration: InputDecoration(
-            labelText: 'Phone Number',
+            labelText:
+                AppLocalizations.of(context)?.translate('phone_number_hint') ??
+                'Phone Number',
             labelStyle: GoogleFonts.dmSans(
               color: Theme.of(context).textTheme.bodySmall!.color,
             ),

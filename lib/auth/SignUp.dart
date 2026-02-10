@@ -8,6 +8,7 @@ import '../providers/auth_provider.dart';
 import '../providers/user_provider.dart';
 import '../utils/algeriaWilayas.dart';
 import '../routes/route_names.dart';
+import '../l10n/app_localizations.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
@@ -54,22 +55,34 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<void> _onSingup() async {
     if (!_isFormValid) {
-      _showError('Please fill all fields and accept terms and conditions');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_fill_all') ??
+            'Please fill all fields and accept terms and conditions',
+      );
       return;
     }
 
     if (!_isValidEmail(_emailController.text)) {
-      _showError('Please enter a valid email address');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_invalid_email') ??
+            'Please enter a valid email address',
+      );
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
-      _showError('Passwords do not match');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_passwords_mismatch') ??
+            'Passwords do not match',
+      );
       return;
     }
 
     if (_passwordController.text.length < 6) {
-      _showError('Password must be at least 6 characters');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_password_length') ??
+            'Password must be at least 6 characters',
+      );
       return;
     }
 
@@ -104,7 +117,11 @@ class _SignUpPageState extends State<SignUpPage> {
       Navigator.pushReplacementNamed(context, RouteNames.welcome);
     } else {
       // Show error message
-      _showError(authProvider.error ?? 'Signup failed. Please try again.');
+      _showError(
+        authProvider.error ??
+            (AppLocalizations.of(context)?.translate('error_signup_failed') ??
+                'Signup failed. Please try again.'),
+      );
     }
   }
 
@@ -141,7 +158,8 @@ class _SignUpPageState extends State<SignUpPage> {
           },
         ),
         title: Text(
-          'Register',
+          AppLocalizations.of(context)?.translate('signup_appbar_title') ??
+              'Register',
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -158,7 +176,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
             // Getting Started Title
             Text(
-              'Getting Started',
+              AppLocalizations.of(context)?.translate('signup_title') ??
+                  'Getting Started',
               style: GoogleFonts.dmSans(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -169,7 +188,8 @@ class _SignUpPageState extends State<SignUpPage> {
             const SizedBox(height: 8),
 
             Text(
-              'Seems you are new here,\nLet\'s set up your profile.',
+              AppLocalizations.of(context)?.translate('signup_subtitle') ??
+                  'Seems you are new here,\nLet\'s set up your profile.',
               style: GoogleFonts.dmSans(
                 fontSize: 14,
                 color: Theme.of(context).textTheme.bodySmall!.color,
@@ -182,7 +202,9 @@ class _SignUpPageState extends State<SignUpPage> {
             // Full Name
             _buildInputField(
               controller: _fullNameController,
-              label: 'Full Name',
+              label:
+                  AppLocalizations.of(context)?.translate('fullname_label') ??
+                  'Full Name',
             ),
 
             const SizedBox(height: 16),
@@ -190,7 +212,9 @@ class _SignUpPageState extends State<SignUpPage> {
             // Email Address
             _buildInputField(
               controller: _emailController,
-              label: 'Email Address',
+              label:
+                  AppLocalizations.of(context)?.translate('email_label') ??
+                  'Email Address',
               keyboardType: TextInputType.emailAddress,
             ),
 
@@ -199,7 +223,11 @@ class _SignUpPageState extends State<SignUpPage> {
             // Current Address
             _buildInputField(
               controller: _addressController,
-              label: 'Current Address',
+              label:
+                  AppLocalizations.of(
+                    context,
+                  )?.translate('current_address_label') ??
+                  'Current Address',
             ),
 
             const SizedBox(height: 16),
@@ -211,7 +239,11 @@ class _SignUpPageState extends State<SignUpPage> {
                   flex: 1,
                   child: _buildInputField(
                     controller: _postalCodeController,
-                    label: 'Code Postal',
+                    label:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('postal_code_label') ??
+                        'Code Postal',
                     keyboardType: TextInputType.number,
                     inputFormatters: [
                       FilteringTextInputFormatter.digitsOnly,
@@ -229,7 +261,9 @@ class _SignUpPageState extends State<SignUpPage> {
             // Password
             _buildInputField(
               controller: _passwordController,
-              label: 'Password',
+              label:
+                  AppLocalizations.of(context)?.translate('password_label') ??
+                  'Password',
               obscureText: _obscurePassword,
               suffixIcon: IconButton(
                 icon: Icon(
@@ -250,7 +284,11 @@ class _SignUpPageState extends State<SignUpPage> {
             // Confirm Password
             _buildInputField(
               controller: _confirmPasswordController,
-              label: 'Confirm Password',
+              label:
+                  AppLocalizations.of(
+                    context,
+                  )?.translate('confirm_password_label') ??
+                  'Confirm Password',
               obscureText: _obscureConfirmPassword,
               suffixIcon: IconButton(
                 icon: Icon(
@@ -305,11 +343,19 @@ class _SignUpPageState extends State<SignUpPage> {
                           color: Theme.of(context).textTheme.bodySmall!.color,
                         ),
                         children: [
-                          const TextSpan(
-                            text: 'By creating an account, you agree to our ',
+                          TextSpan(
+                            text:
+                                AppLocalizations.of(
+                                  context,
+                                )?.translate('terms_aggrement') ??
+                                'By creating an account, you agree to our ',
                           ),
                           TextSpan(
-                            text: 'Term and Conditions',
+                            text:
+                                AppLocalizations.of(
+                                  context,
+                                )?.translate('terms_link') ??
+                                'Term and Conditions',
                             style: GoogleFonts.dmSans(
                               fontSize: 12,
                               color: AppColors.roseColor,
@@ -332,7 +378,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 return Opacity(
                   opacity: _isFormValid ? 1.0 : 0.5,
                   child: PrimaryButton(
-                    text: 'Sign up',
+                    text:
+                        AppLocalizations.of(context)?.translate('signup_btn') ??
+                        'Sign up',
                     isLoading: authProvider.isLoading,
                     onPressed: _isFormValid ? _onSingup : () {},
                   ),
@@ -347,7 +395,10 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Already have an account? ',
+                  AppLocalizations.of(
+                        context,
+                      )?.translate('already_have_account') ??
+                      'Already have an account? ',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     color: Theme.of(context).textTheme.bodySmall!.color,
@@ -358,7 +409,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     Navigator.pushReplacementNamed(context, RouteNames.signIn);
                   },
                   child: Text(
-                    'Login',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('login_link_text') ??
+                        'Login',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: AppColors.roseColor,
@@ -593,7 +647,7 @@ class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Wilaya',
+            AppLocalizations.of(context)?.translate('wilaya_label') ?? 'Wilaya',
             style: GoogleFonts.dmSans(
               fontSize: 12,
               color: Theme.of(context).inputDecorationTheme.labelStyle!.color,

@@ -6,6 +6,7 @@ import '../theme/colors.dart';
 import '../Widgets/button.dart';
 import '../providers/user_provider.dart';
 import '../routes/route_names.dart';
+import '../l10n/app_localizations.dart';
 
 class MobileNumberPage extends StatefulWidget {
   const MobileNumberPage({Key? key}) : super(key: key);
@@ -47,12 +48,18 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
     final phoneNumber = _phoneController.text;
 
     if (phoneNumber.isEmpty) {
-      _showError('Please enter your phone number');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_phone_empty') ??
+            'Please enter your phone number',
+      );
       return;
     }
 
     if (phoneNumber.length != 9) {
-      _showError('Phone number must be 9 digits');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_phone_length') ??
+            'Phone number must be 9 digits',
+      );
       return;
     }
 
@@ -111,7 +118,8 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
 
             // Welcome Text
             Text(
-              'Welcome',
+              AppLocalizations.of(context)?.translate('mobile_title') ??
+                  'Welcome',
               style: GoogleFonts.dmSans(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
@@ -122,7 +130,8 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
             const SizedBox(height: 8),
 
             Text(
-              'Enter your phone number to get started',
+              AppLocalizations.of(context)?.translate('mobile_subtitle') ??
+                  'Enter your phone number to get started',
               style: GoogleFonts.dmSans(
                 fontSize: 14,
                 color: Theme.of(context).textTheme.bodySmall!.color,
@@ -176,7 +185,11 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
                         color: Theme.of(context).textTheme.bodyLarge!.color,
                       ),
                       decoration: InputDecoration(
-                        hintText: 'Phone number',
+                        hintText:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('phone_number_hint') ??
+                            'Phone number',
                         hintStyle: GoogleFonts.dmSans(
                           fontSize: 16,
                           color: Theme.of(
@@ -196,7 +209,8 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
             // Privacy and agreements text
             Center(
               child: Text(
-                'Privacy and agreements',
+                AppLocalizations.of(context)?.translate('privacy_agreements') ??
+                    'Privacy and agreements',
                 style: GoogleFonts.dmSans(
                   fontSize: 12,
                   color: Colors.grey[600],
@@ -207,7 +221,12 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
             const SizedBox(height: 20),
 
             // Continue Button
-            PrimaryButton(text: 'Continue', onPressed: _onContinue),
+            PrimaryButton(
+              text:
+                  AppLocalizations.of(context)?.translate('continue_btn') ??
+                  'Continue',
+              onPressed: _onContinue,
+            ),
 
             const SizedBox(height: 20),
           ],

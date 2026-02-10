@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../theme/colors.dart';
+import '../../l10n/app_localizations.dart';
 
 class MessageInputField extends StatefulWidget {
   final Function(String) onSendMessage;
@@ -51,9 +52,15 @@ class _MessageInputFieldState extends State<MessageInputField> {
         widget.onSendFile!(image.path, 'IMAGE');
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)?.translate('error_picking_image') ?? 'Error picking image'}: $e',
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -68,9 +75,15 @@ class _MessageInputFieldState extends State<MessageInputField> {
         widget.onSendFile!(photo.path, 'IMAGE');
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error taking photo: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)?.translate('error_taking_photo') ?? 'Error taking photo'}: $e',
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -94,7 +107,10 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 ),
                 child: Icon(Icons.photo_library, color: Colors.blue[700]),
               ),
-              title: const Text('Gallery'),
+              title: Text(
+                AppLocalizations.of(context)?.translate('gallery_option') ??
+                    'Gallery',
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _handleImagePicker();
@@ -109,7 +125,10 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 ),
                 child: Icon(Icons.camera_alt, color: Colors.pink[700]),
               ),
-              title: const Text('Camera'),
+              title: Text(
+                AppLocalizations.of(context)?.translate('camera_option') ??
+                    'Camera',
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _handleCameraPicker();
@@ -124,8 +143,16 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 ),
                 child: Icon(Icons.insert_drive_file, color: Colors.orange[700]),
               ),
-              title: const Text('Document'),
-              subtitle: const Text('Coming soon'),
+              title: Text(
+                AppLocalizations.of(context)?.translate('document_option') ??
+                    'Document',
+              ),
+              subtitle: Text(
+                AppLocalizations.of(
+                      context,
+                    )?.translate('feature_coming_soon') ??
+                    'Coming soon',
+              ),
               enabled: false,
             ),
           ],
@@ -169,8 +196,10 @@ class _MessageInputFieldState extends State<MessageInputField> {
                 ),
                 child: TextField(
                   controller: _controller,
-                  decoration: const InputDecoration(
-                    hintText: ' Type a message...',
+                  decoration: InputDecoration(
+                    hintText:
+                        AppLocalizations.of(context)?.translate('chat_hint') ??
+                        ' Type a message...',
                     border: InputBorder.none,
                     contentPadding: EdgeInsets.symmetric(vertical: 10),
                   ),

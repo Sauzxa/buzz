@@ -8,6 +8,7 @@ import '../providers/user_provider.dart';
 import '../routes/route_names.dart';
 import '../core/homePage.dart';
 import '../utils/fade_route.dart';
+import '../l10n/app_localizations.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key}) : super(key: key);
@@ -50,12 +51,18 @@ class _SignInPageState extends State<SignInPage> {
     final password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      _showError('Please enter email and password');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_enter_email_password') ??
+            'Please enter email and password',
+      );
       return;
     }
 
     if (!_isValidEmail(email)) {
-      _showError('Please enter a valid email address');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_invalid_email') ??
+            'Please enter a valid email address',
+      );
       return;
     }
 
@@ -104,7 +111,11 @@ class _SignInPageState extends State<SignInPage> {
         setState(() {
           _isLoggingIn = false;
         });
-        _showError(authProvider.error ?? 'Login failed. Please try again.');
+        _showError(
+          authProvider.error ??
+              (AppLocalizations.of(context)?.translate('error_login_failed') ??
+                  'Login failed. Please try again.'),
+        );
       }
     } catch (e) {
       // Handle any unexpected errors
@@ -112,7 +123,10 @@ class _SignInPageState extends State<SignInPage> {
         setState(() {
           _isLoggingIn = false;
         });
-        _showError('An unexpected error occurred. Please try again.');
+        _showError(
+          AppLocalizations.of(context)?.translate('error_unexpected') ??
+              'An unexpected error occurred. Please try again.',
+        );
       }
     }
   }
@@ -167,7 +181,12 @@ class _SignInPageState extends State<SignInPage> {
         setState(() {
           _isGoogleSigningIn = false;
         });
-        _showError('Google Sign-In failed. Please try again.');
+        _showError(
+          AppLocalizations.of(
+                context,
+              )?.translate('error_google_signin_failed') ??
+              'Google Sign-In failed. Please try again.',
+        );
       }
     }
   }
@@ -219,7 +238,8 @@ class _SignInPageState extends State<SignInPage> {
 
             // Let's Sign You In Title
             Text(
-              'Let\'s Sign You In',
+              AppLocalizations.of(context)?.translate('login_title') ??
+                  'Let\'s Sign You In',
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 fontSize: 28,
@@ -231,7 +251,8 @@ class _SignInPageState extends State<SignInPage> {
             const SizedBox(height: 12),
 
             Text(
-              'Welcome back, you\'ve\nbeen missed!',
+              AppLocalizations.of(context)?.translate('login_subtitle') ??
+                  'Welcome back, you\'ve\nbeen missed!',
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 fontSize: 16,
@@ -245,7 +266,9 @@ class _SignInPageState extends State<SignInPage> {
             // Email Address
             _buildInputField(
               controller: _emailController,
-              label: 'Email Address',
+              label:
+                  AppLocalizations.of(context)?.translate('email_label') ??
+                  'Email Address',
               hintText: userProvider.user.email?.isNotEmpty == true
                   ? userProvider.user.email
                   : '',
@@ -257,7 +280,9 @@ class _SignInPageState extends State<SignInPage> {
             // Password
             _buildInputField(
               controller: _passwordController,
-              label: 'Password',
+              label:
+                  AppLocalizations.of(context)?.translate('password_label') ??
+                  'Password',
               // Use stored password as hint if available (per user request)
               hintText: userProvider.user.password?.isNotEmpty == true
                   ? userProvider.user.password
@@ -316,7 +341,10 @@ class _SignInPageState extends State<SignInPage> {
                         });
                       },
                       child: Text(
-                        'Remember Me',
+                        AppLocalizations.of(
+                              context,
+                            )?.translate('remember_me') ??
+                            'Remember Me',
                         style: GoogleFonts.dmSans(
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
@@ -329,7 +357,10 @@ class _SignInPageState extends State<SignInPage> {
                 GestureDetector(
                   onTap: _onForgotPassword,
                   child: Text(
-                    'Forgot Password ?',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('forgot_password') ??
+                        'Forgot Password ?',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: AppColors.roseColor,
@@ -344,7 +375,9 @@ class _SignInPageState extends State<SignInPage> {
 
             // Login Button
             PrimaryButton(
-              text: 'Login',
+              text:
+                  AppLocalizations.of(context)?.translate('login_btn') ??
+                  'Login',
               isLoading: _isLoggingIn, // Use local state for entire flow
               onPressed: _onLogin,
             ),
@@ -356,7 +389,7 @@ class _SignInPageState extends State<SignInPage> {
               children: [
                 const Spacer(),
                 Text(
-                  'OR',
+                  AppLocalizations.of(context)?.translate('or_divider') ?? 'OR',
                   style: GoogleFonts.dmSans(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -413,7 +446,10 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                             const SizedBox(width: 12),
                             Text(
-                              'Continue with Google',
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('continue_google') ??
+                                  'Continue with Google',
                               style: GoogleFonts.dmSans(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -435,7 +471,8 @@ class _SignInPageState extends State<SignInPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Don\'t have an account ? ',
+                  AppLocalizations.of(context)?.translate('no_account') ??
+                      'Don\'t have an account ? ',
                   style: GoogleFonts.dmSans(
                     fontSize: 14,
                     color: Theme.of(context).textTheme.bodySmall!.color,
@@ -449,7 +486,8 @@ class _SignInPageState extends State<SignInPage> {
                     );
                   },
                   child: Text(
-                    'Sign Up',
+                    AppLocalizations.of(context)?.translate('signup_link') ??
+                        'Sign Up',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: AppColors.roseColor,

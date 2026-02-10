@@ -15,6 +15,7 @@ import '../../routes/route_names.dart';
 import '../../pages/settings/profile/edit_profile_settings.dart';
 import 'order_success_page.dart';
 import 'service_order_form_page2.dart';
+import '../../l10n/app_localizations.dart';
 
 class ServiceOrderFormPage extends StatefulWidget {
   final ServiceModel service;
@@ -115,17 +116,23 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
       // Check required fields
       if (field.required) {
         if (value == null) {
-          _showError('${field.label} is required');
+          _showError(
+            '${field.label} ${AppLocalizations.of(context)?.translate('is_required_error') ?? 'is required'}',
+          );
           return false;
         }
 
         if (value is String && value.trim().isEmpty) {
-          _showError('${field.label} is required');
+          _showError(
+            '${field.label} ${AppLocalizations.of(context)?.translate('is_required_error') ?? 'is required'}',
+          );
           return false;
         }
 
         if (value is List && value.isEmpty) {
-          _showError('${field.label} is required');
+          _showError(
+            '${field.label} ${AppLocalizations.of(context)?.translate('is_required_error') ?? 'is required'}',
+          );
           return false;
         }
       }
@@ -139,7 +146,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           if (validation.minLength != null &&
               value.length < validation.minLength!) {
             _showError(
-              '${field.label} must be at least ${validation.minLength} characters',
+              '${field.label} ${(AppLocalizations.of(context)?.translate('min_length_error') ?? 'must be at least {length} characters').replaceAll('{length}', validation.minLength.toString())}',
             );
             return false;
           }
@@ -147,7 +154,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           if (validation.maxLength != null &&
               value.length > validation.maxLength!) {
             _showError(
-              '${field.label} must not exceed ${validation.maxLength} characters',
+              '${field.label} ${(AppLocalizations.of(context)?.translate('max_length_error') ?? 'must not exceed {length} characters').replaceAll('{length}', validation.maxLength.toString())}',
             );
             return false;
           }
@@ -158,12 +165,16 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           final numValue = double.tryParse(value.toString());
           if (numValue != null) {
             if (validation.min != null && numValue < validation.min!) {
-              _showError('${field.label} must be at least ${validation.min}');
+              _showError(
+                '${field.label} ${(AppLocalizations.of(context)?.translate('min_value_error') ?? 'must be at least {value}').replaceAll('{value}', validation.min.toString())}',
+              );
               return false;
             }
 
             if (validation.max != null && numValue > validation.max!) {
-              _showError('${field.label} must not exceed ${validation.max}');
+              _showError(
+                '${field.label} ${(AppLocalizations.of(context)?.translate('max_value_error') ?? 'must not exceed {value}').replaceAll('{value}', validation.max.toString())}',
+              );
               return false;
             }
           }
@@ -232,7 +243,9 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to submit order: $e'),
+            content: Text(
+              '${AppLocalizations.of(context)?.translate('failed_submit_order') ?? 'Failed to submit order'}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -304,7 +317,8 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
             ),
             const SizedBox(height: 20),
             Text(
-              'Form Not Available',
+              AppLocalizations.of(context)?.translate('form_not_available') ??
+                  'Form Not Available',
               style: GoogleFonts.dmSans(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -313,7 +327,10 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
             ),
             const SizedBox(height: 12),
             Text(
-              'The order form for this service is not available yet. Please check back later or contact support.',
+              AppLocalizations.of(
+                    context,
+                  )?.translate('order_form_unavailable_msg') ??
+                  'The order form for this service is not available yet. Please check back later or contact support.',
               textAlign: TextAlign.center,
               style: GoogleFonts.dmSans(
                 fontSize: 14,
@@ -449,8 +466,14 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           const SizedBox(height: 8),
           Text(
             _isMultiPage
-                ? 'Fill in the details below (Page 1 of 2)'
-                : 'Fill in the details below to place your order',
+                ? (AppLocalizations.of(
+                        context,
+                      )?.translate('fill_details_page_1') ??
+                      'Fill in the details below (Page 1 of 2)')
+                : (AppLocalizations.of(
+                        context,
+                      )?.translate('fill_details_order') ??
+                      'Fill in the details below to place your order'),
             style: GoogleFonts.dmSans(
               fontSize: 14,
               color: Theme.of(context).textTheme.bodySmall!.color,
@@ -480,8 +503,17 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           // Button: Next (for multi-page) or Submit Order (for single-page)
           PrimaryButton(
             text: _isMultiPage
-                ? 'Next'
-                : (_isSubmitting ? 'Submitting...' : 'Submit Order'),
+                ? (AppLocalizations.of(context)?.translate('next_btn') ??
+                      'Next')
+                : (_isSubmitting
+                      ? (AppLocalizations.of(
+                              context,
+                            )?.translate('submitting_status') ??
+                            'Submitting...')
+                      : (AppLocalizations.of(
+                              context,
+                            )?.translate('submit_order_btn') ??
+                            'Submit Order')),
             onPressed: () {
               if (!_isSubmitting) {
                 _isMultiPage ? _goToNextPage() : _submitOrder();
@@ -510,8 +542,14 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
         const SizedBox(height: 8),
         Text(
           _isMultiPage
-              ? 'Fill in the details below (Page 1 of 2)'
-              : 'Fill in the details below to place your order',
+              ? (AppLocalizations.of(
+                      context,
+                    )?.translate('fill_details_page_1') ??
+                    'Fill in the details below (Page 1 of 2)')
+              : (AppLocalizations.of(
+                      context,
+                    )?.translate('fill_details_order') ??
+                    'Fill in the details below to place your order'),
           style: GoogleFonts.dmSans(
             fontSize: 14,
             color: Theme.of(context).textTheme.bodySmall!.color,
@@ -541,8 +579,16 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
         // Button: Next (for multi-page) or Submit Order (for single-page)
         PrimaryButton(
           text: _isMultiPage
-              ? 'Next'
-              : (_isSubmitting ? 'Submitting...' : 'Submit Order'),
+              ? (AppLocalizations.of(context)?.translate('next_btn') ?? 'Next')
+              : (_isSubmitting
+                    ? (AppLocalizations.of(
+                            context,
+                          )?.translate('submitting_status') ??
+                          'Submitting...')
+                    : (AppLocalizations.of(
+                            context,
+                          )?.translate('submit_order_btn') ??
+                          'Submit Order')),
           backgroundColor: _categoryTheme.color,
           onPressed: () {
             if (!_isSubmitting) {

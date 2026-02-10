@@ -9,6 +9,7 @@ import '../../Widgets/home_drawer.dart';
 import '../../Widgets/notification_popup.dart';
 import '../../Widgets/notification_badge.dart';
 import '../../routes/route_names.dart';
+import '../../l10n/app_localizations.dart';
 
 class ServiceChoosingPage extends StatelessWidget {
   final ServiceModel service;
@@ -71,7 +72,7 @@ class ServiceChoosingPage extends StatelessWidget {
           'assets/Logos/WhiteLogo.png',
           height: 35,
           errorBuilder: (_, __, ___) => Text(
-            'BUZZ',
+            AppLocalizations.of(context)?.translate('app_name') ?? 'BUZZ',
             style: GoogleFonts.dmSans(
               color: Colors.white,
               fontWeight: FontWeight.bold,
@@ -200,15 +201,22 @@ class ServiceChoosingPage extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(24),
                   child: PrimaryButton(
-                    text: 'Get Started',
+                    text:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('get_started_btn') ??
+                        'Get Started',
                     backgroundColor: themeColor,
                     onPressed: () {
                       if (service.formFields == null ||
                           service.formFields!.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text(
-                              'No order form available for this service yet',
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('no_order_form_available') ??
+                                  'No order form available for this service yet',
                             ),
                             backgroundColor: Colors.orange,
                           ),

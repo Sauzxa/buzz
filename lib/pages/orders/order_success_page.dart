@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../Widgets/button.dart';
 import '../../routes/route_names.dart';
 import '../../utils/category_theme.dart';
+import '../../l10n/app_localizations.dart';
 import 'order_details_page.dart';
 
 class OrderSuccessPage extends StatelessWidget {
@@ -24,7 +25,8 @@ class OrderSuccessPage extends StatelessWidget {
         elevation: 0,
         leading: const SizedBox(), // Remove back button
         title: Text(
-          'Order Placed',
+          AppLocalizations.of(context)?.translate('order_placed_title') ??
+              'Order Placed',
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -72,7 +74,10 @@ class OrderSuccessPage extends StatelessWidget {
                       child: Column(
                         children: [
                           Text(
-                            'Procedure Completed',
+                            AppLocalizations.of(
+                                  context,
+                                )?.translate('procedure_completed') ??
+                                'Procedure Completed',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.dmSans(
                               fontSize: 24,
@@ -84,7 +89,10 @@ class OrderSuccessPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Successfully',
+                            AppLocalizations.of(
+                                  context,
+                                )?.translate('successfully') ??
+                                'Successfully',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.dmSans(
                               fontSize: 24,
@@ -96,7 +104,10 @@ class OrderSuccessPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Your order has been placed successfully. We will contact you soon with further details.',
+                            AppLocalizations.of(
+                                  context,
+                                )?.translate('order_placed_success_msg') ??
+                                'Your order has been placed successfully. We will contact you soon with further details.',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.dmSans(
                               fontSize: 14,
@@ -120,7 +131,11 @@ class OrderSuccessPage extends StatelessWidget {
               child: Column(
                 children: [
                   PrimaryButton(
-                    text: 'Go to Homepage',
+                    text:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('go_home_btn') ??
+                        'Go to Homepage',
                     onPressed: () {
                       // Navigate to home and remove all previous routes
                       Navigator.of(context).pushNamedAndRemoveUntil(
@@ -148,7 +163,12 @@ class OrderSuccessPage extends StatelessWidget {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Order details not available'),
+                            content: Text(
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('order_details_not_available') ??
+                                  'Order details not available',
+                            ),
                             backgroundColor: _categoryTheme.color,
                           ),
                         );
@@ -158,7 +178,10 @@ class OrderSuccessPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'View Order Details',
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('view_order_details') ??
+                              'View Order Details',
                           style: GoogleFonts.dmSans(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

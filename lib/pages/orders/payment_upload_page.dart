@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../services/invoice_service.dart';
 import '../../theme/colors.dart';
 import '../../Widgets/button.dart';
+import '../../l10n/app_localizations.dart';
 import 'invoice_uploaded_success.dart';
 
 class PaymentUploadPage extends StatefulWidget {
@@ -47,13 +48,16 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
         });
       } else {
         setState(() {
-          _error = 'No invoice found for this order yet.';
+          _error =
+              AppLocalizations.of(context)?.translate('no_invoice_found') ??
+              'No invoice found for this order yet.';
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to fetch invoice info: $e';
+        _error =
+            '${AppLocalizations.of(context)?.translate('failed_fetch_invoice') ?? 'Failed to fetch invoice info'}: $e';
         _isLoading = false;
       });
     }
@@ -74,9 +78,13 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error picking image: $e')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${AppLocalizations.of(context)?.translate('error_picking_image') ?? 'Error picking image'}: $e',
+          ),
+        ),
+      );
     }
   }
 
@@ -103,7 +111,9 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Upload failed: $e'),
+          content: Text(
+            '${AppLocalizations.of(context)?.translate('upload_failed') ?? 'Upload failed'}: $e',
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -121,7 +131,8 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Upload Payment',
+          AppLocalizations.of(context)?.translate('upload_payment_title') ??
+              'Upload Payment',
           style: GoogleFonts.dmSans(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -143,7 +154,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    'Upload your payment receipt for Order #${widget.order['orderNumber'] ?? widget.order['id']}',
+                    '${AppLocalizations.of(context)?.translate('upload_receipt_instruction') ?? 'Upload your payment receipt for Order #'} ${widget.order['orderNumber'] ?? widget.order['id']}',
                     style: GoogleFonts.dmSans(fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
@@ -185,7 +196,10 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                                   ),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Tap to select image',
+                                    AppLocalizations.of(
+                                          context,
+                                        )?.translate('tap_select_image') ??
+                                        'Tap to select image',
                                     style: GoogleFonts.dmSans(
                                       fontSize: 16,
                                       color: Theme.of(
@@ -202,7 +216,15 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
                   const SizedBox(height: 30),
 
                   PrimaryButton(
-                    text: _isLoading ? 'Uploading...' : 'Submit Receipt',
+                    text: _isLoading
+                        ? (AppLocalizations.of(
+                                context,
+                              )?.translate('uploading_status') ??
+                              'Uploading...')
+                        : (AppLocalizations.of(
+                                context,
+                              )?.translate('submit_receipt_btn') ??
+                              'Submit Receipt'),
                     onPressed: (_imageFile != null && !_isLoading)
                         ? _uploadProof
                         : () => _showImageSourceSheet(context),
@@ -221,7 +243,10 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Gallery'),
+              title: Text(
+                AppLocalizations.of(context)?.translate('gallery_option') ??
+                    'Gallery',
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.gallery);
@@ -229,7 +254,10 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
             ),
             ListTile(
               leading: const Icon(Icons.camera_alt),
-              title: const Text('Camera'),
+              title: Text(
+                AppLocalizations.of(context)?.translate('camera_option') ??
+                    'Camera',
+              ),
               onTap: () {
                 Navigator.pop(context);
                 _pickImage(ImageSource.camera);

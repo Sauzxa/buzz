@@ -14,6 +14,7 @@ import '../../utils/category_theme.dart';
 import '../../routes/route_names.dart';
 import '../../pages/settings/profile/edit_profile_settings.dart';
 import 'order_success_page.dart';
+import '../../l10n/app_localizations.dart';
 
 class ServiceOrderFormPage2 extends StatefulWidget {
   final ServiceModel service;
@@ -108,17 +109,23 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
       // Check required fields
       if (field.required) {
         if (value == null) {
-          _showError('${field.label} is required');
+          _showError(
+            '${field.label} ${AppLocalizations.of(context)?.translate('is_required_error') ?? 'is required'}',
+          );
           return false;
         }
 
         if (value is String && value.trim().isEmpty) {
-          _showError('${field.label} is required');
+          _showError(
+            '${field.label} ${AppLocalizations.of(context)?.translate('is_required_error') ?? 'is required'}',
+          );
           return false;
         }
 
         if (value is List && value.isEmpty) {
-          _showError('${field.label} is required');
+          _showError(
+            '${field.label} ${AppLocalizations.of(context)?.translate('is_required_error') ?? 'is required'}',
+          );
           return false;
         }
       }
@@ -132,7 +139,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           if (validation.minLength != null &&
               value.length < validation.minLength!) {
             _showError(
-              '${field.label} must be at least ${validation.minLength} characters',
+              '${field.label} ${(AppLocalizations.of(context)?.translate('min_length_error') ?? 'must be at least {length} characters').replaceAll('{length}', validation.minLength.toString())}',
             );
             return false;
           }
@@ -140,7 +147,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           if (validation.maxLength != null &&
               value.length > validation.maxLength!) {
             _showError(
-              '${field.label} must not exceed ${validation.maxLength} characters',
+              '${field.label} ${(AppLocalizations.of(context)?.translate('max_length_error') ?? 'must not exceed {length} characters').replaceAll('{length}', validation.maxLength.toString())}',
             );
             return false;
           }
@@ -151,12 +158,16 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           final numValue = double.tryParse(value.toString());
           if (numValue != null) {
             if (validation.min != null && numValue < validation.min!) {
-              _showError('${field.label} must be at least ${validation.min}');
+              _showError(
+                '${field.label} ${(AppLocalizations.of(context)?.translate('min_value_error') ?? 'must be at least {value}').replaceAll('{value}', validation.min.toString())}',
+              );
               return false;
             }
 
             if (validation.max != null && numValue > validation.max!) {
-              _showError('${field.label} must not exceed ${validation.max}');
+              _showError(
+                '${field.label} ${(AppLocalizations.of(context)?.translate('max_value_error') ?? 'must not exceed {value}').replaceAll('{value}', validation.max.toString())}',
+              );
               return false;
             }
           }
@@ -209,7 +220,9 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to submit order: $e'),
+            content: Text(
+              '${AppLocalizations.of(context)?.translate('failed_submit_order') ?? 'Failed to submit order'}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -269,7 +282,10 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Complete the remaining details',
+                AppLocalizations.of(
+                      context,
+                    )?.translate('complete_remaining_details') ??
+                    'Complete the remaining details',
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   color: Theme.of(context).textTheme.bodySmall!.color,
@@ -293,7 +309,15 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
 
               // Submit Button
               PrimaryButton(
-                text: _isSubmitting ? 'Submitting...' : 'Submit Order',
+                text: _isSubmitting
+                    ? (AppLocalizations.of(
+                            context,
+                          )?.translate('submitting_status') ??
+                          'Submitting...')
+                    : (AppLocalizations.of(
+                            context,
+                          )?.translate('submit_order_btn') ??
+                          'Submit Order'),
                 backgroundColor: widget.categoryTheme.color,
                 onPressed: () {
                   if (!_isSubmitting) {

@@ -31,6 +31,7 @@ import '../pages/categories/category_page.dart';
 import '../pages/services_pages/service_choosing_page.dart';
 import '../pages/settings/profile/edit_profile_settings.dart';
 import '../routes/route_names.dart';
+import '../l10n/app_localizations.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -229,7 +230,8 @@ class _HomePageState extends State<HomePage> {
     } else {
       SnackBarHelper.showInfoSnackBar(
         context,
-        'Feature available in the future',
+        AppLocalizations.of(context)?.translate('feature_future') ??
+            'Feature available in the future',
       );
     }
   }
@@ -265,7 +267,8 @@ class _HomePageState extends State<HomePage> {
       if (categoriesProvider.hasError || servicesProvider.hasError) {
         SnackBarHelper.showErrorSnackBar(
           context,
-          'Failed to load some data. Pull to refresh.',
+          AppLocalizations.of(context)?.translate('failed_load_data') ??
+              'Failed to load some data. Pull to refresh.',
         );
       }
     }
@@ -328,7 +331,10 @@ class _HomePageState extends State<HomePage> {
                               height: 35,
                               errorBuilder: (context, error, stackTrace) {
                                 return Text(
-                                  'BUZZ',
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('app_name') ??
+                                      'BUZZ',
                                   style: GoogleFonts.dmSans(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -365,7 +371,7 @@ class _HomePageState extends State<HomePage> {
                                   );
                                 }
                                 return Text(
-                                  'Salam ${userProvider.fullName}',
+                                  '${AppLocalizations.of(context)?.translate('salam') ?? 'Salam'} ${userProvider.fullName}',
                                   style: GoogleFonts.dmSans(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
@@ -376,7 +382,10 @@ class _HomePageState extends State<HomePage> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'What are you looking for today?',
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('what_looking_for') ??
+                                  'What are you looking for today?',
                               style: GoogleFonts.dmSans(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w900,
@@ -408,7 +417,11 @@ class _HomePageState extends State<HomePage> {
                                     decoration: InputDecoration(
                                       filled: true,
                                       fillColor: Colors.transparent,
-                                      hintText: 'Search services...',
+                                      hintText:
+                                          AppLocalizations.of(
+                                            context,
+                                          )?.translate('search_hint') ??
+                                          'Search services...',
                                       hintStyle: GoogleFonts.dmSans(
                                         color: Theme.of(context).hintColor,
                                         fontSize: 14,
@@ -487,8 +500,14 @@ class _HomePageState extends State<HomePage> {
                                 });
 
                                 final message = scope == SearchScope.allServices
-                                    ? 'Search Scope: All Services'
-                                    : 'Search Scope: Selected Categories Only';
+                                    ? (AppLocalizations.of(
+                                            context,
+                                          )?.translate('search_scope_all') ??
+                                          'Search Scope: All Services')
+                                    : (AppLocalizations.of(context)?.translate(
+                                            'search_scope_filtered',
+                                          ) ??
+                                          'Search Scope: Selected Categories Only');
 
                                 ScaffoldMessenger.of(context).clearSnackBars();
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -615,7 +634,10 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 const SizedBox(height: 12),
                                 Text(
-                                  'No services found',
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('no_services_found') ??
+                                      'No services found',
                                   style: GoogleFonts.dmSans(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -624,7 +646,10 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  'Try a different search term',
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('try_different_search') ??
+                                      'Try a different search term',
                                   style: GoogleFonts.dmSans(
                                     fontSize: 14,
                                     color: Colors.grey[500],
@@ -797,7 +822,10 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  'News & Offers',
+                  AppLocalizations.of(
+                        context,
+                      )?.translate('news_offers_title') ??
+                      'News & Offers',
                   style: GoogleFonts.dmSans(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -876,7 +904,10 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'News & Offers',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('news_offers_title') ??
+                        'News & Offers',
                     style: GoogleFonts.dmSans(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -906,7 +937,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       child: Text(
-                        'See All',
+                        AppLocalizations.of(context)?.translate('see_all') ??
+                            'See All',
                         style: GoogleFonts.dmSans(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
@@ -984,7 +1016,10 @@ class _HomePageState extends State<HomePage> {
                 ),
                 child: Center(
                   child: Text(
-                    'No offers available',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('no_offers_available') ??
+                        'No offers available',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -1096,8 +1131,14 @@ class _HomePageState extends State<HomePage> {
                 child: Center(
                   child: Text(
                     _selectedCategories.isNotEmpty
-                        ? 'No services matching filters'
-                        : 'No services available',
+                        ? (AppLocalizations.of(
+                                context,
+                              )?.translate('no_services_matching') ??
+                              'No services matching filters')
+                        : (AppLocalizations.of(
+                                context,
+                              )?.translate('no_services_available') ??
+                              'No services available'),
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       color: Colors.grey[600],
@@ -1183,7 +1224,7 @@ class _HomePageState extends State<HomePage> {
                       if (news.newsLink != null && news.newsLink!.isNotEmpty) {
                         SnackBarHelper.showInfoSnackBar(
                           context,
-                          'Opening ${news.title}',
+                          '${AppLocalizations.of(context)?.translate('opening_link') ?? 'Opening'} ${news.title}',
                         );
                         // TODO: Open URL in browser
                         // You can use url_launcher package:

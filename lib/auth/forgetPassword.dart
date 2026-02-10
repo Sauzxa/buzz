@@ -5,6 +5,7 @@ import '../Widgets/button.dart';
 import '../providers/auth_provider.dart';
 import '../utils/fade_route.dart';
 import 'resetEmailSent.dart';
+import '../l10n/app_localizations.dart';
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({Key? key}) : super(key: key);
@@ -27,12 +28,18 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      _showError('Please enter your email address');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_enter_email') ??
+            'Please enter your email address',
+      );
       return;
     }
 
     if (!_isValidEmail(email)) {
-      _showError('Please enter a valid email address');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_invalid_email') ??
+            'Please enter a valid email address',
+      );
       return;
     }
 
@@ -69,7 +76,10 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         _isProcessing = false;
       });
 
-      _showError('An error occurred. Please try again.');
+      _showError(
+        AppLocalizations.of(context)?.translate('error_unexpected') ??
+            'An error occurred. Please try again.',
+      );
     }
   }
 
@@ -116,7 +126,8 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
 
               // Forget Password Title
               Text(
-                'Forget Password',
+                AppLocalizations.of(context)?.translate('forgot_pass_title') ??
+                    'Forget Password',
                 style: GoogleFonts.dmSans(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -127,7 +138,10 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
               const SizedBox(height: 8),
 
               Text(
-                'Enter your email address\nto reset password.',
+                AppLocalizations.of(
+                      context,
+                    )?.translate('forgot_pass_subtitle') ??
+                    'Enter your email address\nto reset password.',
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
                   color: Theme.of(context).textTheme.bodySmall!.color,
@@ -142,7 +156,8 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Email Address',
+                    AppLocalizations.of(context)?.translate('email_label') ??
+                        'Email Address',
                     style: GoogleFonts.dmSans(
                       fontSize: 12,
                       color: Theme.of(
@@ -179,7 +194,9 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
 
               // Reset Password Button
               PrimaryButton(
-                text: 'Reset Password',
+                text:
+                    AppLocalizations.of(context)?.translate('reset_pass_btn') ??
+                    'Reset Password',
                 isLoading: _isProcessing,
                 onPressed: _isProcessing ? () {} : _onResetPassword,
               ),

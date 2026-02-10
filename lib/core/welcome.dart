@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/colors.dart';
 import '../routes/route_names.dart';
+import '../l10n/app_localizations.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({super.key});
@@ -71,7 +72,7 @@ class _WelcomePageState extends State<WelcomePage>
           height: 35,
           errorBuilder: (context, error, stackTrace) {
             return Text(
-              'BUZZ',
+              AppLocalizations.of(context)?.translate('app_name') ?? 'BUZZ',
               style: GoogleFonts.dmSans(
                 color: AppColors.roseColor,
                 fontWeight: FontWeight.bold,
@@ -141,7 +142,10 @@ class _WelcomePageState extends State<WelcomePage>
                               ),
                               const SizedBox(height: 20),
                               Text(
-                                'SWIPE UP',
+                                AppLocalizations.of(
+                                      context,
+                                    )?.translate('swipe_up_text') ??
+                                    'SWIPE UP',
                                 style: GoogleFonts.dmSans(
                                   color: Colors.white,
                                   fontSize: 24,

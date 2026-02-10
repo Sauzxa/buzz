@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../Widgets/button.dart';
 import '../auth/SignIn.dart';
 import '../utils/fade_route.dart';
+import '../l10n/app_localizations.dart';
 
 class ResetEmailSentPage extends StatelessWidget {
   const ResetEmailSentPage({Key? key}) : super(key: key);
@@ -39,7 +40,10 @@ class ResetEmailSentPage extends StatelessWidget {
 
               // Title
               Text(
-                'Reset email sent',
+                AppLocalizations.of(
+                      context,
+                    )?.translate('reset_email_sent_title') ??
+                    'Reset email sent',
                 style: GoogleFonts.dmSans(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -51,7 +55,10 @@ class ResetEmailSentPage extends StatelessWidget {
 
               // Description
               Text(
-                'We have sent all required\ninstructions details to your\nmail.',
+                AppLocalizations.of(
+                      context,
+                    )?.translate('reset_email_sent_desc') ??
+                    'We have sent all required\ninstructions details to your\nmail.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.dmSans(
                   fontSize: 14,
@@ -73,7 +80,9 @@ class ResetEmailSentPage extends StatelessWidget {
 
               // Proceed Button
               PrimaryButton(
-                text: 'Proceed',
+                text:
+                    AppLocalizations.of(context)?.translate('proceed_btn') ??
+                    'Proceed',
                 onPressed: () => _onProceed(context),
               ),
 

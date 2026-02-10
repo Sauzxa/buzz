@@ -7,6 +7,7 @@ import '../../providers/invoice_provider.dart';
 import '../../Widgets/order_drawer.dart';
 import '../../Widgets/order_tracking_stepper.dart';
 import '../../routes/route_names.dart';
+import '../../l10n/app_localizations.dart';
 
 class OrderTrackingPage extends StatefulWidget {
   const OrderTrackingPage({Key? key}) : super(key: key);
@@ -112,7 +113,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           },
         ),
         title: Text(
-          'Tracking',
+          AppLocalizations.of(context)?.translate('tracking_title') ??
+              'Tracking',
           style: GoogleFonts.dmSans(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -147,7 +149,10 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           return sortedOrders.isEmpty
               ? Center(
                   child: Text(
-                    'No orders to track',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('no_orders_to_track') ??
+                        'No orders to track',
                     style: GoogleFonts.dmSans(
                       fontSize: 16,
                       color: Theme.of(context).textTheme.bodySmall!.color,
@@ -214,7 +219,11 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
-                      (order['serviceCategory'] ?? 'Service')
+                      (order['serviceCategory'] ??
+                              (AppLocalizations.of(
+                                    context,
+                                  )?.translate('default_service_name') ??
+                                  'Service'))
                           .toString()
                           .toUpperCase(),
                       style: GoogleFonts.dmSans(
@@ -282,7 +291,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                       children: [
                         Text(
                           order['title'] ??
-                              'COMMANDE N ${_getOrderNumber(order['orderNumber'])}',
+                              '${AppLocalizations.of(context)?.translate('order_number_prefix') ?? 'ORDER N'} ${_getOrderNumber(order['orderNumber'])}',
                           style: GoogleFonts.dmSans(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -331,7 +340,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Deadline',
+                    AppLocalizations.of(context)?.translate('deadline_label') ??
+                        'Deadline',
                     style: GoogleFonts.dmSans(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -422,21 +432,33 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   String _getStatusLabel(String status) {
     switch (status.toUpperCase()) {
       case 'PENDING':
-        return 'Pending';
+        return AppLocalizations.of(context)?.translate('status_pending') ??
+            'Pending';
       case 'PRICED':
-        return 'Priced';
+        return AppLocalizations.of(context)?.translate('status_priced') ??
+            'Priced';
       case 'AWAITING_PAYMENT_VALIDATION':
-        return 'Awaiting Payment';
+        return AppLocalizations.of(
+              context,
+            )?.translate('status_awaiting_payment') ??
+            'Awaiting Payment';
       case 'IN_PROGRESS':
-        return 'In Progress';
+        return AppLocalizations.of(context)?.translate('status_in_progress') ??
+            'In Progress';
       case 'COMPLETED':
-        return 'Completed';
+        return AppLocalizations.of(context)?.translate('status_completed') ??
+            'Completed';
       case 'CANCELLED':
-        return 'Cancelled';
+        return AppLocalizations.of(context)?.translate('status_cancelled') ??
+            'Cancelled';
       case 'DELIVERED':
-        return 'Delivered';
+        return AppLocalizations.of(context)?.translate('status_delivered') ??
+            'Delivered';
       default:
-        return status;
+        return AppLocalizations.of(
+              context,
+            )?.translate('status_$status'.toLowerCase()) ??
+            status;
     }
   }
 

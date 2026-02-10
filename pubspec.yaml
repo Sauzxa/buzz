@@ -53,6 +53,8 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   app_links: ^6.4.1  # For deep linking / password reset (replaces uni_links)
   google_sign_in: ^7.2.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -115,6 +117,7 @@ flutter:
     - assets/others/invoiceSucces.png
     - assets/icons/Groups.png
     - assets/Logos/LimitedOffre.png
+    - assets/i18n/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

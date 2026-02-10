@@ -3,14 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../Widgets/notification_popup.dart';
 import 'package:provider/provider.dart';
 import '../../../theme/colors.dart';
+import '../../../Widgets/home_drawer.dart';
 import '../../../Widgets/button.dart';
 import '../../../Widgets/custom_bottom_nav_bar.dart';
-import '../../../Widgets/home_drawer.dart';
-import '../../../providers/user_provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../routes/route_names.dart';
-import '../../../auth/SignIn.dart';
-import '../../../utils/fade_route.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ChangePassSettings extends StatefulWidget {
   const ChangePassSettings({Key? key}) : super(key: key);
@@ -57,9 +55,14 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
     } else if (index == 4) {
       Navigator.pushReplacementNamed(context, RouteNames.chat);
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Feature coming soon!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)?.translate('feature_coming_soon') ??
+                'Feature coming soon!',
+          ),
+        ),
+      );
     }
   }
 
@@ -88,17 +91,28 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password changed successfully!'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(
+                    context,
+                  )?.translate('password_changed_success') ??
+                  'Password changed successfully!',
+            ),
             backgroundColor: Colors.green,
-            duration: Duration(seconds: 3),
+            duration: const Duration(seconds: 3),
           ),
         );
       } else {
         // Show error message from auth provider
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(authProvider.error ?? 'Failed to change password'),
+            content: Text(
+              authProvider.error ??
+                  AppLocalizations.of(
+                    context,
+                  )?.translate('password_change_failed') ??
+                  'Failed to change password',
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 4),
           ),
@@ -108,7 +122,9 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('An error occurred: $e'),
+            content: Text(
+              '${AppLocalizations.of(context)?.translate('error_label') ?? 'Error'}: $e',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -153,7 +169,10 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
                   Padding(
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
-                      'Change Password',
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('change_pass_title') ??
+                          'Change Password',
                       style: GoogleFonts.dmSans(
                         fontSize: 18,
                         fontWeight: FontWeight.w600,
@@ -220,7 +239,10 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
 
                       // Heading
                       Text(
-                        'Change Password',
+                        AppLocalizations.of(
+                              context,
+                            )?.translate('change_pass_title') ??
+                            'Change Password',
                         textAlign: TextAlign.start,
                         style: GoogleFonts.dmSans(
                           fontSize: 24,
@@ -233,7 +255,10 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
 
                       // Subtitle
                       Text(
-                        'Please note changing password will required\nagain login to the app.',
+                        AppLocalizations.of(
+                              context,
+                            )?.translate('change_pass_subtitle') ??
+                            'Please note changing password will required\nagain login to the app.',
                         textAlign: TextAlign.start,
                         style: GoogleFonts.dmSans(
                           fontSize: 14,
@@ -247,7 +272,11 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
                       // Current Password
                       _buildPasswordField(
                         controller: _currentPassController,
-                        label: 'Current Password',
+                        label:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('current_password_label') ??
+                            'Current Password',
                         hint: '',
                         isObscure: _obscureCurrent,
                         onVisibilityToggle: () {
@@ -260,7 +289,11 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
                       // New Password
                       _buildPasswordField(
                         controller: _newPassController,
-                        label: 'New Password',
+                        label:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('new_password_label') ??
+                            'New Password',
                         hint: '',
                         isObscure: _obscureNew,
                         onVisibilityToggle: () {
@@ -273,7 +306,11 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
                       // Confirm New Password
                       _buildPasswordFieldWithValidation(
                         controller: _confirmPassController,
-                        label: 'Confirm New Password',
+                        label:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('confirm_new_password_label') ??
+                            'Confirm New Password',
                         hint: '',
                         isObscure: _obscureConfirm,
                         onVisibilityToggle: () {
@@ -285,7 +322,11 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
 
                       // Save Button
                       PrimaryButton(
-                        text: 'Save Password',
+                        text:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('save_password_btn') ??
+                            'Save Password',
                         onPressed: _savePassword,
                         isLoading: _isLoading,
                       ),
@@ -365,7 +406,10 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'This field is required'; // Required validation message
+              return AppLocalizations.of(
+                    context,
+                  )?.translate('field_required_error') ??
+                  'This field is required';
             }
             return null;
           },
@@ -429,7 +473,10 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
               return 'This field is required';
             }
             if (value != _newPassController.text) {
-              return 'Passwords do not match';
+              return AppLocalizations.of(
+                    context,
+                  )?.translate('error_passwords_mismatch') ??
+                  'Passwords do not match';
             }
             return null;
           },

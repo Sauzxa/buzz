@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../l10n/app_localizations.dart';
 
 class FaqPage extends StatefulWidget {
   const FaqPage({super.key});
@@ -37,7 +38,10 @@ class _FaqPageState extends State<FaqPage> {
                     },
                   ),
                   Text(
-                    'FAQs',
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('faq_title_header') ??
+                        'FAQs',
                     style: GoogleFonts.dmSans(
                       fontSize: 20,
                       fontWeight: FontWeight.w600,
@@ -68,7 +72,8 @@ class _FaqPageState extends State<FaqPage> {
                   children: [
                     // Title
                     Text(
-                      'FAQ',
+                      AppLocalizations.of(context)?.translate('settings_faq') ??
+                          'FAQ',
                       style: GoogleFonts.dmSans(
                         fontSize: 32,
                         fontWeight: FontWeight.w700,
@@ -77,7 +82,8 @@ class _FaqPageState extends State<FaqPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Find important information and update about\nany recent changes and fees here.',
+                      AppLocalizations.of(context)?.translate('faq_desc') ??
+                          'Find important information and update about\nany recent changes and fees here.',
                       style: GoogleFonts.dmSans(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -88,7 +94,12 @@ class _FaqPageState extends State<FaqPage> {
                     const SizedBox(height: 32),
 
                     // General Section
-                    _buildSectionTitle('General'),
+                    _buildSectionTitle(
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('faq_general_section') ??
+                          'General',
+                    ),
                     const SizedBox(height: 16),
                     _buildFaqItem(
                       index: 0,
@@ -113,7 +124,12 @@ class _FaqPageState extends State<FaqPage> {
                     const SizedBox(height: 32),
 
                     // Contact Section
-                    _buildSectionTitle('Contact'),
+                    _buildSectionTitle(
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('faq_contact_section') ??
+                          'Contact',
+                    ),
                     const SizedBox(height: 16),
                     _buildFaqItem(
                       index: 3,
@@ -170,7 +186,10 @@ class _FaqPageState extends State<FaqPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Go to Homepage',
+                                AppLocalizations.of(
+                                      context,
+                                    )?.translate('go_home_btn') ??
+                                    'Go to Homepage',
                                 style: GoogleFonts.dmSans(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,

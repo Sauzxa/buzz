@@ -9,6 +9,7 @@ import '../../Widgets/notification_badge.dart';
 import '../../utils/category_theme.dart';
 import '../../routes/route_names.dart';
 import '../settings/profile/edit_profile_settings.dart';
+import '../../l10n/app_localizations.dart';
 
 class CategoryPage extends StatefulWidget {
   final CategoryModel category;
@@ -143,7 +144,10 @@ class _CategoryPageState extends State<CategoryPage> {
                         height: 35,
                         errorBuilder: (context, error, stackTrace) {
                           return Text(
-                            'BUZZ',
+                            AppLocalizations.of(
+                                  context,
+                                )?.translate('app_name') ??
+                                'BUZZ',
                             style: GoogleFonts.dmSans(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -180,7 +184,10 @@ class _CategoryPageState extends State<CategoryPage> {
                         // If category has specific styling description, use it, else default
                         widget.category.description.isNotEmpty
                             ? widget.category.description
-                            : "Create,\nDon't hate!",
+                            : (AppLocalizations.of(
+                                    context,
+                                  )?.translate('default_category_desc') ??
+                                  "Create,\nDon't hate!"),
                         style: GoogleFonts.playfairDisplay(
                           // Serif font for elegance
                           fontSize: 48,
@@ -217,7 +224,10 @@ class _CategoryPageState extends State<CategoryPage> {
                             ),
                           ),
                           child: Text(
-                            'Continue',
+                            AppLocalizations.of(
+                                  context,
+                                )?.translate('continue_btn') ??
+                                'Continue',
                             style: GoogleFonts.dmSans(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,

@@ -13,6 +13,7 @@ import '../pages/settings/general_settings.dart';
 import '../pages/services_pages/saved_services.dart';
 import '../auth/SignIn.dart';
 import '../pages/settings/user_settings_page.dart';
+import '../l10n/app_localizations.dart';
 
 class HomeDrawer extends StatefulWidget {
   const HomeDrawer({super.key});
@@ -70,8 +71,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
           _isLoggingOut = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Logout failed. Please try again.'),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)?.translate('drawer_logout_failed') ??
+                  'Logout failed. Please try again.',
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -193,7 +197,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   _buildMenuItem(
                     context,
                     icon: Icons.person_outline,
-                    title: 'My Profile',
+                    title:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('drawer_my_profile') ??
+                        'My Profile',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -205,7 +213,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   _buildMenuItem(
                     context,
                     icon: Icons.call_outlined,
-                    title: 'Services',
+                    title:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('drawer_services') ??
+                        'Services',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.pushNamed(context, '/services-buzz');
@@ -214,7 +226,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   _buildMenuItem(
                     context,
                     icon: Icons.bookmark_border,
-                    title: 'Saved Services',
+                    title:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('drawer_saved_services') ??
+                        'Saved Services',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -237,7 +253,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   _buildMenuItem(
                     context,
                     icon: Icons.settings_outlined,
-                    title: 'Settings',
+                    title:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('drawer_settings') ??
+                        'Settings',
                     onTap: () {
                       Navigator.pop(context); // Close drawer
                       Navigator.push(
@@ -251,7 +271,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   _buildMenuItem(
                     context,
                     icon: Icons.person_add_outlined,
-                    title: 'Invite Friends',
+                    title:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('drawer_invite_friends') ??
+                        'Invite Friends',
                     onTap: () {
                       Navigator.pop(context);
                     },
@@ -259,7 +283,11 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   _buildMenuItem(
                     context,
                     icon: Icons.help_outline,
-                    title: 'Buzz Features',
+                    title:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('drawer_buzz_features') ??
+                        'Buzz Features',
                     onTap: () async {
                       Navigator.pop(context);
 
@@ -269,14 +297,20 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         builder: (BuildContext dialogContext) {
                           return AlertDialog(
                             title: Text(
-                              'Open in Browser',
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('open_in_browser_title') ??
+                                  'Open in Browser',
                               style: GoogleFonts.dmSans(
                                 fontWeight: FontWeight.bold,
                                 color: isDarkMode ? Colors.white : Colors.black,
                               ),
                             ),
                             content: Text(
-                              'This will open www.buzz-apex.com in your browser.',
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('open_in_browser_content') ??
+                                  'This will open www.buzz-apex.com in your browser.',
                               style: GoogleFonts.dmSans(
                                 color: isDarkMode
                                     ? Colors.white70
@@ -288,7 +322,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 onPressed: () =>
                                     Navigator.of(dialogContext).pop(false),
                                 child: Text(
-                                  'Cancel',
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('cancel') ??
+                                      'Cancel',
                                   style: GoogleFonts.dmSans(
                                     color: isDarkMode
                                         ? Colors.white70
@@ -300,7 +337,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                 onPressed: () =>
                                     Navigator.of(dialogContext).pop(true),
                                 child: Text(
-                                  'Open',
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('open_btn') ??
+                                      'Open',
                                   style: GoogleFonts.dmSans(
                                     color: AppColors.roseColor,
                                     fontWeight: FontWeight.bold,
@@ -326,8 +366,13 @@ class _HomeDrawerState extends State<HomeDrawer> {
                           debugPrint('Error launching URL: $e');
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Could not open website'),
+                              SnackBar(
+                                content: Text(
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('could_not_open_website') ??
+                                      'Could not open website',
+                                ),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -383,7 +428,10 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                   ),
                                   const SizedBox(width: 16),
                                   Text(
-                                    'Logout',
+                                    AppLocalizations.of(
+                                          context,
+                                        )?.translate('drawer_logout') ??
+                                        'Logout',
                                     style: GoogleFonts.dmSans(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,

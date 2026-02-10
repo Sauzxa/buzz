@@ -10,6 +10,7 @@ import '../../Widgets/long_press_service_wrapper.dart';
 import '../../Widgets/custom_bottom_nav_bar.dart';
 import '../../routes/route_names.dart';
 import 'service_choosing_page.dart';
+import '../../l10n/app_localizations.dart';
 
 class SavedServicesPage extends StatefulWidget {
   const SavedServicesPage({super.key});
@@ -42,9 +43,14 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
     } else if (index == 4) {
       Navigator.pushReplacementNamed(context, RouteNames.chat);
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Feature coming soon!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)?.translate('feature_coming_soon') ??
+                'Feature coming soon!',
+          ),
+        ),
+      );
     }
   }
 
@@ -93,7 +99,10 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
                       ),
                       const SizedBox(width: 12),
                       Text(
-                        'Saved',
+                        AppLocalizations.of(
+                              context,
+                            )?.translate('saved_services_title') ??
+                            'Saved',
                         style: GoogleFonts.dmSans(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -136,7 +145,10 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                'No saved services yet',
+                                AppLocalizations.of(
+                                      context,
+                                    )?.translate('no_saved_services') ??
+                                    'No saved services yet',
                                 style: GoogleFonts.dmSans(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w500,
