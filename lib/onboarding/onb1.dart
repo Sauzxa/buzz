@@ -12,86 +12,93 @@ class onb1 extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.roseColor,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final screenHeight = constraints.maxHeight;
-          final screenWidth = constraints.maxWidth;
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final screenHeight = constraints.maxHeight;
+            final screenWidth = constraints.maxWidth;
 
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(minHeight: screenHeight),
-              child: IntrinsicHeight(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.06),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(height: screenHeight * 0.1),
-                      // Logo
-                      Image.asset(
-                        'assets/Logos/WhiteLogo.png',
-                        height: screenHeight * 0.15,
-                        fit: BoxFit.contain,
-                      ),
-                      SizedBox(height: screenHeight * 0.025),
-
-                      const Spacer(),
-
-                      // Main Text
-                      Text(
-                        "First remote services\nprovider in Algeria",
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.dmSans(
-                          color: Colors.white,
-                          fontSize: screenWidth * 0.055,
-                          fontWeight: FontWeight.w500,
-                          height: 1.5,
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: screenHeight),
+                child: IntrinsicHeight(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: screenWidth * 0.06,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(height: screenHeight * 0.05),
+                        // Logo
+                        Image.asset(
+                          'assets/Logos/WhiteLogo.png',
+                          height: screenHeight * 0.15,
+                          fit: BoxFit.contain,
                         ),
-                      ),
+                        SizedBox(height: screenHeight * 0.025),
 
-                      const Spacer(),
+                        const Spacer(),
 
-                      // Product of text
-                      Text(
-                        "Product Of",
-                        style: GoogleFonts.dmSans(
-                          color: Colors.white70,
-                          fontSize: screenWidth * 0.03,
+                        // Main Text
+                        Text(
+                          "First remote services\nprovider in Algeria",
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.dmSans(
+                            color: Colors.white,
+                            fontSize: screenWidth * 0.055,
+                            fontWeight: FontWeight.w500,
+                            height: 1.5,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: screenHeight * 0.005),
-                      Text(
-                        "apex tech",
-                        style: GoogleFonts.dmSans(
-                          color: Colors.white,
-                          fontSize: screenWidth * 0.04,
-                          fontWeight: FontWeight.bold,
+
+                        const Spacer(),
+
+                        // Product of text
+                        Text(
+                          "Product Of",
+                          style: GoogleFonts.dmSans(
+                            color: Colors.white70,
+                            fontSize: screenWidth * 0.03,
+                          ),
                         ),
-                      ),
+                        SizedBox(height: screenHeight * 0.005),
+                        Text(
+                          "apex tech",
+                          style: GoogleFonts.dmSans(
+                            color: Colors.white,
+                            fontSize: screenWidth * 0.04,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
 
-                      SizedBox(height: screenHeight * 0.04),
+                        SizedBox(height: screenHeight * 0.04),
 
-                      // Pagination Dots
-                      const WhitePageIndicator(currentIndex: 0),
+                        // Pagination Dots
+                        const WhitePageIndicator(currentIndex: 0),
 
-                      SizedBox(height: screenHeight * 0.04),
+                        SizedBox(height: screenHeight * 0.04),
 
-                      // Next Button
-                      WhiteButton(
-                        text: "Next",
-                        fontSize: screenWidth * 0.045,
-                        onPressed: () {
-                          Navigator.pushNamed(context, RouteNames.onboarding2);
-                        },
-                      ),
-                      SizedBox(height: screenHeight * 0.05),
-                    ],
+                        // Next Button
+                        WhiteButton(
+                          text: "Next",
+                          fontSize: screenWidth * 0.045,
+                          onPressed: () {
+                            Navigator.pushNamed(
+                              context,
+                              RouteNames.onboarding2,
+                            );
+                          },
+                        ),
+                        SizedBox(height: screenHeight * 0.03),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }

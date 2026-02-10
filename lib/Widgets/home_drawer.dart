@@ -341,53 +341,58 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
 
             // Logout Button
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 40),
+            SafeArea(
               child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(30),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 20,
                 ),
-                child: Material(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(30),
-                  child: InkWell(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(30),
-                    onTap: _isLoggingOut ? null : _handleLogout,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 12,
-                      ),
-                      child: _isLoggingOut
-                          ? const Center(
-                              child: SizedBox(
-                                height: 24,
-                                width: 24,
-                                child: CircularProgressIndicator(
-                                  color: AppColors.roseColor,
-                                  strokeWidth: 2.5,
-                                ),
-                              ),
-                            )
-                          : Row(
-                              children: [
-                                const Icon(
-                                  Icons.logout,
-                                  color: AppColors.roseColor,
-                                  size: 24,
-                                ),
-                                const SizedBox(width: 16),
-                                Text(
-                                  'Logout',
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(30),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: _isLoggingOut ? null : _handleLogout,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 12,
+                        ),
+                        child: _isLoggingOut
+                            ? const Center(
+                                child: SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
                                     color: AppColors.roseColor,
+                                    strokeWidth: 2.5,
                                   ),
                                 ),
-                              ],
-                            ),
+                              )
+                            : Row(
+                                children: [
+                                  const Icon(
+                                    Icons.logout,
+                                    color: AppColors.roseColor,
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: 16),
+                                  Text(
+                                    'Logout',
+                                    style: GoogleFonts.dmSans(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.roseColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
                     ),
                   ),
                 ),
