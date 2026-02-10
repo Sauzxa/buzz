@@ -307,6 +307,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                 title:
                     AppLocalizations.of(context)?.translate('english') ??
                     'English',
+                flag: '🇬🇧',
                 value: const Locale('en'),
                 groupValue: languageProvider.appLocale,
                 onChanged: (Locale? value) {
@@ -321,6 +322,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                 title:
                     AppLocalizations.of(context)?.translate('french') ??
                     'French',
+                flag: '🇫🇷',
                 value: const Locale('fr'),
                 groupValue: languageProvider.appLocale,
                 onChanged: (Locale? value) {
@@ -340,18 +342,25 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
   Widget _buildLanguageOption(
     BuildContext context, {
     required String title,
+    required String flag,
     required Locale value,
     required Locale groupValue,
     required ValueChanged<Locale?> onChanged,
   }) {
     return RadioListTile<Locale>(
-      title: Text(
-        title,
-        style: GoogleFonts.dmSans(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Theme.of(context).textTheme.bodyLarge?.color,
-        ),
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: GoogleFonts.dmSans(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
+          Text(flag, style: const TextStyle(fontSize: 20)),
+        ],
       ),
       value: value,
       groupValue: groupValue,
