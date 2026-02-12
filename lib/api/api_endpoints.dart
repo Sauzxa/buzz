@@ -112,6 +112,9 @@ class ApiEndpoints {
   static String markSupportMessageAsRead(int messageId) =>
       '$apiPrefix/supportMessage/$messageId/read';
 
+  // FAQ endpoints
+  static String get getFaqs => '$apiPrefix/faqs';
+
   // Helper method to get full URL
   static String getFullUrl(String endpoint) {
     return '$baseUrl$endpoint';

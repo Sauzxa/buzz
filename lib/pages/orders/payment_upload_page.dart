@@ -236,6 +236,21 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
   }
 
   void _showImageSourceSheet(BuildContext context) {
+    if (widget.order['paymentMethod'] == 'ESPECE') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(
+                  context,
+                )?.translate('cannot_upload_invoice_espece') ??
+                "You can't upload invoice for ESPECE order type",
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(

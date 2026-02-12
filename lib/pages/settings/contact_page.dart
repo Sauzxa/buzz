@@ -29,7 +29,7 @@ class _ContactPageState extends State<ContactPage> {
       backgroundColor: const Color(
         0xFFE91E63,
       ), // Pink background mainly for the top
-      body: Stack(
+      body: Column(
         children: [
           // 1. Header (Custom AppBar)
           SafeArea(
@@ -91,233 +91,210 @@ class _ContactPageState extends State<ContactPage> {
           ),
 
           // 2. White Container Body
-          Column(
-            children: [
-              const SizedBox(height: 100), // Spacing for header
-              Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(30),
+                  topRight: Radius.circular(30),
+                ),
+              ),
+              child: ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 30,
+                ),
+                children: [
+                  // Title
+                  Text(
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('settings_contact_us') ??
+                        'Contact Us',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  // Subtitle
+                  Text(
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('contact_us_subtitle') ??
+                        'Please choose what types of support do you\nneed and let us know.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.dmSans(
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                      fontSize: 14,
+                      height: 1.5,
                     ),
                   ),
-                  child: Column(
+                  const SizedBox(height: 30),
+
+                  // Grid
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.8,
                     children: [
-                      const SizedBox(height: 30),
-                      // Title
-                      Text(
-                        AppLocalizations.of(
+                      _buildContactCard(
+                        icon: Icons
+                            .chat_bubble_rounded, // Chat icon from design is roundish
+                        iconColor: const Color(0xFF4CAF50),
+                        bgColor: const Color(0xFFEBFAEB), // Very light green
+                        title:
+                            AppLocalizations.of(
                               context,
-                            )?.translate('settings_contact_us') ??
-                            'Contact Us',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).textTheme.titleLarge!.color,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      // Subtitle
-                      Text(
-                        AppLocalizations.of(
+                            )?.translate('chat_support_title') ??
+                            'Support Chat',
+                        subtitle:
+                            AppLocalizations.of(
                               context,
-                            )?.translate('contact_us_subtitle') ??
-                            'Please choose what types of support do you\nneed and let us know.',
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.dmSans(
-                          color: Theme.of(context).textTheme.bodySmall!.color,
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
-                      ),
-                      const SizedBox(height: 30),
-
-                      // Grid
-                      Expanded(
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            // Calculate aspect ratio to make cards look like the design (taller)
-                            // Width is (screen width - padding - spacing) / 2
-                            // Height needs to fit content comfortable.
-                            // 0.8 looks good.
-                            return GridView.count(
-                              crossAxisCount: 2,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                              ),
-                              mainAxisSpacing: 16,
-                              crossAxisSpacing: 16,
-                              childAspectRatio: 0.8,
-                              children: [
-                                _buildContactCard(
-                                  icon: Icons
-                                      .chat_bubble_rounded, // Chat icon from design is roundish
-                                  iconColor: const Color(0xFF4CAF50),
-                                  bgColor: const Color(
-                                    0xFFEBFAEB,
-                                  ), // Very light green
-                                  title:
-                                      AppLocalizations.of(
-                                        context,
-                                      )?.translate('chat_support_title') ??
-                                      'Support Chat',
-                                  subtitle:
-                                      AppLocalizations.of(
-                                        context,
-                                      )?.translate('online_support_subtitle') ??
-                                      '24x7 Online Support',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ChatScreen(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                _buildContactCard(
-                                  icon: Icons.call_rounded,
-                                  iconColor: const Color(0xFFFF7043),
-                                  bgColor: const Color(
-                                    0xFFFFF5F2,
-                                  ), // Very light orange/peach
-                                  title:
-                                      AppLocalizations.of(
-                                        context,
-                                      )?.translate('call_center_title') ??
-                                      'Call Center',
-                                  subtitle:
-                                      AppLocalizations.of(context)?.translate(
-                                        'customer_service_subtitle',
-                                      ) ??
-                                      '24x7 Customer Service',
-                                  onTap: () async {
-                                    final Uri launchUri = Uri(
-                                      scheme: 'tel',
-                                      path: '0555496574',
-                                    );
-                                    try {
-                                      if (await canLaunchUrl(launchUri)) {
-                                        await launchUrl(launchUri);
-                                      }
-                                    } catch (e) {
-                                      debugPrint(e.toString());
-                                    }
-                                  },
-                                ),
-                                _buildContactCard(
-                                  icon: Icons.email_rounded,
-                                  iconColor: const Color(0xFFAB47BC),
-                                  bgColor: const Color(
-                                    0xFFF9F0FC,
-                                  ), // Very light purple
-                                  title:
-                                      AppLocalizations.of(
-                                        context,
-                                      )?.translate('email_title') ??
-                                      'Email',
-                                  subtitle: 'buzz@gmail.com',
-                                  onTap: () async {
-                                    final Uri launchUri = Uri(
-                                      scheme: 'mailto',
-                                      path: 'buzz@gmail.com',
-                                    );
-                                    try {
-                                      if (await canLaunchUrl(launchUri)) {
-                                        await launchUrl(launchUri);
-                                      }
-                                    } catch (e) {
-                                      debugPrint(e.toString());
-                                    }
-                                  },
-                                ),
-                                _buildContactCard(
-                                  icon: Icons.help_outline_rounded,
-                                  iconColor: const Color(0xFFFFB300),
-                                  bgColor: const Color(
-                                    0xFFFFFDE7,
-                                  ), // Very light yellow
-                                  title:
-                                      AppLocalizations.of(
-                                        context,
-                                      )?.translate('settings_faq') ??
-                                      'FAQ',
-                                  subtitle:
-                                      AppLocalizations.of(
-                                        context,
-                                      )?.translate('faq_subtitle') ??
-                                      '+50 Answers',
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => const FaqPage(),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-
-                      // Bottom Button
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.of(
-                              context,
-                            ).popUntil((route) => route.isFirst);
-                          },
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: Theme.of(context).cardColor,
-                            side: BorderSide(
-                              color: Theme.of(context).dividerColor,
+                            )?.translate('online_support_subtitle') ??
+                            '24x7 Online Support',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const ChatScreen(),
                             ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                          );
+                        },
+                      ),
+                      _buildContactCard(
+                        icon: Icons.call_rounded,
+                        iconColor: const Color(0xFFFF7043),
+                        bgColor: const Color(
+                          0xFFFFF5F2,
+                        ), // Very light orange/peach
+                        title:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('call_center_title') ??
+                            'Call Center',
+                        subtitle:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('customer_service_subtitle') ??
+                            '24x7 Customer Service',
+                        onTap: () async {
+                          final Uri launchUri = Uri(
+                            scheme: 'tel',
+                            path: '0555496574',
+                          );
+                          try {
+                            if (await canLaunchUrl(launchUri)) {
+                              await launchUrl(launchUri);
+                            }
+                          } catch (e) {
+                            debugPrint(e.toString());
+                          }
+                        },
+                      ),
+                      _buildContactCard(
+                        icon: Icons.email_rounded,
+                        iconColor: const Color(0xFFAB47BC),
+                        bgColor: const Color(0xFFF9F0FC), // Very light purple
+                        title:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('email_title') ??
+                            'Email',
+                        subtitle: 'buzz@gmail.com',
+                        onTap: () async {
+                          final Uri launchUri = Uri(
+                            scheme: 'mailto',
+                            path: 'buzz@gmail.com',
+                          );
+                          try {
+                            if (await canLaunchUrl(launchUri)) {
+                              await launchUrl(launchUri);
+                            }
+                          } catch (e) {
+                            debugPrint(e.toString());
+                          }
+                        },
+                      ),
+                      _buildContactCard(
+                        icon: Icons.help_outline_rounded,
+                        iconColor: const Color(0xFFFFB300),
+                        bgColor: const Color(0xFFFFFDE7), // Very light yellow
+                        title:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('settings_faq') ??
+                            'FAQ',
+                        subtitle:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('faq_subtitle') ??
+                            '+50 Answers',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FaqPage(),
                             ),
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            minimumSize: const Size(double.infinity, 56),
-                            elevation: 0,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                AppLocalizations.of(
-                                      context,
-                                    )?.translate('go_home_btn') ??
-                                    'Go to Homepage',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(
-                                    context,
-                                  ).textTheme.titleLarge!.color,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Icon(
-                                Icons.arrow_forward_rounded,
-                                size: 20,
-                                color: Theme.of(context).iconTheme.color,
-                              ),
-                            ],
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),
-                ),
+
+                  const SizedBox(height: 20),
+
+                  // Bottom Button
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Theme.of(context).cardColor,
+                      side: BorderSide(color: Theme.of(context).dividerColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 18),
+                      minimumSize: const Size(double.infinity, 56),
+                      elevation: 0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('go_home_btn') ??
+                              'Go to Homepage',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Icon(
+                          Icons.arrow_forward_rounded,
+                          size: 20,
+                          color: Theme.of(context).iconTheme.color,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
               ),
-            ],
+            ),
           ),
         ],
       ),

@@ -433,7 +433,7 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                   topRight: Radius.circular(30),
                 ),
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 100),
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 180),
                   children: [
                     const SizedBox(
                       height: 30,

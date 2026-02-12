@@ -94,69 +94,101 @@ class _MessageInputFieldState extends State<MessageInputField> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.blue[100],
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(Icons.photo_library, color: Colors.blue[700]),
+            Text(
+              AppLocalizations.of(context)?.translate('share_content') ??
+                  'Share Content',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).textTheme.titleLarge?.color,
               ),
-              title: Text(
-                AppLocalizations.of(context)?.translate('gallery_option') ??
-                    'Gallery',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _handleImagePicker();
-              },
             ),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.pink[100],
-                  shape: BoxShape.circle,
+            const SizedBox(height: 30),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _buildAttachmentOption(
+                  icon: Icons.photo_library_rounded,
+                  color: Colors.purple,
+                  label:
+                      AppLocalizations.of(
+                        context,
+                      )?.translate('gallery_option') ??
+                      'Gallery',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _handleImagePicker();
+                  },
                 ),
-                child: Icon(Icons.camera_alt, color: Colors.pink[700]),
-              ),
-              title: Text(
-                AppLocalizations.of(context)?.translate('camera_option') ??
-                    'Camera',
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                _handleCameraPicker();
-              },
-            ),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.orange[100],
-                  shape: BoxShape.circle,
+                _buildAttachmentOption(
+                  icon: Icons.camera_alt_rounded,
+                  color: AppColors.roseColor,
+                  label:
+                      AppLocalizations.of(
+                        context,
+                      )?.translate('camera_option') ??
+                      'Camera',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _handleCameraPicker();
+                  },
                 ),
-                child: Icon(Icons.insert_drive_file, color: Colors.orange[700]),
-              ),
-              title: Text(
-                AppLocalizations.of(context)?.translate('document_option') ??
-                    'Document',
-              ),
-              subtitle: Text(
-                AppLocalizations.of(
-                      context,
-                    )?.translate('feature_coming_soon') ??
-                    'Coming soon',
-              ),
-              enabled: false,
+                _buildAttachmentOption(
+                  icon: Icons.article_rounded,
+                  color: Colors.orange,
+                  label:
+                      AppLocalizations.of(
+                        context,
+                      )?.translate('document_option') ??
+                      'Document',
+                  onTap: () {
+                    // Navigator.pop(context);
+                    // Document picker not implemented yet
+                  },
+                ),
+              ],
             ),
+            const SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildAttachmentOption({
+    required IconData icon,
+    required Color color,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 28),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
+            ),
+          ),
+        ],
       ),
     );
   }
