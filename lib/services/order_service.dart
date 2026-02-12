@@ -86,7 +86,11 @@ class OrderService {
           ? jsonDecode(response.data)
           : response.data;
 
-      final orderId = responseData['id'];
+      // Handle case where backend returns { "order": { "id": ... } }
+      final orderId = responseData is Map && responseData.containsKey('order')
+          ? responseData['order']['id']
+          : responseData['id'];
+
       if (orderId == null) {
         throw Exception('Order created but ID was missing in response');
       }
