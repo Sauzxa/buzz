@@ -14,6 +14,11 @@ class FormFieldModel {
   final int? maxFiles;
   final int?
   columns; // Page number for multi-page forms (1 or 2), also used for grid layout
+  final bool? readOnly; // Field is read-only (not editable)
+  final bool? computed; // Field value is computed from formula
+  final List<String>? dependsOn; // List of field IDs this field depends on
+  final String? formula; // Formula expression for computed fields
+  final List<FormFieldRule>? rules; // Conditional rules for computed fields
 
   FormFieldModel({
     required this.id,
@@ -30,6 +35,11 @@ class FormFieldModel {
     this.maxFileSize,
     this.maxFiles,
     this.columns,
+    this.readOnly,
+    this.computed,
+    this.dependsOn,
+    this.formula,
+    this.rules,
   });
 
   factory FormFieldModel.fromJson(Map<String, dynamic> json) {
@@ -54,6 +64,17 @@ class FormFieldModel {
       maxFileSize: json['maxFileSize'],
       maxFiles: json['maxFiles'],
       columns: json['columns'], // Page number for multi-page forms
+      readOnly: json['readOnly'],
+      computed: json['computed'],
+      dependsOn: json['dependsOn'] != null
+          ? List<String>.from(json['dependsOn'])
+          : null,
+      formula: json['formula'],
+      rules: json['rules'] != null
+          ? (json['rules'] as List)
+                .map((rule) => FormFieldRule.fromJson(rule))
+                .toList()
+          : null,
     );
   }
 
@@ -73,6 +94,11 @@ class FormFieldModel {
       'maxFileSize': maxFileSize,
       'maxFiles': maxFiles,
       'columns': columns,
+      'readOnly': readOnly,
+      'computed': computed,
+      'dependsOn': dependsOn,
+      'formula': formula,
+      'rules': rules?.map((rule) => rule.toJson()).toList(),
     };
   }
 }
@@ -106,6 +132,24 @@ class FormFieldOption {
       'image': image,
       'description': description,
     };
+  }
+}
+
+class FormFieldRule {
+  final String when; // Condition expression (e.g., "support == 'cartoon'")
+  final double multiply; // Multiplier to apply when condition is true
+
+  FormFieldRule({required this.when, required this.multiply});
+
+  factory FormFieldRule.fromJson(Map<String, dynamic> json) {
+    return FormFieldRule(
+      when: json['when'] ?? '',
+      multiply: (json['multiply'] ?? 1).toDouble(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'when': when, 'multiply': multiply};
   }
 }
 

@@ -205,6 +205,7 @@ class _SideBySideDropdownState extends State<_SideBySideDropdown> {
 class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
   final Map<String, TextEditingController> _controllers = {};
   final Map<String, FocusNode> _focusNodes = {};
+  final Map<String, double> _computedValues = {}; // Store computed field values
 
   @override
   void initState() {
@@ -220,6 +221,197 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
         _focusNodes[field.id] = FocusNode();
       }
     }
+    // Setup listeners for computed fields
+    _setupComputedFieldListeners();
+    // Calculate initial values for computed fields
+    _recalculateAllComputedFields();
+  }
+
+  void _setupComputedFieldListeners() {
+    // Find all computed fields
+    final computedFields = widget.formFields.where((f) => f.computed == true);
+
+    for (var computedField in computedFields) {
+      if (computedField.dependsOn == null) continue;
+
+      // Add listeners to all dependent fields
+      for (var dependentFieldId in computedField.dependsOn!) {
+        final controller = _controllers[dependentFieldId];
+        if (controller != null) {
+          controller.addListener(() {
+            _recalculateAllComputedFields();
+          });
+        }
+      }
+    }
+  }
+
+  void _recalculateAllComputedFields() {
+    // Defer calculation to avoid setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      final computedFields = widget.formFields.where((f) => f.computed == true);
+
+      for (var field in computedFields) {
+        final value = _calculateComputedField(field);
+        if (value != null) {
+          setState(() {
+            _computedValues[field.id] = value;
+          });
+          // Notify parent widget of the computed value
+          widget.onFieldChanged(field.id, value);
+        }
+      }
+    });
+  }
+
+  double? _calculateComputedField(FormFieldModel field) {
+    if (field.formula == null || field.dependsOn == null) return null;
+
+    try {
+      // Get values of dependent fields
+      final values = <String, dynamic>{};
+      for (var dependentId in field.dependsOn!) {
+        final controller = _controllers[dependentId];
+        if (controller != null) {
+          final text = controller.text;
+          values[dependentId] = double.tryParse(text) ?? 0.0;
+        } else {
+          // For dropdown fields, get from formData
+          values[dependentId] = widget.formData[dependentId];
+        }
+      }
+
+      // Evaluate formula
+      double baseValue = _evaluateFormula(field.formula!, values);
+
+      // Apply conditional rules
+      if (field.rules != null && field.rules!.isNotEmpty) {
+        baseValue = _applyRules(baseValue, field.rules!, values);
+      }
+
+      return baseValue;
+    } catch (e) {
+      print('Error calculating computed field ${field.id}: $e');
+      return null;
+    }
+  }
+
+  double _evaluateFormula(String formula, Map<String, dynamic> values) {
+    // Simple formula evaluator
+    // Replace variable names with their values
+    String expression = formula;
+
+    values.forEach((key, value) {
+      final numValue = value is double
+          ? value
+          : (double.tryParse(value.toString()) ?? 0.0);
+      expression = expression.replaceAll(key, numValue.toString());
+    });
+
+    // Remove spaces and parentheses for simple evaluation
+    expression = expression.replaceAll(' ', '');
+
+    // Simple arithmetic evaluation (supports *, /, +, -)
+    try {
+      return _evaluateExpression(expression);
+    } catch (e) {
+      print('Error evaluating formula: $expression, error: $e');
+      return 0.0;
+    }
+  }
+
+  double _evaluateExpression(String expr) {
+    // Remove outer parentheses
+    expr = expr.trim();
+    if (expr.startsWith('(') && expr.endsWith(')')) {
+      expr = expr.substring(1, expr.length - 1);
+    }
+
+    // Simple recursive descent parser for arithmetic
+    // This handles: number, (expr), expr * expr, expr / expr, expr + expr, expr - expr
+
+    // Try to parse as a number first
+    final num = double.tryParse(expr);
+    if (num != null) return num;
+
+    // Find operators (prioritize * and / over + and -)
+    int level = 0;
+    int? addSubIndex;
+    int? mulDivIndex;
+
+    for (int i = expr.length - 1; i >= 0; i--) {
+      final char = expr[i];
+      if (char == ')') level++;
+      if (char == '(') level--;
+
+      if (level == 0) {
+        if ((char == '+' || char == '-') && addSubIndex == null) {
+          addSubIndex = i;
+        }
+        if ((char == '*' || char == '/') &&
+            mulDivIndex == null &&
+            addSubIndex == null) {
+          mulDivIndex = i;
+        }
+      }
+    }
+
+    // Process addition/subtraction first (lower precedence)
+    if (addSubIndex != null) {
+      final left = _evaluateExpression(expr.substring(0, addSubIndex));
+      final right = _evaluateExpression(expr.substring(addSubIndex + 1));
+      return expr[addSubIndex] == '+' ? left + right : left - right;
+    }
+
+    // Process multiplication/division
+    if (mulDivIndex != null) {
+      final left = _evaluateExpression(expr.substring(0, mulDivIndex));
+      final right = _evaluateExpression(expr.substring(mulDivIndex + 1));
+      return expr[mulDivIndex] == '*' ? left * right : left / right;
+    }
+
+    // If we get here, try removing outer parentheses and retry
+    if (expr.startsWith('(') && expr.endsWith(')')) {
+      return _evaluateExpression(expr.substring(1, expr.length - 1));
+    }
+
+    return 0.0;
+  }
+
+  double _applyRules(
+    double baseValue,
+    List<FormFieldRule> rules,
+    Map<String, dynamic> values,
+  ) {
+    double result = baseValue;
+
+    for (var rule in rules) {
+      if (_evaluateCondition(rule.when, values)) {
+        result *= rule.multiply;
+      }
+    }
+
+    return result;
+  }
+
+  bool _evaluateCondition(String condition, Map<String, dynamic> values) {
+    // Simple condition evaluator for equality checks
+    // Supports: "fieldName == 'value'"
+
+    final parts = condition.split('==');
+    if (parts.length != 2) return false;
+
+    final fieldName = parts[0].trim();
+    final expectedValue = parts[1]
+        .trim()
+        .replaceAll("'", '')
+        .replaceAll('"', '');
+
+    final actualValue = values[fieldName]?.toString() ?? '';
+
+    return actualValue == expectedValue;
   }
 
   @override
@@ -412,6 +604,11 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
 
   // Build field with label on left and input on right
   Widget _buildSideBySideField(FormFieldModel field) {
+    // Check if this is a computed field
+    if (field.computed == true) {
+      return _buildComputedField(field);
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -431,6 +628,50 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
           child: field.type == 'dropdown'
               ? _buildSideBySideDropdown(field)
               : _buildSideBySideTextField(field),
+        ),
+      ],
+    );
+  }
+
+  // Build computed field (read-only with calculated value)
+  Widget _buildComputedField(FormFieldModel field) {
+    final computedValue = _computedValues[field.id] ?? 0.0;
+    final displayValue = '${computedValue.toStringAsFixed(2)}da';
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          field.label,
+          style: GoogleFonts.dmSans(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white,
+          ),
+        ),
+        const SizedBox(width: 16),
+        Container(
+          width: 150,
+          height: 40,
+          decoration: BoxDecoration(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey[800]
+                : Colors.grey[200],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            displayValue,
+            style: GoogleFonts.dmSans(
+              fontSize: 14,
+              color: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.color?.withOpacity(0.7),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
       ],
     );
@@ -488,6 +729,13 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
   }
 
   Widget _buildField(FormFieldModel field) {
+    if (field.computed == true) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: _buildComputedField(field),
+      );
+    }
+
     switch (field.type) {
       case 'text':
       case 'email':
