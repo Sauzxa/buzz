@@ -55,13 +55,24 @@ class ApiClient {
             'RESPONSE[${response.statusCode}] => ${response.requestOptions.path}',
           );
 
-          // Parse JSON response
+          // Parse JSON response (only if content-type suggests JSON or it looks like JSON)
           if (response.data is String && response.data.toString().isNotEmpty) {
-            try {
-              response.data = jsonDecode(response.data as String);
-            } catch (e) {
-              print('❌ [API_CLIENT] JSON parse error: $e');
-              print('❌ [API_CLIENT] Raw response: ${response.data}');
+            final rawString = response.data as String;
+            final trimmed = rawString.trimLeft();
+            // Only attempt JSON decode if it looks like JSON (starts with { or [)
+            if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+              try {
+                response.data = jsonDecode(rawString);
+              } catch (e) {
+                print('❌ [API_CLIENT] JSON parse error: $e');
+                print('❌ [API_CLIENT] Raw response: ${response.data}');
+                // Keep original string — callers must handle non-Map data
+              }
+            } else {
+              // Non-JSON response (plain text error message, etc.) — keep as-is
+              print(
+                'ℹ️ [API_CLIENT] Non-JSON response (status ${response.statusCode}): $rawString',
+              );
             }
           }
 

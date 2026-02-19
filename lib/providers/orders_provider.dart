@@ -74,8 +74,8 @@ class OrdersProvider extends ChangeNotifier {
   Future<bool> cancelOrder(String orderId, String customerId) async {
     try {
       await _orderService.cancelOrder(orderId);
-      // Refresh active orders
-      await fetchActiveOrders(customerId);
+      // Refresh all orders (order_management_page uses allOrders)
+      await fetchAllOrders(customerId);
       return true;
     } catch (e) {
       print('Error cancelling order: $e');

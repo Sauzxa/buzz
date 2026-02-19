@@ -24,6 +24,11 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
   int _selectedIndex = 2; // Orders tab is index 2
   final Map<String, String?> _invoiceDeadlineCache = {};
 
+  // Local copy used for optimistic removal — avoids the Dismissible
+  // "still part of the tree" FlutterError that happens when the list is
+  // updated asynchronously after the swipe animation completes.
+  List<dynamic> _localOrders = [];
+
   @override
   void initState() {
     super.initState();
@@ -48,13 +53,14 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
     }
 
     if (!mounted) return;
-    await Provider.of<OrdersProvider>(
-      context,
-      listen: false,
-    ).fetchAllOrders(userId);
+    final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
+    await ordersProvider.fetchAllOrders(userId);
 
-    // Fetch invoice deadlines for all orders
+    // Mirror the provider list into our local list
     if (mounted) {
+      setState(() {
+        _localOrders = List<dynamic>.from(ordersProvider.allOrders);
+      });
       await _fetchInvoiceDeadlines();
     }
   }
@@ -203,11 +209,27 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
             )
           : Consumer<OrdersProvider>(
               builder: (context, ordersProvider, child) {
-                if (ordersProvider.isLoading) {
+                // Sync local list when provider updates (e.g. after a pull-to-refresh)
+                // but only when not empty to avoid overwriting an optimistic removal.
+                if (!ordersProvider.isLoading &&
+                    ordersProvider.error == null &&
+                    ordersProvider.allOrders.length != _localOrders.length) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _localOrders = List<dynamic>.from(
+                          ordersProvider.allOrders,
+                        );
+                      });
+                    }
+                  });
+                }
+
+                if (ordersProvider.isLoading && _localOrders.isEmpty) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (ordersProvider.error != null) {
+                if (ordersProvider.error != null && _localOrders.isEmpty) {
                   return Center(
                     child: Text(
                       '${AppLocalizations.of(context)?.translate('error_label') ?? 'Error'}: ${ordersProvider.error}',
@@ -215,9 +237,7 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                   );
                 }
 
-                final orders = ordersProvider.allOrders;
-
-                if (orders.isEmpty) {
+                if (_localOrders.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -277,13 +297,13 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                       ),
                     ),
 
-                    // Orders List
+                    // Orders List — driven by _localOrders for instant removal
                     Expanded(
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
-                        itemCount: orders.length,
+                        itemCount: _localOrders.length,
                         itemBuilder: (context, index) {
-                          final order = orders[index];
+                          final order = _localOrders[index];
                           final orderId = order['id']?.toString();
                           final paymentDeadline = orderId != null
                               ? _invoiceDeadlineCache[orderId]
@@ -292,7 +312,6 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                             order: order,
                             paymentDeadline: paymentDeadline,
                             onTap: () {
-                              // Navigate to details
                               Navigator.pushNamed(
                                 context,
                                 RouteNames.orderDetails,
@@ -300,7 +319,6 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                               );
                             },
                             onUploadReceipt: () {
-                              // Only navigate if upload is allowed (status check in Card, but logic here too)
                               Navigator.pushNamed(
                                 context,
                                 RouteNames.paymentUpload,
@@ -308,7 +326,6 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                               );
                             },
                             confirmDismiss: (direction) async {
-                              // Show confirmation dialog
                               return await showDialog<bool>(
                                     context: context,
                                     builder: (BuildContext dialogContext) {
@@ -365,11 +382,9 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                             children: [
                                               Expanded(
                                                 child: ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(
-                                                      dialogContext,
-                                                    ).pop(false);
-                                                  },
+                                                  onPressed: () => Navigator.of(
+                                                    dialogContext,
+                                                  ).pop(false),
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor: Theme.of(
                                                       dialogContext,
@@ -409,11 +424,9 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: ElevatedButton(
-                                                  onPressed: () {
-                                                    Navigator.of(
-                                                      dialogContext,
-                                                    ).pop(true);
-                                                  },
+                                                  onPressed: () => Navigator.of(
+                                                    dialogContext,
+                                                  ).pop(true),
                                                   style: ElevatedButton.styleFrom(
                                                     backgroundColor:
                                                         AppColors.roseColor,
@@ -454,8 +467,17 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                   ) ??
                                   false;
                             },
-                            onDismissed: (direction) async {
-                              // Capture ScaffoldMessenger before async operations
+                            onDismissed: (direction) {
+                              // ─── OPTIMISTIC REMOVAL ───────────────────────
+                              // Remove the item from the local list SYNCHRONOUSLY
+                              // before any async work, so Flutter never sees the
+                              // Dismissible widget still in the tree after dismiss.
+                              final removedOrder = order;
+                              final removedIndex = index;
+                              setState(() {
+                                _localOrders.removeAt(removedIndex);
+                              });
+
                               final messenger = ScaffoldMessenger.of(context);
                               final userProvider = Provider.of<UserProvider>(
                                 context,
@@ -463,39 +485,14 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                               );
                               final userId = userProvider.user.id?.toString();
 
-                              if (userId != null && userId.isNotEmpty) {
-                                final success = await ordersProvider
-                                    .cancelOrder(
-                                      order['id'].toString(),
-                                      userId,
-                                    );
-
-                                if (success) {
-                                  messenger.showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        AppLocalizations.of(context)?.translate(
-                                              'order_cancelled_success',
-                                            ) ??
-                                            'Order cancelled successfully',
-                                      ),
-                                      backgroundColor: AppColors.greenColor,
-                                    ),
+                              if (userId == null || userId.isEmpty) {
+                                // Re-insert if we can't cancel (no user)
+                                setState(() {
+                                  _localOrders.insert(
+                                    removedIndex,
+                                    removedOrder,
                                   );
-                                } else {
-                                  messenger.showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        AppLocalizations.of(context)?.translate(
-                                              'order_cancel_failed',
-                                            ) ??
-                                            'Failed to cancel order',
-                                      ),
-                                      backgroundColor: Colors.red,
-                                    ),
-                                  );
-                                }
-                              } else {
+                                });
                                 messenger.showSnackBar(
                                   SnackBar(
                                     content: Text(
@@ -503,11 +500,58 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
                                             context,
                                           )?.translate('user_not_logged_in') ??
                                           'User not logged in',
-                                    ), // Already localized locally if needed, but not critical
+                                    ),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
+                                return;
                               }
+
+                              // Fire-and-forget: call backend then show result
+                              ordersProvider
+                                  .cancelOrder(
+                                    removedOrder['id'].toString(),
+                                    userId,
+                                  )
+                                  .then((success) {
+                                    if (!mounted) return;
+                                    if (success) {
+                                      messenger.showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            AppLocalizations.of(
+                                                  context,
+                                                )?.translate(
+                                                  'order_cancelled_success',
+                                                ) ??
+                                                'Order cancelled successfully',
+                                          ),
+                                          backgroundColor: AppColors.greenColor,
+                                        ),
+                                      );
+                                    } else {
+                                      // API failed — re-insert the order
+                                      setState(() {
+                                        _localOrders.insert(
+                                          removedIndex,
+                                          removedOrder,
+                                        );
+                                      });
+                                      messenger.showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            AppLocalizations.of(
+                                                  context,
+                                                )?.translate(
+                                                  'order_cancel_failed',
+                                                ) ??
+                                                'Failed to cancel order',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  });
                             },
                           );
                         },

@@ -328,8 +328,14 @@ class OrderService {
         ApiEndpoints.cancelOrder(orderId),
       );
 
-      if (response.statusCode != 200) {
-        throw Exception('Failed to cancel order: ${response.statusCode}');
+      // Accept any 2xx response (200 OK or 204 No Content)
+      if (response.statusCode == null ||
+          response.statusCode! < 200 ||
+          response.statusCode! >= 300) {
+        final msg = response.data is String
+            ? response.data as String
+            : 'status ${response.statusCode}';
+        throw Exception('Failed to cancel order: $msg');
       }
     } catch (e) {
       print('Error cancelling order: $e');

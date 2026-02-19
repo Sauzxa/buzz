@@ -14,15 +14,31 @@ class InvoiceService {
         ApiEndpoints.getInvoiceByOrderId(orderId),
       );
 
-      if (response.statusCode == 200) {
-        return InvoiceModel.fromJson(response.data as Map<String, dynamic>);
-      } else if (response.statusCode == 404) {
-        return null; // No invoice found
-      } else {
-        throw Exception('Failed to load invoice: ${response.statusCode}');
+      // 404 or any non-200 where data is plaintext — no invoice exists yet
+      if (response.statusCode == 404 || response.statusCode == null) {
+        return null;
       }
+
+      if (response.statusCode == 200) {
+        // Guard: backend may return plain text even on 200 if something is off
+        if (response.data is! Map<String, dynamic>) {
+          print(
+            '⚠️ [INVOICE_SERVICE] Unexpected response type for order $orderId: ${response.data.runtimeType}',
+          );
+          return null;
+        }
+        return InvoiceModel.fromJson(response.data as Map<String, dynamic>);
+      }
+
+      // Any other non-success status
+      final msg = response.data is String
+          ? response.data as String
+          : 'status ${response.statusCode}';
+      throw Exception('Failed to load invoice: $msg');
     } catch (e) {
-      print('Error fetching invoice: $e');
+      print(
+        '⚠️ [INVOICE_SERVICE] Error fetching invoice for order $orderId: $e',
+      );
       rethrow;
     }
   }
