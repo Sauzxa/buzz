@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:buzz/models/user.model.dart';
 import '../api/api_client.dart';
 import '../api/api_endpoints.dart';
@@ -55,7 +56,7 @@ class AuthService {
       await _apiClient.post(ApiEndpoints.logout);
     } catch (e) {
       // Log error but don't stop local logout
-      print('Logout API call failed: $e');
+      debugPrint('Logout API call failed: $e');
     }
   }
 
@@ -157,7 +158,7 @@ class AuthService {
   /// Returns UserModel with JWT tokens on success
   Future<UserModel> googleAuth(String idToken) async {
     try {
-      print('🔵 Sending Google ID token to backend for validation...');
+      debugPrint('🔵 Sending Google ID token to backend for validation...');
 
       final response = await _apiClient.post(
         ApiEndpoints.googleAuth,
@@ -191,13 +192,13 @@ class AuthService {
 
       // Success response (2xx)
       if (response.statusCode == 200 || response.statusCode == 201) {
-        print('✅ Google authentication successful');
+        debugPrint('✅ Google authentication successful');
         return UserModel.fromJson(response.data);
       } else {
         throw Exception('Unexpected error occurred');
       }
     } catch (e) {
-      print('❌ Google authentication error: $e');
+      debugPrint('❌ Google authentication error: $e');
       rethrow;
     }
   }
@@ -211,28 +212,60 @@ class AuthService {
         data: {'email': email},
       );
 
-      // Check for server errors (5xx)
-      if (response.statusCode != null && response.statusCode! >= 500) {
+      // Extract message from response body if available
+      String extractMessage(String fallback) {
+        if (response.data != null && response.data is Map) {
+          return response.data['message'] ?? fallback;
+        }
+        return fallback;
+      }
+
+      // 503 = email server (SMTP) is down
+      if (response.statusCode == 503) {
         throw Exception(
-          'Server error (${response.statusCode}). Please try again later.',
+          extractMessage(
+            'Email service is currently unavailable. Please try again later.',
+          ),
         );
       }
 
-      // Check for client errors (4xx)
-      if (response.statusCode != null && response.statusCode! >= 400) {
-        String message = 'Failed to send password reset email';
-        if (response.data != null && response.data is Map) {
-          message = response.data['message'] ?? message;
-        }
-        throw Exception(message);
+      // Other server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          extractMessage(
+            'Server error (${response.statusCode}). Please try again later.',
+          ),
+        );
       }
 
-      // Success - email sent
+      // Client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        throw Exception(extractMessage('Failed to send password reset email'));
+      }
+
+      // Success - email sent (200 or 201)
       if (response.statusCode != 200 && response.statusCode != 201) {
         throw Exception('Unexpected error occurred');
       }
     } catch (e) {
       rethrow;
+    }
+  }
+
+  /// Validate a password reset token before showing the reset form
+  /// Returns true if the token is valid (not expired, not used)
+  Future<bool> validateResetToken(String token) async {
+    try {
+      final response = await _apiClient.get(
+        ApiEndpoints.validateResetToken(token),
+      );
+
+      if (response.statusCode == 200 && response.data is Map) {
+        return response.data['success'] == true;
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
   }
 

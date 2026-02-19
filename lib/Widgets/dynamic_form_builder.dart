@@ -634,42 +634,43 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
   }
 
   // Build computed field (read-only with calculated value)
+  // Label is centered, value is centered below it — full width layout
   Widget _buildComputedField(FormFieldModel field) {
     final computedValue = _computedValues[field.id] ?? 0.0;
     final displayValue = '${computedValue.toStringAsFixed(2)}da';
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        // Centered label
         Text(
           field.label,
+          textAlign: TextAlign.center,
           style: GoogleFonts.dmSans(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
             color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white,
           ),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(height: 8),
+        // Centered read-only value box
         Container(
-          width: 150,
-          height: 40,
+          width: double.infinity,
+          height: 44,
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey[800]
-                : Colors.grey[200],
-            borderRadius: BorderRadius.circular(8),
+                ? Colors.white.withOpacity(0.08)
+                : Colors.white.withOpacity(0.30),
+            borderRadius: BorderRadius.circular(10),
           ),
-          alignment: Alignment.centerLeft,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          alignment: Alignment.center,
           child: Text(
             displayValue,
+            textAlign: TextAlign.center,
             style: GoogleFonts.dmSans(
-              fontSize: 14,
-              color: Theme.of(
-                context,
-              ).textTheme.bodyLarge?.color?.withOpacity(0.7),
-              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
         ),
@@ -731,7 +732,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
   Widget _buildField(FormFieldModel field) {
     if (field.computed == true) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        padding: const EdgeInsets.only(top: 12.0, bottom: 4.0),
         child: _buildComputedField(field),
       );
     }

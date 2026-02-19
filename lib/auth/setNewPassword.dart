@@ -9,7 +9,7 @@ import '../l10n/app_localizations.dart';
 class SetNewPasswordPage extends StatefulWidget {
   final String token;
 
-  const SetNewPasswordPage({Key? key, required this.token}) : super(key: key);
+  const SetNewPasswordPage({super.key, required this.token});
 
   @override
   State<SetNewPasswordPage> createState() => _SetNewPasswordPageState();
@@ -24,6 +24,36 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _isProcessing = false;
+  bool _isValidatingToken = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _validateToken();
+  }
+
+  Future<void> _validateToken() async {
+    final isValid = await _authService.validateResetToken(widget.token);
+    if (!mounted) return;
+
+    if (!isValid) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)?.translate('error_token_expired') ??
+                'This reset link has expired or already been used. Please request a new one.',
+          ),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+      Navigator.pushReplacement(context, FadeRoute(page: const SignInPage()));
+      return;
+    }
+
+    setState(() => _isValidatingToken = false);
+  }
 
   @override
   void dispose() {
@@ -97,13 +127,23 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isValidatingToken) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(
+            Icons.arrow_back,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),
