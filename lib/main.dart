@@ -27,6 +27,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'l10n/app_localizations.dart';
 import 'providers/language_provider.dart';
 
+//
 // Global FCM Service instance for access throughout app
 late FcmService globalFcmService;
 NotificationProvider? _globalNotificationProvider;
