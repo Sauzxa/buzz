@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "774786152752",
+    "project_id": "buzz-app-eeb22",
+    "storage_bucket": "buzz-app-eeb22.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774786152752:android:250ab38be07f2da07c70f5",
+        "android_client_info": {
+          "package_name": "com.example.buzz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1tvrGsqZOD3CSzDwVGIPjWNSVTC1V3is"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

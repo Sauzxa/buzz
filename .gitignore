@@ -46,13 +46,13 @@ app.*.map.json
 #special files : 
 UI.txt
 # config files
-lib/config/
-*.config.dart
+#lib/config/
+#*.config.dart
 
 # Backend Firebase Service Account (SECURITY - DO NOT COMMIT)
-buzz_back/src/main/resources/firebase/*.json
+#buzz_back/src/main/resources/firebase/*.json
 # env files
-.env
+#.env
 #Readme files
 HOMEPAGE_IMPLEMENTATION.md
 IMPLEMENTATION_SUMMARY.md
@@ -62,8 +62,8 @@ README.md
 DROPDOWN_IMPLEMENTATION.md
 GOOGLE_SIGNIN_IMPLEMENTATION.md
 #backend src
-buzz_back/
-lib/firebase_options.dart
-android/app/google-services.json
-ios/Runner/GoogleService-Info.plist
+#buzz_back/
+#lib/firebase_options.dart
+#android/app/google-services.json
+#ios/Runner/GoogleService-Info.plist
 Uv.json
