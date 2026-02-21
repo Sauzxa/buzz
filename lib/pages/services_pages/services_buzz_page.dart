@@ -94,7 +94,7 @@ class _ServicesBuzzPageState extends State<ServicesBuzzPage> {
                             height: 35,
                             errorBuilder: (context, error, stackTrace) {
                               return Text(
-                                'BUZZ',
+                                'artifex',
                                 style: GoogleFonts.dmSans(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,

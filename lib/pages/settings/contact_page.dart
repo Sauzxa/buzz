@@ -208,7 +208,7 @@ class _ContactPageState extends State<ContactPage> {
                               context,
                             )?.translate('email_title') ??
                             'Email',
-                        subtitle: 'buzz@gmail.com',
+                        subtitle: 'artifex@gmail.com',
                         onTap: () async {
                           final Uri launchUri = Uri(
                             scheme: 'mailto',

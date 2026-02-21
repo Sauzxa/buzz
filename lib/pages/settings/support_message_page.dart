@@ -380,9 +380,9 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
             Text(
               widget.messageType == 'SUPPORT'
                   ? (AppLocalizations.of(context)?.translate('buzz_feedback') ??
-                        'Buzz Feedback')
+                        'artifex Feedback')
                   : (AppLocalizations.of(context)?.translate('buzz_support') ??
-                        'Buzz Support'),
+                        'artifex Support'),
               style: GoogleFonts.dmSans(
                 color: Colors.white,
                 fontSize: 12,

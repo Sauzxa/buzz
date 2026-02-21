@@ -135,123 +135,137 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
   Future<void> _pickImage() async {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              AppLocalizations.of(context)?.translate('change_profile_pic') ??
-                  'Change Profile Picture',
-              style: GoogleFonts.dmSans(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppLocalizations.of(context)?.translate('change_profile_pic') ??
+                    'Change Profile Picture',
+                style: GoogleFonts.dmSans(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: const Icon(Icons.camera_alt, color: AppColors.roseColor),
-              title: Text(
-                AppLocalizations.of(context)?.translate('take_photo') ??
-                    'Take a photo',
-                style: GoogleFonts.dmSans(),
-              ),
-              onTap: () async {
-                Navigator.pop(context);
-                final XFile? image = await _picker.pickImage(
-                  source: ImageSource.camera,
-                );
-                if (image != null) {
-                  File file = File(image.path);
-                  int originalSize = await file.length();
-                  print(
-                    'Camera - Original Size: ${(originalSize / 1024 / 1024).toStringAsFixed(2)} MB',
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Icon(
+                  Icons.camera_alt,
+                  color: AppColors.roseColor,
+                ),
+                title: Text(
+                  AppLocalizations.of(context)?.translate('take_photo') ??
+                      'Take a photo',
+                  style: GoogleFonts.dmSans(),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final XFile? image = await _picker.pickImage(
+                    source: ImageSource.camera,
                   );
+                  if (image != null) {
+                    File file = File(image.path);
+                    int originalSize = await file.length();
+                    print(
+                      'Camera - Original Size: ${(originalSize / 1024 / 1024).toStringAsFixed(2)} MB',
+                    );
 
-                  try {
-                    final compressedFile =
-                        await FlutterImageCompress.compressAndGetFile(
-                          file.absolute.path,
-                          '${file.parent.path}/temp_${DateTime.now().millisecondsSinceEpoch}.jpg',
-                          minWidth: 800,
-                          minHeight: 800,
-                          quality: 60,
+                    try {
+                      final compressedFile =
+                          await FlutterImageCompress.compressAndGetFile(
+                            file.absolute.path,
+                            '${file.parent.path}/temp_${DateTime.now().millisecondsSinceEpoch}.jpg',
+                            minWidth: 800,
+                            minHeight: 800,
+                            quality: 60,
+                          );
+
+                      if (compressedFile != null) {
+                        int compressedSize = await compressedFile.length();
+                        print(
+                          'Camera - Compressed Size: ${(compressedSize / 1024 / 1024).toStringAsFixed(2)} MB',
                         );
-
-                    if (compressedFile != null) {
-                      int compressedSize = await compressedFile.length();
-                      print(
-                        'Camera - Compressed Size: ${(compressedSize / 1024 / 1024).toStringAsFixed(2)} MB',
-                      );
-                      setState(
-                        () => _selectedImage = File(compressedFile.path),
-                      );
-                    } else {
-                      print('Camera - Compression failed, using original.');
+                        setState(
+                          () => _selectedImage = File(compressedFile.path),
+                        );
+                      } else {
+                        print('Camera - Compression failed, using original.');
+                        setState(() => _selectedImage = file);
+                      }
+                    } catch (e) {
+                      print('Camera - Compression Error: $e');
                       setState(() => _selectedImage = file);
                     }
-                  } catch (e) {
-                    print('Camera - Compression Error: $e');
-                    setState(() => _selectedImage = file);
                   }
-                }
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.photo_library,
-                color: AppColors.roseColor,
+                },
               ),
-              title: Text(
-                AppLocalizations.of(context)?.translate('choose_gallery') ??
-                    'Choose from gallery',
-                style: GoogleFonts.dmSans(),
-              ),
-              onTap: () async {
-                Navigator.pop(context);
-                final XFile? image = await _picker.pickImage(
-                  source: ImageSource.gallery,
-                );
-                if (image != null) {
-                  File file = File(image.path);
-                  int originalSize = await file.length();
-                  print(
-                    'Gallery - Original Size: ${(originalSize / 1024 / 1024).toStringAsFixed(2)} MB',
+              ListTile(
+                leading: const Icon(
+                  Icons.photo_library,
+                  color: AppColors.roseColor,
+                ),
+                title: Text(
+                  AppLocalizations.of(context)?.translate('choose_gallery') ??
+                      'Choose from gallery',
+                  style: GoogleFonts.dmSans(),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  final XFile? image = await _picker.pickImage(
+                    source: ImageSource.gallery,
                   );
+                  if (image != null) {
+                    File file = File(image.path);
+                    int originalSize = await file.length();
+                    print(
+                      'Gallery - Original Size: ${(originalSize / 1024 / 1024).toStringAsFixed(2)} MB',
+                    );
 
-                  try {
-                    final compressedFile =
-                        await FlutterImageCompress.compressAndGetFile(
-                          file.absolute.path,
-                          '${file.parent.path}/temp_${DateTime.now().millisecondsSinceEpoch}.jpg',
-                          minWidth: 800,
-                          minHeight: 800,
-                          quality: 60,
+                    try {
+                      final compressedFile =
+                          await FlutterImageCompress.compressAndGetFile(
+                            file.absolute.path,
+                            '${file.parent.path}/temp_${DateTime.now().millisecondsSinceEpoch}.jpg',
+                            minWidth: 800,
+                            minHeight: 800,
+                            quality: 60,
+                          );
+
+                      if (compressedFile != null) {
+                        int compressedSize = await compressedFile.length();
+                        print(
+                          'Gallery - Compressed Size: ${(compressedSize / 1024 / 1024).toStringAsFixed(2)} MB',
                         );
-
-                    if (compressedFile != null) {
-                      int compressedSize = await compressedFile.length();
-                      print(
-                        'Gallery - Compressed Size: ${(compressedSize / 1024 / 1024).toStringAsFixed(2)} MB',
-                      );
-                      setState(
-                        () => _selectedImage = File(compressedFile.path),
-                      );
-                    } else {
-                      print('Gallery - Compression failed, using original.');
+                        setState(
+                          () => _selectedImage = File(compressedFile.path),
+                        );
+                      } else {
+                        print('Gallery - Compression failed, using original.');
+                        setState(() => _selectedImage = file);
+                      }
+                    } catch (e) {
+                      print('Gallery - Compression Error: $e');
                       setState(() => _selectedImage = file);
                     }
-                  } catch (e) {
-                    print('Gallery - Compression Error: $e');
-                    setState(() => _selectedImage = file);
                   }
-                }
-              },
-            ),
-          ],
+                },
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     );

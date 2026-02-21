@@ -72,7 +72,7 @@ class ServiceChoosingPage extends StatelessWidget {
           'assets/Logos/WhiteLogo.png',
           height: 35,
           errorBuilder: (_, __, ___) => Text(
-            AppLocalizations.of(context)?.translate('app_name') ?? 'BUZZ',
+            AppLocalizations.of(context)?.translate('app_name') ?? 'artifex',
             style: GoogleFonts.dmSans(
               color: Colors.white,
               fontWeight: FontWeight.bold,

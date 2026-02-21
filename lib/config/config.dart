@@ -4,12 +4,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 class AppConfig {
   // Server configuration - Use domain name in production
   static String get baseUrl =>
-      dotenv.env['BASE_URL'] ?? 'https://buzz-obqj.onrender.com';
+      dotenv.env['BASE_URL'] ?? 'http://72.60.45.126:10000';
 
   // Legacy support (kept for backward compatibility)
   /*
   static String get serverIpAddress =>
-      dotenv.env['SERVER_IP'] ?? '154.240.110.154';
+      dotenv.env['SERVER_IP'] ?? '72.60.45.126';
 */
   /*
   static int get serverPort =>
