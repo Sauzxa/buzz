@@ -69,8 +69,8 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
     // Save phone number to provider (local format, no country code)
     context.read<UserProvider>().setPhoneNumber(localPhoneNumber);
 
-    // Navigate to OTP verification page
-    Navigator.pushReplacementNamed(context, RouteNames.otpVerification);
+    // Navigate directly to Sign Up page (OTP verification removed)
+    Navigator.pushReplacementNamed(context, RouteNames.signUp);
   }
 
   void _showError(String message) {

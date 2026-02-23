@@ -6,7 +6,6 @@ import '../onboarding/onb3.dart';
 import '../onboarding/onb4.dart';
 import '../onboarding/onb5.dart';
 import '../auth/mobileNumber.dart';
-import '../auth/otp.dart';
 import '../auth/SignUp.dart';
 import '../auth/SignIn.dart';
 import '../auth/forgetPassword.dart';
@@ -51,9 +50,6 @@ class RouteGenerator {
 
       case RouteNames.mobileNumber:
         return MaterialPageRoute(builder: (_) => const MobileNumberPage());
-
-      case RouteNames.otpVerification:
-        return MaterialPageRoute(builder: (_) => const OTPPage());
 
       case RouteNames.signUp:
         return MaterialPageRoute(builder: (_) => const SignUpPage());
