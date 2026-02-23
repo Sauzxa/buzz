@@ -95,13 +95,23 @@ class ServiceChoosingPage extends StatelessWidget {
         selectedItemColor: themeColor,
         onTap: (index) {
           if (index == 0) {
-            // Use pushNamedAndRemoveUntil for safer navigation
+            // Home - Use pushNamedAndRemoveUntil for safer navigation
             Navigator.pushNamedAndRemoveUntil(
               context,
               RouteNames.home,
               (route) => false,
             );
+          } else if (index == 1) {
+            // Search
+            Navigator.pushNamed(context, RouteNames.search);
+          } else if (index == 2) {
+            // Orders
+            Navigator.pushNamed(context, RouteNames.orderManagement);
+          } else if (index == 3) {
+            // Profile/Settings
+            Navigator.pushNamed(context, RouteNames.settings);
           } else if (index == 4) {
+            // Chat
             Navigator.pushNamed(context, RouteNames.chat);
           }
         },

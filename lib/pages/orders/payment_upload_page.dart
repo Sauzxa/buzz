@@ -109,12 +109,23 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
       );
     } catch (e) {
       if (!mounted) return;
+
+      // Extract user-friendly error message
+      String errorMessage =
+          AppLocalizations.of(context)?.translate('upload_failed') ??
+          'Upload failed';
+
+      final errorString = e.toString();
+      if (errorString.contains('Exception:')) {
+        // Extract the actual message after "Exception: "
+        errorMessage = errorString.replaceFirst('Exception: ', '');
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            '${AppLocalizations.of(context)?.translate('upload_failed') ?? 'Upload failed'}: $e',
-          ),
+          content: Text(errorMessage),
           backgroundColor: Colors.red,
+          duration: const Duration(seconds: 4),
         ),
       );
     } finally {

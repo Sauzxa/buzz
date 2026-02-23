@@ -61,9 +61,29 @@ class InvoiceService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception(
-          'Failed to upload payment proof: ${response.statusCode}',
-        );
+        // Extract user-friendly error message
+        String errorMessage = 'Failed to upload payment proof';
+
+        if (response.statusCode == 400) {
+          final responseData = response.data;
+          if (responseData is String) {
+            // Check for specific error patterns
+            if (responseData.contains('ESPECE') ||
+                responseData.toLowerCase().contains('cash')) {
+              errorMessage = 'Cash payments do not require receipt upload';
+            } else if (responseData.contains('status')) {
+              errorMessage = 'Payment proof cannot be uploaded at this time';
+            } else {
+              errorMessage = 'Invalid payment proof upload';
+            }
+          }
+        } else if (response.statusCode == 403) {
+          errorMessage = 'You do not have permission to upload this receipt';
+        } else if (response.statusCode == 404) {
+          errorMessage = 'Invoice not found';
+        }
+
+        throw Exception(errorMessage);
       }
     } catch (e) {
       print('Error uploading payment proof: $e');
