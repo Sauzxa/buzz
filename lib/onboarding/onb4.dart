@@ -84,9 +84,9 @@ class onb4 extends StatelessWidget {
                         Expanded(
                           child: Container(
                             width: double.infinity,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(30),
                                 topRight: Radius.circular(30),
                               ),
@@ -125,7 +125,9 @@ class onb4 extends StatelessWidget {
                                           'We have the best in class individuals working just for you. They are well trained and capable of handling anything you need.',
                                           textAlign: TextAlign.center,
                                           style: GoogleFonts.dmSans(
-                                            color: Colors.grey[600],
+                                            color: Theme.of(
+                                              context,
+                                            ).textTheme.bodySmall!.color,
                                             fontSize: screenWidth * 0.035,
                                             height: 1.5,
                                           ),

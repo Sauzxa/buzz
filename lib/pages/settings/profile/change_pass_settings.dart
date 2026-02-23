@@ -50,19 +50,22 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
   }
 
   void _onBottomNavTapped(int index) {
-    if (index == 0) {
-      Navigator.pushReplacementNamed(context, RouteNames.home);
-    } else if (index == 4) {
-      Navigator.pushReplacementNamed(context, RouteNames.chat);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)?.translate('feature_coming_soon') ??
-                'Feature coming soon!',
-          ),
-        ),
-      );
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(context, RouteNames.home);
+        break;
+      case 1:
+        Navigator.pushReplacementNamed(context, RouteNames.search);
+        break;
+      case 2:
+        Navigator.pushReplacementNamed(context, RouteNames.orderManagement);
+        break;
+      case 3:
+        Navigator.pushReplacementNamed(context, RouteNames.settings);
+        break;
+      case 4:
+        Navigator.pushReplacementNamed(context, RouteNames.chat);
+        break;
     }
   }
 
@@ -137,8 +140,6 @@ class _ChangePassSettingsState extends State<ChangePassSettings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset:
-          false, // Prevent scaffold resize when keyboard appears
       backgroundColor: AppColors.roseColor,
       drawer:
           const HomeDrawer(), // Needed if using Grid View icon to open drawer

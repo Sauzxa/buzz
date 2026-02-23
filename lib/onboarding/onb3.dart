@@ -84,9 +84,9 @@ class onb3 extends StatelessWidget {
                         Expanded(
                           child: Container(
                             width: double.infinity,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.only(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(30),
                                 topRight: Radius.circular(30),
                               ),
@@ -125,7 +125,9 @@ class onb3 extends StatelessWidget {
                                           'We provide the best transportation service and organize your furniture properly to prevent any damage.',
                                           textAlign: TextAlign.center,
                                           style: GoogleFonts.dmSans(
-                                            color: Colors.grey[600],
+                                            color: Theme.of(
+                                              context,
+                                            ).textTheme.bodySmall!.color,
                                             fontSize: screenWidth * 0.035,
                                             height: 1.5,
                                           ),
