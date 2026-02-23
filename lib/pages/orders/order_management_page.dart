@@ -56,10 +56,18 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
     final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
     await ordersProvider.fetchAllOrders(userId);
 
-    // Mirror the provider list into our local list
+    // Filter active orders and mirror into local list
     if (mounted) {
+      final activeOrders = ordersProvider.allOrders.where((order) {
+        final status = order['status']?.toString().toUpperCase();
+        return status != 'CANCELLED' &&
+            status != 'COMPLETED' &&
+            status != 'REFUSED' &&
+            status != 'DELIVERED';
+      }).toList();
+
       setState(() {
-        _localOrders = List<dynamic>.from(ordersProvider.allOrders);
+        _localOrders = List<dynamic>.from(activeOrders);
       });
       await _fetchInvoiceDeadlines();
     }
@@ -209,17 +217,24 @@ class _OrderManagementPageState extends State<OrderManagementPage> {
             )
           : Consumer<OrdersProvider>(
               builder: (context, ordersProvider, child) {
+                // Filter out archived orders (CANCELLED, COMPLETED, REFUSED)
+                final activeOrders = ordersProvider.allOrders.where((order) {
+                  final status = order['status']?.toString().toUpperCase();
+                  return status != 'CANCELLED' &&
+                      status != 'COMPLETED' &&
+                      status != 'REFUSED' &&
+                      status != 'DELIVERED';
+                }).toList();
+
                 // Sync local list when provider updates (e.g. after a pull-to-refresh)
                 // but only when not empty to avoid overwriting an optimistic removal.
                 if (!ordersProvider.isLoading &&
                     ordersProvider.error == null &&
-                    ordersProvider.allOrders.length != _localOrders.length) {
+                    activeOrders.length != _localOrders.length) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
                     if (mounted) {
                       setState(() {
-                        _localOrders = List<dynamic>.from(
-                          ordersProvider.allOrders,
-                        );
+                        _localOrders = List<dynamic>.from(activeOrders);
                       });
                     }
                   });
