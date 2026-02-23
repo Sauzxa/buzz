@@ -498,7 +498,12 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     if (!canUpload) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.only(
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: 20 + MediaQuery.of(context).padding.bottom,
+      ),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         boxShadow: [
