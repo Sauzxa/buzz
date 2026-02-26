@@ -252,27 +252,111 @@ class AuthService {
     }
   }
 
-  /// Validate a password reset token before showing the reset form
-  /// Returns true if the token is valid (not expired, not used)
-  Future<bool> validateResetToken(String token) async {
+  /// Verify password reset OTP code
+  /// Returns success status and remaining attempts on failure
+  Future<Map<String, dynamic>> verifyResetOtp({
+    required String email,
+    required String otp,
+  }) async {
     try {
-      final response = await _apiClient.get(
-        ApiEndpoints.validateResetToken(token),
+      final response = await _apiClient.post(
+        ApiEndpoints.verifyResetOtp,
+        data: {'email': email, 'otp': otp},
       );
 
-      if (response.statusCode == 200 && response.data is Map) {
-        return response.data['success'] == true;
+      // Check for server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          'Server error (${response.statusCode}). Please try again later.',
+        );
       }
-      return false;
+
+      // Check for client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        String message = 'Failed to verify code';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Success response (2xx)
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        if (response.data is Map) {
+          return {
+            'success': response.data['success'] ?? false,
+            'message': response.data['message'] ?? '',
+            'remainingAttempts': response.data['remainingAttempts'],
+          };
+        }
+      }
+
+      throw Exception('Unexpected error occurred');
     } catch (e) {
-      return false;
+      rethrow;
     }
   }
 
-  /// Reset password with token from email
-  /// Validates token and sets new password
+  /// Resend password reset OTP
+  Future<void> resendResetOtp(String email) async {
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoints.resendResetOtp,
+        data: {'email': email},
+      );
+
+      // Extract message from response body if available
+      String extractMessage(String fallback) {
+        if (response.data != null && response.data is Map) {
+          return response.data['message'] ?? fallback;
+        }
+        return fallback;
+      }
+
+      // 429 = Too many requests (cooldown or max attempts)
+      if (response.statusCode == 429) {
+        throw Exception(
+          extractMessage('Please wait before requesting a new code'),
+        );
+      }
+
+      // 503 = email server (SMTP) is down
+      if (response.statusCode == 503) {
+        throw Exception(
+          extractMessage(
+            'Email service is currently unavailable. Please try again later.',
+          ),
+        );
+      }
+
+      // Other server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          extractMessage(
+            'Server error (${response.statusCode}). Please try again later.',
+          ),
+        );
+      }
+
+      // Client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        throw Exception(extractMessage('Failed to resend code'));
+      }
+
+      // Success - code sent (200 or 201)
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Unexpected error occurred');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Reset password with OTP from email
+  /// Validates OTP and sets new password
   Future<void> resetPassword({
-    required String token,
+    required String email,
+    required String otp,
     required String newPassword,
     required String confirmPassword,
   }) async {
@@ -280,7 +364,8 @@ class AuthService {
       final response = await _apiClient.post(
         ApiEndpoints.resetPassword,
         data: {
-          'token': token,
+          'email': email,
+          'otp': otp,
           'newPassword': newPassword,
           'confirmPassword': confirmPassword,
         },

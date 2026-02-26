@@ -58,11 +58,11 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       });
 
       if (success) {
-        // Navigate to Reset Email Sent page
+        // Navigate to Reset Email Sent page with email
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            FadeRoute(page: const ResetEmailSentPage()),
+            FadeRoute(page: ResetEmailSentPage(email: email)),
           );
         }
       } else {
@@ -171,18 +171,33 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                       color: Theme.of(context).inputDecorationTheme.fillColor,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: TextField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
-                        color: Theme.of(context).textTheme.bodyLarge!.color,
+                    child: Theme(
+                      data: Theme.of(context).copyWith(
+                        inputDecorationTheme: const InputDecorationTheme(
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
+                          filled: false,
+                        ),
                       ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
+                      child: TextField(
+                        controller: _emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                         ),
                       ),
                     ),

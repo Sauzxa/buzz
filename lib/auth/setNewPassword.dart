@@ -7,9 +7,10 @@ import '../utils/fade_route.dart';
 import '../l10n/app_localizations.dart';
 
 class SetNewPasswordPage extends StatefulWidget {
-  final String token;
+  final String email;
+  final String otp;
 
-  const SetNewPasswordPage({super.key, required this.token});
+  const SetNewPasswordPage({super.key, required this.email, required this.otp});
 
   @override
   State<SetNewPasswordPage> createState() => _SetNewPasswordPageState();
@@ -24,36 +25,6 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
   bool _isProcessing = false;
-  bool _isValidatingToken = true;
-
-  @override
-  void initState() {
-    super.initState();
-    _validateToken();
-  }
-
-  Future<void> _validateToken() async {
-    final isValid = await _authService.validateResetToken(widget.token);
-    if (!mounted) return;
-
-    if (!isValid) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)?.translate('error_token_expired') ??
-                'This reset link has expired or already been used. Please request a new one.',
-          ),
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 4),
-        ),
-      );
-      Navigator.pushReplacement(context, FadeRoute(page: const SignInPage()));
-      return;
-    }
-
-    setState(() => _isValidatingToken = false);
-  }
 
   @override
   void dispose() {
@@ -94,7 +65,8 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
 
     try {
       await _authService.resetPassword(
-        token: widget.token,
+        email: widget.email,
+        otp: widget.otp,
         newPassword: password,
         confirmPassword: confirmPassword,
       );
@@ -127,15 +99,9 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isValidatingToken) {
-      return Scaffold(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
@@ -148,7 +114,7 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
         ),
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,7 +172,7 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
                 isLoading: _isProcessing,
                 onPressed: _isProcessing ? () {} : _onSetPassword,
               ),
-              const Spacer(),
+              const SizedBox(height: 40),
             ],
           ),
         ),
@@ -235,27 +201,41 @@ class _SetNewPasswordPageState extends State<SetNewPasswordPage> {
           decoration: BoxDecoration(
             color: Theme.of(context).inputDecorationTheme.fillColor,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Theme.of(context).dividerColor),
           ),
-          child: TextField(
-            controller: controller,
-            obscureText: obscureText,
-            style: GoogleFonts.dmSans(
-              fontSize: 14,
-              color: Theme.of(context).textTheme.bodyLarge!.color,
-            ),
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              inputDecorationTheme: const InputDecorationTheme(
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                focusedErrorBorder: InputBorder.none,
+                filled: false,
               ),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.grey[400],
+            ),
+            child: TextField(
+              controller: controller,
+              obscureText: obscureText,
+              style: GoogleFonts.dmSans(
+                fontSize: 14,
+                color: Theme.of(context).textTheme.bodyLarge!.color,
+              ),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 14,
                 ),
-                onPressed: onToggle,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.grey[400],
+                  ),
+                  onPressed: onToggle,
+                ),
               ),
             ),
           ),

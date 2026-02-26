@@ -385,14 +385,71 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  /// Request password reset link
-  /// Sends a password reset email to the provided email address
+  /// Request password reset OTP
+  /// Sends a password reset email with 5-digit code to the provided email address
   Future<bool> forgotPassword(String email) async {
     _setLoading(true);
     _error = null;
 
     try {
       await _authService.forgotPassword(email);
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      // Extract clean error message
+      String errorMessage = e.toString();
+
+      // Remove "Exception: " prefix if present
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+
+      _error = errorMessage;
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  /// Verify password reset OTP code
+  /// Returns map with success status, message, and remaining attempts
+  Future<Map<String, dynamic>> verifyResetOtp({
+    required String email,
+    required String otp,
+  }) async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      final result = await _authService.verifyResetOtp(email: email, otp: otp);
+      _setLoading(false);
+      return result;
+    } catch (e) {
+      // Extract clean error message
+      String errorMessage = e.toString();
+
+      // Remove "Exception: " prefix if present
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+
+      _error = errorMessage;
+      _setLoading(false);
+      return {
+        'success': false,
+        'message': errorMessage,
+        'remainingAttempts': null,
+      };
+    }
+  }
+
+  /// Resend password reset OTP code
+  /// Subject to cooldown and attempt limits
+  Future<bool> resendResetOtp(String email) async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      await _authService.resendResetOtp(email);
       _setLoading(false);
       return true;
     } catch (e) {

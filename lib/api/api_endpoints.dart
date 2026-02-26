@@ -14,9 +14,9 @@ class ApiEndpoints {
   static String get logout => '$apiPrefix/auth/logout';
   static String get refreshToken => '$apiPrefix/auth/refresh';
   static String get forgotPassword => '$apiPrefix/auth/forgot-password';
+  static String get verifyResetOtp => '$apiPrefix/auth/verify-reset-otp';
   static String get resetPassword => '$apiPrefix/auth/reset-password';
-  static String validateResetToken(String token) =>
-      '$apiPrefix/auth/validate-reset-token?token=$token';
+  static String get resendResetOtp => '$apiPrefix/auth/resend-reset-otp';
   static String get changePassword => '$apiPrefix/auth/change-password';
   static String get googleAuth => '$apiPrefix/auth/google';
 

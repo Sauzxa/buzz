@@ -5,9 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'dart:async';
-import 'package:app_links/app_links.dart';
 import 'routes/app_routes.dart';
-import 'routes/route_names.dart';
 import 'providers/user_provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/categories_provider.dart';
@@ -91,65 +89,19 @@ class Buzz extends StatefulWidget {
 }
 
 class _BuzzState extends State<Buzz> {
-  late AppLinks _appLinks;
-  StreamSubscription? _deepLinkSub;
+  // Note: Deep link support removed - OTP-based password reset doesn't need it
+  // StreamSubscription? _deepLinkSub;
 
   @override
   void initState() {
     super.initState();
     // Setup FCM callback for new notifications
     _setupFcmCallback();
-    // Initialize app_links
-    _appLinks = AppLinks();
-    // Setup deep link handling
-    _initDeepLinkListener();
   }
 
   @override
   void dispose() {
-    _deepLinkSub?.cancel();
     super.dispose();
-  }
-
-  void _initDeepLinkListener() {
-    // Handle deep links when app is already running
-    _deepLinkSub = _appLinks.uriLinkStream.listen(
-      (Uri uri) {
-        _handleDeepLink(uri);
-      },
-      onError: (err) {
-        print(' Deep link error: $err');
-      },
-    );
-
-    // Handle initial deep link (when app is launched from terminated state)
-    _appLinks.getInitialLink().then((Uri? uri) {
-      if (uri != null) {
-        _handleDeepLink(uri);
-      }
-    });
-  }
-
-  void _handleDeepLink(Uri uri) {
-    print('🔗 Deep link received: $uri');
-
-    // Handle password reset deep link: buzzapp://reset-password?token=xxx
-    if (uri.scheme == 'buzzapp' && uri.host == 'reset-password') {
-      final token = uri.queryParameters['token'];
-      if (token != null && token.isNotEmpty) {
-        print('🔑 Password reset token: $token');
-
-        // Navigate to SetNewPasswordPage with token
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          NotificationNavigationService.navigatorKey.currentState?.pushNamed(
-            RouteNames.setNewPassword,
-            arguments: token,
-          );
-        });
-      } else {
-        print('⚠️ No token found in deep link');
-      }
-    }
   }
 
   void _setupFcmCallback() {

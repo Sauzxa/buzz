@@ -61,12 +61,17 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const ForgetPasswordPage());
 
       case RouteNames.resetEmailSent:
-        return MaterialPageRoute(builder: (_) => const ResetEmailSentPage());
+        final String email = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => ResetEmailSentPage(email: email),
+        );
 
       case RouteNames.setNewPassword:
-        final String token = settings.arguments as String;
+        final Map<String, String> args =
+            settings.arguments as Map<String, String>;
         return MaterialPageRoute(
-          builder: (_) => SetNewPasswordPage(token: token),
+          builder: (_) =>
+              SetNewPasswordPage(email: args['email']!, otp: args['otp']!),
         );
 
       case RouteNames.welcome:
