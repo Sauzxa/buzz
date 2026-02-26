@@ -37,6 +37,10 @@ class ApiEndpoints {
   static String get createOrder => '$apiPrefix/orders';
   static String uploadOrderFile(String orderId) =>
       '$apiPrefix/orders/$orderId/files';
+  static String submitOrder(String orderId) =>
+      '$apiPrefix/orders/$orderId/submit';
+  static String deleteDraftOrder(String orderId) =>
+      '$apiPrefix/orders/$orderId/delete';
   static String getAllOrdersByCustomer(String customerId) =>
       '$apiPrefix/orders/customer/$customerId';
   static String getActiveOrdersByCustomer(String customerId) =>

@@ -46,7 +46,7 @@ app.*.map.json
 #special files : 
 UI.txt
 # config files
-#lib/config/
+lib/config/
 #*.config.dart
 
 # Backend Firebase Service Account (SECURITY - DO NOT COMMIT)
@@ -62,7 +62,7 @@ README.md
 DROPDOWN_IMPLEMENTATION.md
 GOOGLE_SIGNIN_IMPLEMENTATION.md
 FCM_SETUP_GUIDE.md
-#backend src
+backend src
 buzz_back/
 lib/firebase_options.dart
 android/app/google-services.json

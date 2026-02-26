@@ -13,6 +13,7 @@ class OrderService {
     List<File>? files,
   }) async {
     int? createdOrderId;
+    bool isPrintingService = false;
 
     try {
       // Step 1: Create Order (JSON)
@@ -80,16 +81,19 @@ class OrderService {
         );
       }
 
-      // Extract order ID from response
-      // Response data might be a Map or a JSON String depending on Dio interceptor
+      // Extract order ID and status from response
       final responseData = response.data is String
           ? jsonDecode(response.data)
           : response.data;
 
       // Handle case where backend returns { "order": { "id": ... } }
-      final orderId = responseData is Map && responseData.containsKey('order')
-          ? responseData['order']['id']
-          : responseData['id'];
+      final orderResponse =
+          responseData is Map && responseData.containsKey('order')
+          ? responseData['order']
+          : responseData;
+
+      final orderId = orderResponse['id'];
+      final orderStatus = orderResponse['status'];
 
       if (orderId == null) {
         throw Exception('Order created but ID was missing in response');
@@ -98,15 +102,24 @@ class OrderService {
       // Store the created order ID for potential rollback
       createdOrderId = orderId;
 
-      print('\n✅ Order created successfully. ID: $orderId');
-      print('⏳ Backend should now send ORDER_CREATED notification...\n');
+      // Check if this is a printing service with auto-invoice (status will be PRICED)
+      isPrintingService = orderStatus == 'PRICED';
 
-      // Step 2: Upload Files (Multipart) - SYNCHRONIZED WITH ORDER CREATION
-      // If file upload fails, the order will be rolled back (deleted/cancelled)
+      if (isPrintingService) {
+        print(
+          '\n✅ Printing order created with auto-invoice. ID: $orderId, Status: PRICED',
+        );
+        print('✅ Invoice automatically created with 24h payment deadline');
+        print('⏳ Backend sent ORDER_CREATED and ORDER_PRICED notifications\n');
+      } else {
+        print('\n✅ Order created successfully. ID: $orderId, Status: DRAFT');
+      }
+
+      // Step 2: Upload Files (if provided)
       if (files != null && files.isNotEmpty) {
         print('📤 Starting file upload for order $orderId...');
         print(
-          '⚠️  If file upload fails, order $orderId will be cancelled automatically.\n',
+          '⚠️  If file upload fails, order $orderId will be deleted automatically.\n',
         );
 
         try {
@@ -114,19 +127,41 @@ class OrderService {
           print('\n✅ All files uploaded successfully for order $orderId');
         } catch (fileUploadError) {
           print('\n❌ File upload failed for order $orderId: $fileUploadError');
-          print('🔄 Rolling back: Cancelling order $orderId...\n');
+          print('🔄 Rolling back: Deleting order $orderId...\n');
 
-          // ROLLBACK: Cancel/Delete the created order since file upload failed
+          // ROLLBACK: Delete the DRAFT order since file upload failed
           await _rollbackOrder(orderId.toString());
 
           // Re-throw the error with a clear message
           throw Exception(
-            'File upload failed. Order has been cancelled. Error: $fileUploadError',
+            'File upload failed. Order has been deleted. Error: $fileUploadError',
           );
         }
       }
 
-      print('\n🎉 Order $orderId created and synchronized successfully!\n');
+      // Step 3: Submit Order (only for non-printing services in DRAFT status)
+      if (!isPrintingService) {
+        print('📤 Submitting order $orderId (DRAFT → PENDING)...\n');
+
+        try {
+          await _submitOrder(orderId.toString());
+          print('\n✅ Order submitted successfully. Status: PENDING');
+          print('⏳ Backend sent ORDER_CREATED notification to admin\n');
+        } catch (submitError) {
+          print('\n❌ Order submission failed for order $orderId: $submitError');
+          print('🔄 Rolling back: Deleting order $orderId...\n');
+
+          // ROLLBACK: Delete the DRAFT order since submission failed
+          await _rollbackOrder(orderId.toString());
+
+          // Re-throw the error with a clear message
+          throw Exception(
+            'Order submission failed. Order has been deleted. Error: $submitError',
+          );
+        }
+      }
+
+      print('\n🎉 Order $orderId created and processed successfully!\n');
       return orderId;
     } catch (e) {
       print('❌ Error in createOrder: $e');
@@ -134,6 +169,7 @@ class OrderService {
       // If we have a created order ID and the error wasn't from rollback itself,
       // ensure we attempt rollback
       if (createdOrderId != null &&
+          !e.toString().contains('Order has been deleted') &&
           !e.toString().contains('Order has been cancelled')) {
         try {
           await _rollbackOrder(createdOrderId.toString());
@@ -187,24 +223,44 @@ class OrderService {
     }
   }
 
+  /// Submit order after file upload (DRAFT → PENDING)
+  /// This triggers the OrderCreatedEvent notification to admin
+  Future<void> _submitOrder(String orderId) async {
+    try {
+      print('� Submitting order $orderId...');
+
+      final response = await _apiClient.post(ApiEndpoints.submitOrder(orderId));
+
+      if (response.statusCode != null &&
+          (response.statusCode! >= 200 && response.statusCode! < 300)) {
+        print('✅ Order $orderId submitted successfully (DRAFT → PENDING)');
+      } else {
+        print('⚠️  Failed to submit order $orderId: ${response.statusCode}');
+        throw Exception('Submit failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('❌ Error during order submission: $e');
+      throw Exception('Failed to submit order $orderId: $e');
+    }
+  }
+
   /// Rollback (cancel/delete) an order if file upload fails
   /// This ensures no incomplete orders exist in the system
   Future<void> _rollbackOrder(String orderId) async {
     try {
-      print(
-        '🔄 Attempting to cancel order $orderId due to file upload failure...',
-      );
+      print('🔄 Attempting to delete DRAFT order $orderId due to failure...');
 
       final response = await _apiClient.delete(
-        ApiEndpoints.cancelOrder(orderId),
+        ApiEndpoints.deleteDraftOrder(orderId),
       );
 
       if (response.statusCode != null &&
           (response.statusCode! >= 200 && response.statusCode! < 300)) {
-        print('✅ Order $orderId successfully cancelled (rolled back)');
+        print('✅ Order $orderId successfully deleted (rolled back)');
+        print('✅ Associated files removed from MinIO storage');
       } else {
-        print('⚠️  Failed to cancel order $orderId: ${response.statusCode}');
-        throw Exception('Rollback failed: Could not cancel order $orderId');
+        print('⚠️  Failed to delete order $orderId: ${response.statusCode}');
+        throw Exception('Rollback failed: Could not delete order $orderId');
       }
     } catch (e) {
       print('❌ Error during order rollback: $e');
