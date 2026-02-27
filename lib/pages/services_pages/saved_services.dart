@@ -57,153 +57,151 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.roseColor,
+      backgroundColor: Theme.of(context).cardColor,
       body: Stack(
         children: [
           Column(
             children: [
-              // Pink Header
-              SafeArea(
-                bottom: false,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
+              // Pink Header with Rounded Bottom Corners
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.roseColor,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                          size: 28,
+                ),
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          onPressed: () => Navigator.pop(context),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
                         ),
-                        onPressed: () => Navigator.pop(context),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 35,
-                        height: 35,
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 35,
+                          height: 35,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.bookmark_border,
+                            color: AppColors.roseColor,
+                            size: 20,
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.bookmark_border,
-                          color: AppColors.roseColor,
-                          size: 20,
+                        const SizedBox(width: 12),
+                        Text(
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('saved_services_title') ??
+                              'Saved',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        AppLocalizations.of(
-                              context,
-                            )?.translate('saved_services_title') ??
-                            'Saved',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
 
               // White Content Body
               Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                  ),
-                  child: Consumer<SavedServicesProvider>(
-                    builder: (context, provider, child) {
-                      if (provider.isLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
+                child: Consumer<SavedServicesProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                      if (provider.savedServices.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.bookmark_border,
-                                size: 60,
+                    if (provider.savedServices.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.bookmark_border,
+                              size: 60,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodySmall!.color,
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('no_saved_services') ??
+                                  'No saved services yet',
+                              style: GoogleFonts.dmSans(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
                                 color: Theme.of(
                                   context,
                                 ).textTheme.bodySmall!.color,
                               ),
-                              const SizedBox(height: 16),
-                              Text(
-                                AppLocalizations.of(
-                                      context,
-                                    )?.translate('no_saved_services') ??
-                                    'No saved services yet',
-                                style: GoogleFonts.dmSans(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Theme.of(
-                                    context,
-                                  ).textTheme.bodySmall!.color,
-                                ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return GridView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 0.8,
+                          ),
+                      itemCount: provider.savedServices.length,
+                      itemBuilder: (context, index) {
+                        final savedService = provider.savedServices[index];
+
+                        // Get the full service from ServicesProvider to ensure we have formFields
+                        final servicesProvider = context
+                            .read<ServicesProvider>();
+                        final fullService = servicesProvider.services.firstWhere(
+                          (s) => s.id == savedService.id,
+                          orElse: () =>
+                              savedService, // Fallback to saved service if not found
+                        );
+
+                        return LongPressServiceWrapper(
+                          service: fullService,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    ServiceChoosingPage(service: fullService),
                               ),
-                            ],
+                            );
+                          },
+                          child: ServiceCard(
+                            service: fullService,
+                            // onTap is handled by wrapper
                           ),
                         );
-                      }
-
-                      return GridView.builder(
-                        padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 16,
-                              mainAxisSpacing: 16,
-                              childAspectRatio: 0.8,
-                            ),
-                        itemCount: provider.savedServices.length,
-                        itemBuilder: (context, index) {
-                          final savedService = provider.savedServices[index];
-
-                          // Get the full service from ServicesProvider to ensure we have formFields
-                          final servicesProvider = context
-                              .read<ServicesProvider>();
-                          final fullService = servicesProvider.services.firstWhere(
-                            (s) => s.id == savedService.id,
-                            orElse: () =>
-                                savedService, // Fallback to saved service if not found
-                          );
-
-                          return LongPressServiceWrapper(
-                            service: fullService,
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ServiceChoosingPage(service: fullService),
-                                ),
-                              );
-                            },
-                            child: ServiceCard(
-                              service: fullService,
-                              // onTap is handled by wrapper
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
+                      },
+                    );
+                  },
                 ),
               ),
             ],

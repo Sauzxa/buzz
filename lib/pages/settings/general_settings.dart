@@ -38,177 +38,173 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: AppColors.roseColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
           Column(
             children: [
               // Pink Header
-              SafeArea(
-                bottom: false,
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 20,
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.roseColor,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(30),
+                    bottomRight: Radius.circular(30),
                   ),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back,
+                ),
+                child: SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 20,
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.arrow_back,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          onPressed: () => Navigator.pushReplacementNamed(
+                            context,
+                            RouteNames.home,
+                          ),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                        const SizedBox(width: 16),
+                        const Icon(
+                          Icons.settings,
                           color: Colors.white,
-                          size: 28,
+                          size: 24,
                         ),
-                        onPressed: () => Navigator.pushReplacementNamed(
-                          context,
-                          RouteNames.home,
+                        const SizedBox(width: 12),
+                        Text(
+                          AppLocalizations.of(
+                                context,
+                              )?.translate('settings_title') ??
+                              'Settings',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                      ),
-                      const SizedBox(width: 16),
-                      const Icon(Icons.settings, color: Colors.white, size: 24),
-                      const SizedBox(width: 12),
-                      Text(
-                        AppLocalizations.of(
-                              context,
-                            )?.translate('settings_title') ??
-                            'Settings',
-                        style: GoogleFonts.dmSans(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
 
               // White Content Body
               Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
+                child: ListView(
+                  padding: const EdgeInsets.only(bottom: 100, top: 20),
+                  children: [
+                    // GENERAL Section
+                    _buildSectionHeader(
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('settings_general_title') ??
+                          'GENERAL',
                     ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-                    child: ListView(
-                      padding: const EdgeInsets.only(bottom: 100, top: 20),
-                      children: [
-                        // GENERAL Section
-                        _buildSectionHeader(
+                    _buildMenuItem(
+                      icon: Icons.person_outline,
+                      title:
                           AppLocalizations.of(
-                                context,
-                              )?.translate('settings_general_title') ??
-                              'GENERAL',
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.person_outline,
-                          title:
-                              AppLocalizations.of(
-                                context,
-                              )?.translate('settings_account') ??
-                              'Account',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const SettingsPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.notifications_outlined,
-                          title:
-                              AppLocalizations.of(
-                                context,
-                              )?.translate('settings_notifications') ??
-                              'Notifications',
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RouteNames.notificationsBuzz,
-                            );
-                          },
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.local_offer_outlined,
-                          title:
-                              AppLocalizations.of(
-                                context,
-                              )?.translate('settings_coupons') ??
-                              'Coupons',
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  AppLocalizations.of(
-                                        context,
-                                      )?.translate('settings_coupons_soon') ??
-                                      'Coupons page coming soon!',
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-
-                        _buildMenuItem(
-                          icon: Icons.language,
-                          title:
-                              AppLocalizations.of(
-                                context,
-                              )?.translate('language_label') ??
-                              'Language',
-                          onTap: () {
-                            _showLanguageDialog(context);
-                          },
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // FEEDBACK Section
-                        _buildSectionHeader(
-                          AppLocalizations.of(
-                                context,
-                              )?.translate('settings_feedback_title') ??
-                              'FEEDBACK',
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.bug_report_outlined,
-                          title:
-                              AppLocalizations.of(
-                                context,
-                              )?.translate('settings_report_bug') ??
-                              'Report a bug',
-                          onTap: () {
-                            Navigator.pushNamed(context, RouteNames.bugReport);
-                          },
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.feedback_outlined,
-                          title:
-                              AppLocalizations.of(
-                                context,
-                              )?.translate('settings_send_feedback') ??
-                              'Send Feedback',
-                          onTap: () {
-                            Navigator.pushNamed(context, RouteNames.feedback);
-                          },
-                        ),
-                      ],
+                            context,
+                          )?.translate('settings_account') ??
+                          'Account',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SettingsPage(),
+                          ),
+                        );
+                      },
                     ),
-                  ),
+                    _buildMenuItem(
+                      icon: Icons.notifications_outlined,
+                      title:
+                          AppLocalizations.of(
+                            context,
+                          )?.translate('settings_notifications') ??
+                          'Notifications',
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          RouteNames.notificationsBuzz,
+                        );
+                      },
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.local_offer_outlined,
+                      title:
+                          AppLocalizations.of(
+                            context,
+                          )?.translate('settings_coupons') ??
+                          'Coupons',
+                      onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('settings_coupons_soon') ??
+                                  'Coupons page coming soon!',
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+
+                    _buildMenuItem(
+                      icon: Icons.language,
+                      title:
+                          AppLocalizations.of(
+                            context,
+                          )?.translate('language_label') ??
+                          'Language',
+                      onTap: () {
+                        _showLanguageDialog(context);
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // FEEDBACK Section
+                    _buildSectionHeader(
+                      AppLocalizations.of(
+                            context,
+                          )?.translate('settings_feedback_title') ??
+                          'FEEDBACK',
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.bug_report_outlined,
+                      title:
+                          AppLocalizations.of(
+                            context,
+                          )?.translate('settings_report_bug') ??
+                          'Report a bug',
+                      onTap: () {
+                        Navigator.pushNamed(context, RouteNames.bugReport);
+                      },
+                    ),
+                    _buildMenuItem(
+                      icon: Icons.feedback_outlined,
+                      title:
+                          AppLocalizations.of(
+                            context,
+                          )?.translate('settings_send_feedback') ??
+                          'Send Feedback',
+                      onTap: () {
+                        Navigator.pushNamed(context, RouteNames.feedback);
+                      },
+                    ),
+                  ],
                 ),
               ),
             ],
