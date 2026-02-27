@@ -100,7 +100,7 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
     final categoryTheme = CategoryTheme.fromCategoryName(widget.categoryName);
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: categoryTheme.color,
       extendBody: true,
       appBar: AppBar(
         backgroundColor: categoryTheme.color,
@@ -133,163 +133,185 @@ class _ServicesByCategoryPageState extends State<ServicesByCategoryPage> {
           const SizedBox(width: 8),
         ],
       ),
-      body: Consumer<ServicesProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          child: Consumer<ServicesProvider>(
+            builder: (context, provider, child) {
+              if (provider.isLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-          if (provider.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 80,
-                    color: Colors.red.shade300,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    provider.errorMessage ?? 'Failed to load services',
-                    style: GoogleFonts.dmSans(fontSize: 14),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => provider.fetchServices(),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final services = provider.services
-              .where((s) => s.categoryId == widget.categoryId)
-              .toList();
-
-          if (services.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.inbox_outlined,
-                    size: 80,
-                    color: Theme.of(context).textTheme.bodySmall!.color,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No services available',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 16,
-                      color: Theme.of(context).textTheme.bodySmall!.color,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          return Column(
-            children: [
-              // Category Description Section
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.categoryName.replaceAll('-', ' '),
-                      style: GoogleFonts.abrilFatface(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).textTheme.titleLarge!.color,
+              if (provider.hasError) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline,
+                        size: 80,
+                        color: Colors.red.shade300,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Select your demands with the most qualified designers at around algeries',
-                      style: GoogleFonts.dmSans(
-                        fontSize: 14,
+                      const SizedBox(height: 16),
+                      Text(
+                        provider.errorMessage ?? 'Failed to load services',
+                        style: GoogleFonts.dmSans(fontSize: 14),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => provider.fetchServices(),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              final services = provider.services
+                  .where((s) => s.categoryId == widget.categoryId)
+                  .toList();
+
+              if (services.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.inbox_outlined,
+                        size: 80,
                         color: Theme.of(context).textTheme.bodySmall!.color,
-                        height: 1.4,
                       ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // Services Grid
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1.0,
+                      const SizedBox(height: 16),
+                      Text(
+                        'No services available',
+                        style: GoogleFonts.dmSans(
+                          fontSize: 16,
+                          color: Theme.of(context).textTheme.bodySmall!.color,
+                        ),
+                      ),
+                    ],
                   ),
-                  itemCount: services.length,
-                  itemBuilder: (context, index) {
-                    final service = services[index];
-                    final isSelected = _selectedService?.id == service.id;
+                );
+              }
 
-                    return GestureDetector(
-                      onTap: () => _onServiceSelected(service),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isSelected
-                                ? categoryTheme.color
-                                : Colors.transparent,
-                            width: 3,
+              return Column(
+                children: [
+                  // Category Description Section
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.categoryName.replaceAll('-', ' '),
+                          style: GoogleFonts.abrilFatface(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(
+                              context,
+                            ).textTheme.titleLarge!.color,
                           ),
                         ),
-                        child: ServiceCard(
-                          service: service,
-                          onTap: () => _onServiceSelected(service),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Select your demands with the most qualified designers at around algeries',
+                          style: GoogleFonts.dmSans(
+                            fontSize: 14,
+                            color: Theme.of(context).textTheme.bodySmall!.color,
+                            height: 1.4,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              // Proceed Button
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
+                      ],
                     ),
-                  ],
-                ),
-                child: SafeArea(
-                  child: PrimaryButton(
-                    text: 'Proceed',
-                    backgroundColor: categoryTheme.color,
-                    onPressed: _selectedService != null
-                        ? _proceedToServiceDetails
-                        : () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Please select a service first'),
-                                backgroundColor: Colors.orange,
-                              ),
-                            );
-                          },
                   ),
-                ),
-              ),
-            ],
-          );
-        },
+
+                  // Services Grid
+                  Expanded(
+                    child: GridView.builder(
+                      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.0,
+                          ),
+                      itemCount: services.length,
+                      itemBuilder: (context, index) {
+                        final service = services[index];
+                        final isSelected = _selectedService?.id == service.id;
+
+                        return GestureDetector(
+                          onTap: () => _onServiceSelected(service),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isSelected
+                                    ? categoryTheme.color
+                                    : Colors.transparent,
+                                width: 3,
+                              ),
+                            ),
+                            child: ServiceCard(
+                              service: service,
+                              onTap: () => _onServiceSelected(service),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  // Proceed Button
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: SafeArea(
+                      child: PrimaryButton(
+                        text: 'Proceed',
+                        backgroundColor: categoryTheme.color,
+                        onPressed: _selectedService != null
+                            ? _proceedToServiceDetails
+                            : () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Please select a service first',
+                                    ),
+                                    backgroundColor: Colors.orange,
+                                  ),
+                                );
+                              },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _bottomNavIndex,

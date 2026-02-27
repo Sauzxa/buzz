@@ -262,7 +262,8 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: _categoryTheme.color,
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: _categoryTheme.color,
         elevation: 0,
@@ -288,11 +289,27 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
           const SizedBox(width: 8),
         ],
       ),
-      body:
-          widget.service.formFields == null ||
-              widget.service.formFields!.isEmpty
-          ? _buildEmptyState()
-          : _buildForm(),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          child:
+              widget.service.formFields == null ||
+                  widget.service.formFields!.isEmpty
+              ? _buildEmptyState()
+              : _buildForm(),
+        ),
+      ),
       bottomNavigationBar: CustomBottomNavBar(
         currentIndex: _bottomNavIndex,
         onTap: _onBottomNavTapped,
@@ -350,7 +367,7 @@ class _ServiceOrderFormPageState extends State<ServiceOrderFormPage> {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

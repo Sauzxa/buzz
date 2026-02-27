@@ -55,9 +55,8 @@ class ServiceChoosingPage extends StatelessWidget {
     final themeColor = _getServiceColor();
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: themeColor,
       extendBody: true,
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: themeColor,
         elevation: 0,
@@ -116,140 +115,143 @@ class ServiceChoosingPage extends StatelessWidget {
           }
         },
       ),
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          // 1. Full Screen Background Image
-          if (imageToShow != null)
-            Image.network(
-              imageToShow,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: Colors.grey[900],
-                  child: const Icon(
-                    Icons.design_services_outlined,
-                    size: 80,
-                    color: Colors.white24,
-                  ),
-                );
-              },
-            )
-          else
-            Container(color: Colors.grey[900]),
-
-          // 2. Dark Overlay for Contrast (Top and Bottom)
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black.withOpacity(0.6),
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.6),
-                ],
-                stops: const [0.0, 0.4, 0.8],
-              ),
-            ),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
-
-          // 3. Content
-          SafeArea(
-            child: Column(
-              children: [
-                // Spacer for AppBar since we removed the custom header
-                // But SafeArea handles the top notch.
-                // Since we have an AppBar with extendBodyBehindAppBar: true,
-                // the body goes behind it. SafeArea will push content down below the notch.
-                // BUT AppBar is also consuming space.
-                // Standard AppBar height is usually handled by Scaffold body unless extending.
-                // When extending, we might need a transparent spacer if the visual design requires it,
-                // OR just let the content center.
-                // The original code had a custom header in column. We removed it.
-                // We want the content to be centered vertically mostly?
-                // The original code had Expanded -> Center -> Container.
-                // So it should be fine.
-
-                // Centered Service Name with Colored Background
-                Expanded(
-                  child: Center(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 20,
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // 1. Full Screen Background Image
+              if (imageToShow != null)
+                Image.network(
+                  imageToShow,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      color: Colors.grey[900],
+                      child: const Icon(
+                        Icons.design_services_outlined,
+                        size: 80,
+                        color: Colors.white24,
                       ),
-                      margin: const EdgeInsets.symmetric(horizontal: 24),
-                      decoration: BoxDecoration(
-                        color: themeColor.withOpacity(
-                          0.9,
-                        ), // Slightly transparent
-                        borderRadius: BorderRadius.circular(24),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 10),
+                    );
+                  },
+                )
+              else
+                Container(color: Colors.grey[900]),
+
+              // 2. Dark Overlay for Contrast (Top and Bottom)
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.6),
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.6),
+                    ],
+                    stops: const [0.0, 0.4, 0.8],
+                  ),
+                ),
+              ),
+
+              // 3. Content
+              SafeArea(
+                child: Column(
+                  children: [
+                    // Centered Service Name with Colored Background
+                    Expanded(
+                      child: Center(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 32,
+                            vertical: 20,
                           ),
-                        ],
-                      ),
-                      child: Text(
-                        service.name.replaceAll('-', ' '),
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.dmSans(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
+                          margin: const EdgeInsets.symmetric(horizontal: 24),
+                          decoration: BoxDecoration(
+                            color: themeColor.withOpacity(
+                              0.9,
+                            ), // Slightly transparent
+                            borderRadius: BorderRadius.circular(24),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Text(
+                            service.name.replaceAll('-', ' '),
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.dmSans(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ),
 
-                // Bottom Action Button
-                Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: PrimaryButton(
-                    text:
-                        AppLocalizations.of(
-                          context,
-                        )?.translate('get_started_btn') ??
-                        'Get Started',
-                    backgroundColor: themeColor,
-                    onPressed: () {
-                      if (service.formFields == null ||
-                          service.formFields!.isEmpty) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              AppLocalizations.of(
-                                    context,
-                                  )?.translate('no_order_form_available') ??
-                                  'No order form available for this service yet',
+                    // Bottom Action Button
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: PrimaryButton(
+                        text:
+                            AppLocalizations.of(
+                              context,
+                            )?.translate('get_started_btn') ??
+                            'Get Started',
+                        backgroundColor: themeColor,
+                        onPressed: () {
+                          if (service.formFields == null ||
+                              service.formFields!.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  AppLocalizations.of(
+                                        context,
+                                      )?.translate('no_order_form_available') ??
+                                      'No order form available for this service yet',
+                                ),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                            return;
+                          }
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  ServiceOrderFormPage(service: service),
                             ),
-                            backgroundColor: Colors.orange,
-                          ),
-                        );
-                        return;
-                      }
+                          );
+                        },
+                      ),
+                    ),
 
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              ServiceOrderFormPage(service: service),
-                        ),
-                      );
-                    },
-                  ),
+                    const SizedBox(height: 10), // Spacing from bottom
+                  ],
                 ),
-
-                const SizedBox(height: 10), // Spacing from bottom
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

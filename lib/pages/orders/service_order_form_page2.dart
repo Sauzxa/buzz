@@ -239,7 +239,8 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: widget.categoryTheme.color,
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: widget.categoryTheme.color,
         elevation: 0,
@@ -265,69 +266,85 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
           const SizedBox(width: 8),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Service Name
-              Text(
-                widget.service.name.replaceAll('-', ' '),
-                style: GoogleFonts.dmSans(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).textTheme.titleLarge!.color,
-                ),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Service Name
+                  Text(
+                    widget.service.name.replaceAll('-', ' '),
+                    style: GoogleFonts.dmSans(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).textTheme.titleLarge!.color,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    AppLocalizations.of(
+                          context,
+                        )?.translate('complete_remaining_details') ??
+                        'Complete the remaining details',
+                    style: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Theme.of(context).textTheme.bodySmall!.color,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Page indicator
+                  _buildPageIndicator(),
+                  const SizedBox(height: 24),
+
+                  // Dynamic Form Fields for page 2
+                  _buildPage2Fields(),
+
+                  const SizedBox(height: 24),
+
+                  // File Upload Section (if page 2 has file fields)
+                  _buildFileUploadSection(),
+
+                  const SizedBox(height: 32),
+
+                  // Submit Button
+                  PrimaryButton(
+                    text: _isSubmitting
+                        ? (AppLocalizations.of(
+                                context,
+                              )?.translate('submitting_status') ??
+                              'Submitting...')
+                        : (AppLocalizations.of(
+                                context,
+                              )?.translate('submit_order_btn') ??
+                              'Submit Order'),
+                    backgroundColor: widget.categoryTheme.color,
+                    onPressed: () {
+                      if (!_isSubmitting) {
+                        _submitOrder();
+                      }
+                    },
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                AppLocalizations.of(
-                      context,
-                    )?.translate('complete_remaining_details') ??
-                    'Complete the remaining details',
-                style: GoogleFonts.dmSans(
-                  fontSize: 14,
-                  color: Theme.of(context).textTheme.bodySmall!.color,
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Page indicator
-              _buildPageIndicator(),
-              const SizedBox(height: 24),
-
-              // Dynamic Form Fields for page 2
-              _buildPage2Fields(),
-
-              const SizedBox(height: 24),
-
-              // File Upload Section (if page 2 has file fields)
-              _buildFileUploadSection(),
-
-              const SizedBox(height: 32),
-
-              // Submit Button
-              PrimaryButton(
-                text: _isSubmitting
-                    ? (AppLocalizations.of(
-                            context,
-                          )?.translate('submitting_status') ??
-                          'Submitting...')
-                    : (AppLocalizations.of(
-                            context,
-                          )?.translate('submit_order_btn') ??
-                          'Submit Order'),
-                backgroundColor: widget.categoryTheme.color,
-                onPressed: () {
-                  if (!_isSubmitting) {
-                    _submitOrder();
-                  }
-                },
-              ),
-
-              const SizedBox(height: 20),
-            ],
+            ),
           ),
         ),
       ),
