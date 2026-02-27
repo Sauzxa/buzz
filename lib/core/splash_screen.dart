@@ -99,7 +99,8 @@ class _SplashScreenState extends State<SplashScreen> {
               height: 80,
               errorBuilder: (context, error, stackTrace) {
                 return Text(
-                  AppLocalizations.of(context)?.translate('app_name') ?? 'Buzz',
+                  AppLocalizations.of(context)?.translate('app_name') ??
+                      'artifex',
                   style: GoogleFonts.dmSans(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,

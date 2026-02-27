@@ -327,8 +327,8 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             Image.asset(
-                              'assets/Logos/WhiteLogo.png',
-                              height: 35,
+                              'assets/Logos/artifexWhite.png',
+                              height: 55,
                               errorBuilder: (context, error, stackTrace) {
                                 return Text(
                                   AppLocalizations.of(

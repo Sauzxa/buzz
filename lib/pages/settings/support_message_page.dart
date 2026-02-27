@@ -366,22 +366,26 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/Logos/WhiteLogo.png',
-              height: 24,
+              'assets/Logos/artifexWhite.png',
+              height: 35,
               errorBuilder: (context, error, stackTrace) => Icon(
                 widget.messageType == 'SUPPORT'
                     ? Icons.feedback
                     : Icons.bug_report,
                 color: Colors.white,
-                size: 24,
+                size: 20,
               ),
             ),
             const SizedBox(height: 2),
             Text(
               widget.messageType == 'SUPPORT'
-                  ? (AppLocalizations.of(context)?.translate('buzz_feedback') ??
+                  ? (AppLocalizations.of(
+                          context,
+                        )?.translate('artifex_feedback') ??
                         'artifex Feedback')
-                  : (AppLocalizations.of(context)?.translate('buzz_support') ??
+                  : (AppLocalizations.of(
+                          context,
+                        )?.translate('artifex_support') ??
                         'artifex Support'),
               style: GoogleFonts.dmSans(
                 color: Colors.white,

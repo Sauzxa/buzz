@@ -39,8 +39,8 @@ class _SettingsPageState extends State<SettingsPage> {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, RouteNames.home);
     } else if (index == 1) {
-      // Search - Navigate to home
-      Navigator.pushReplacementNamed(context, RouteNames.home);
+      // Search - Navigate to search page
+      Navigator.pushNamed(context, RouteNames.search);
     } else if (index == 2) {
       // Order Management
       Navigator.pushNamed(context, RouteNames.orderManagement);

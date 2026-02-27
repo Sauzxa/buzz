@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import '../../theme/colors.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -87,6 +88,40 @@ class _MessageInputFieldState extends State<MessageInputField> {
     }
   }
 
+  Future<void> _handleDocumentPicker() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: [
+          'pdf',
+          'doc',
+          'docx',
+          'txt',
+          'xls',
+          'xlsx',
+          'ppt',
+          'pptx',
+        ],
+      );
+
+      if (result != null &&
+          result.files.single.path != null &&
+          widget.onSendFile != null) {
+        widget.onSendFile!(result.files.single.path!, 'DOCUMENT');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizations.of(context)?.translate('error_picking_document') ?? 'Error picking document'}: $e',
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   void _showAttachmentOptions() {
     showModalBottomSheet(
       context: context,
@@ -146,8 +181,8 @@ class _MessageInputFieldState extends State<MessageInputField> {
                       )?.translate('document_option') ??
                       'Document',
                   onTap: () {
-                    // Navigator.pop(context);
-                    // Document picker not implemented yet
+                    Navigator.pop(context);
+                    _handleDocumentPicker();
                   },
                 ),
               ],

@@ -37,20 +37,17 @@ class _SavedServicesPageState extends State<SavedServicesPage> {
   void _onBottomNavTapped(int index) {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, RouteNames.home);
+    } else if (index == 1) {
+      // Search - Navigate to search page
+      Navigator.pushNamed(context, RouteNames.search);
+    } else if (index == 2) {
+      // Order Management
+      Navigator.pushNamed(context, RouteNames.orderManagement);
     } else if (index == 3) {
       // Navigate to Settings
       Navigator.pushReplacementNamed(context, RouteNames.settings);
     } else if (index == 4) {
       Navigator.pushReplacementNamed(context, RouteNames.chat);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            AppLocalizations.of(context)?.translate('feature_coming_soon') ??
-                'Feature coming soon!',
-          ),
-        ),
-      );
     }
   }
 

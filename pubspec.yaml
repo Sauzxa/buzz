@@ -103,8 +103,11 @@ flutter:
     - assets/icons/4Cadr.png
     - assets/Logos/WhiteLogo.png
     - assets/Logos/PinkLogo.png
+    - assets/Logos/artifexWhite.png
+    - assets/Logos/artifexPink.png
     - assets/icons/googleIcon.png
     - assets/home/welcome.png
+    - assets/home/welcomeArtifex.png
     - assets/others/onb2.png
     - assets/others/onb3.png
     - assets/others/onb4.png

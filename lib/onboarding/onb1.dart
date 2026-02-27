@@ -32,7 +32,7 @@ class onb1 extends StatelessWidget {
                         SizedBox(height: screenHeight * 0.05),
                         // Logo
                         Image.asset(
-                          'assets/Logos/WhiteLogo.png',
+                          'assets/Logos/artifexWhite.png',
                           height: screenHeight * 0.15,
                           fit: BoxFit.contain,
                         ),

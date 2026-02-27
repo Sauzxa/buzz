@@ -160,8 +160,8 @@ class _SearchPageState extends State<SearchPage> {
 
   void _onBottomNavTapped(int index) {
     if (index == 0) {
-      // Home - Go back
-      Navigator.pop(context);
+      // Home - Navigate to home page
+      Navigator.pushReplacementNamed(context, RouteNames.home);
     } else if (index == 1) {
       // Already on search page
       return;

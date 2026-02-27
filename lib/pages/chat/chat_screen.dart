@@ -116,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
     if (index == 0) {
       Navigator.pushReplacementNamed(context, RouteNames.home);
     } else if (index == 1) {
-      Navigator.pushReplacementNamed(context, RouteNames.home);
+      Navigator.pushNamed(context, RouteNames.search);
     } else if (index == 2) {
       Navigator.pushNamed(context, RouteNames.orderManagement);
     } else if (index == 3) {

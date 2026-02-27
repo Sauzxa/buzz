@@ -68,8 +68,8 @@ class _WelcomePageState extends State<WelcomePage>
           ),
         ),
         title: Image.asset(
-          'assets/Logos/PinkLogo.png',
-          height: 35,
+          'assets/Logos/artifexWhite.png',
+          height: 55,
           errorBuilder: (context, error, stackTrace) {
             return Text(
               AppLocalizations.of(context)?.translate('app_name') ?? 'BUZZ',
@@ -126,7 +126,7 @@ class _WelcomePageState extends State<WelcomePage>
                   height: double.infinity,
                   color: Colors.white,
                   child: Image.asset(
-                    'assets/home/welcome.png',
+                    'assets/home/welcomeArtifex.png',
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(

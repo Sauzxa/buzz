@@ -287,7 +287,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                         AppLocalizations.of(
                           context,
                         )?.translate('drawer_buzz_features') ??
-                        'Buzz Features',
+                        'Artifex Features',
                     onTap: () async {
                       Navigator.pop(context);
 
