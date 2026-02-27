@@ -438,8 +438,10 @@ class _SupportMessagePageState extends State<SupportMessagePage> {
               // Message Input Area
               MessageInputField(
                 onSendMessage: (text) => _submitReport(text),
-                onSendFile: (path, type) =>
-                    _submitReport("File Attachment Bug Report", filePath: path),
+                onSendFile: (path, type, fileName) => _submitReport(
+                  "File Attachment: ${fileName ?? 'Unknown'}",
+                  filePath: path,
+                ),
                 isSending: _isLoading,
               ),
             ],

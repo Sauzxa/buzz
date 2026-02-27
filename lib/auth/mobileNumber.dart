@@ -100,7 +100,7 @@ class _MobileNumberPageState extends State<MobileNumberPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/Logos/WhiteLogo.png',
+                    'assets/Logos/artifexPink.png',
                     height: 40,
                     errorBuilder: (context, error, stackTrace) {
                       return Icon(

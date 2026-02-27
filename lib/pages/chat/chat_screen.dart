@@ -362,7 +362,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
               // Message input field
               MessageInputField(
                 onSendMessage: (text) => chatProvider.sendMessage(text),
-                onSendFile: (filePath, fileType) {
+                onSendFile: (filePath, fileType, fileName) {
                   final messageType = MessageType.values.firstWhere(
                     (e) => e.name == fileType,
                     orElse: () => MessageType.IMAGE,
@@ -370,6 +370,7 @@ class _ChatScreenState extends State<ChatScreen> with WidgetsBindingObserver {
                   chatProvider.sendFileMessage(
                     filePath: filePath,
                     messageType: messageType,
+                    text: fileName, // Pass filename as text
                   );
                 },
                 isSending: chatProvider.isSendingMessage,

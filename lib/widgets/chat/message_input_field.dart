@@ -6,7 +6,8 @@ import '../../l10n/app_localizations.dart';
 
 class MessageInputField extends StatefulWidget {
   final Function(String) onSendMessage;
-  final Function(String, String)? onSendFile; // filePath, fileType
+  final Function(String, String, String?)?
+  onSendFile; // filePath, fileType, fileName
   final bool isSending;
 
   const MessageInputField({
@@ -50,7 +51,9 @@ class _MessageInputFieldState extends State<MessageInputField> {
       );
 
       if (image != null && widget.onSendFile != null) {
-        widget.onSendFile!(image.path, 'IMAGE');
+        // Extract filename from path
+        final fileName = image.path.split('/').last;
+        widget.onSendFile!(image.path, 'IMAGE', fileName);
       }
     } catch (e) {
       if (mounted) {
@@ -73,7 +76,9 @@ class _MessageInputFieldState extends State<MessageInputField> {
       );
 
       if (photo != null && widget.onSendFile != null) {
-        widget.onSendFile!(photo.path, 'IMAGE');
+        // Extract filename from path
+        final fileName = photo.path.split('/').last;
+        widget.onSendFile!(photo.path, 'IMAGE', fileName);
       }
     } catch (e) {
       if (mounted) {
@@ -107,7 +112,10 @@ class _MessageInputFieldState extends State<MessageInputField> {
       if (result != null &&
           result.files.single.path != null &&
           widget.onSendFile != null) {
-        widget.onSendFile!(result.files.single.path!, 'DOCUMENT');
+        // Extract filename from result
+        final fileName = result.files.single.name;
+        // Send file with filename
+        widget.onSendFile!(result.files.single.path!, 'DOCUMENT', fileName);
       }
     } catch (e) {
       if (mounted) {
@@ -128,67 +136,68 @@ class _MessageInputFieldState extends State<MessageInputField> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              AppLocalizations.of(context)?.translate('share_content') ??
-                  'Share Content',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).textTheme.titleLarge?.color,
+      builder: (context) => SafeArea(
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                AppLocalizations.of(context)?.translate('share_content') ??
+                    'Share Content',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
+                ),
               ),
-            ),
-            const SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _buildAttachmentOption(
-                  icon: Icons.photo_library_rounded,
-                  color: Colors.purple,
-                  label:
-                      AppLocalizations.of(
-                        context,
-                      )?.translate('gallery_option') ??
-                      'Gallery',
-                  onTap: () {
-                    Navigator.pop(context);
-                    _handleImagePicker();
-                  },
-                ),
-                _buildAttachmentOption(
-                  icon: Icons.camera_alt_rounded,
-                  color: AppColors.roseColor,
-                  label:
-                      AppLocalizations.of(
-                        context,
-                      )?.translate('camera_option') ??
-                      'Camera',
-                  onTap: () {
-                    Navigator.pop(context);
-                    _handleCameraPicker();
-                  },
-                ),
-                _buildAttachmentOption(
-                  icon: Icons.article_rounded,
-                  color: Colors.orange,
-                  label:
-                      AppLocalizations.of(
-                        context,
-                      )?.translate('document_option') ??
-                      'Document',
-                  onTap: () {
-                    Navigator.pop(context);
-                    _handleDocumentPicker();
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildAttachmentOption(
+                    icon: Icons.photo_library_rounded,
+                    color: Colors.purple,
+                    label:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('gallery_option') ??
+                        'Gallery',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleImagePicker();
+                    },
+                  ),
+                  _buildAttachmentOption(
+                    icon: Icons.camera_alt_rounded,
+                    color: AppColors.roseColor,
+                    label:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('camera_option') ??
+                        'Camera',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleCameraPicker();
+                    },
+                  ),
+                  _buildAttachmentOption(
+                    icon: Icons.article_rounded,
+                    color: Colors.orange,
+                    label:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('document_option') ??
+                        'Document',
+                    onTap: () {
+                      Navigator.pop(context);
+                      _handleDocumentPicker();
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

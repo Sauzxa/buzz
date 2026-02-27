@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../models/message_model.dart';
 import '../../models/message_type_enum.dart';
 import '../../theme/colors.dart';
@@ -231,29 +232,118 @@ class MessageBubble extends StatelessWidget {
         );
 
       case MessageType.DOCUMENT:
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.description,
-              color: isMine ? Colors.white : AppColors.primaryColor,
-              size: 20,
-            ),
-            const SizedBox(width: 8),
-            Flexible(
-              child: Text(
-                message.text ?? 'Document',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: isMine
-                      ? Colors.white
-                      : Theme.of(context).textTheme.bodyLarge!.color,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+        return GestureDetector(
+          onTap: () async {
+            if (message.fileUrl != null && message.fileUrl!.isNotEmpty) {
+              try {
+                final uri = Uri.parse(message.fileUrl!);
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.externalApplication);
+                } else {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Cannot open document: ${message.text ?? "Document"}',
+                        ),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error opening document: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            } else {
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Document URL not available'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isMine
+                  ? Colors.white.withOpacity(0.2)
+                  : Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: isMine
+                    ? Colors.white.withOpacity(0.3)
+                    : Theme.of(context).dividerColor,
+                width: 1,
               ),
             ),
-          ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isMine
+                        ? Colors.white.withOpacity(0.2)
+                        : AppColors.roseColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Icon(
+                    Icons.description,
+                    color: isMine ? Colors.white : AppColors.roseColor,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        message.text ?? 'Document',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: isMine
+                              ? Colors.white
+                              : Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Tap to open',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: isMine
+                              ? Colors.white.withOpacity(0.7)
+                              : Theme.of(context).textTheme.bodySmall!.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Icon(
+                  Icons.download,
+                  color: isMine
+                      ? Colors.white.withOpacity(0.7)
+                      : Theme.of(context).iconTheme.color,
+                  size: 20,
+                ),
+              ],
+            ),
+          ),
         );
 
       case MessageType.VIDEO:
