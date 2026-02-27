@@ -10,7 +10,8 @@ class RouteNames {
   static const String onboarding5 = '/onboarding5';
 
   // Auth routes
-  static const String mobileNumber = '/mobile-number';
+  static const String emailPage = '/email-page';
+  static const String verifyEmail = '/verify-email';
   static const String signUp = '/sign-up';
   static const String signIn = '/sign-in';
   static const String forgetPassword = '/forget-password';

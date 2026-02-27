@@ -438,4 +438,109 @@ class AuthService {
       rethrow;
     }
   }
+
+  /// Send email verification OTP
+  /// Sends a 5-digit verification code to the provided email address
+  Future<void> sendEmailVerification(String email) async {
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoints.sendEmailVerification,
+        data: {'email': email},
+      );
+
+      // Check for server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          'Server error (${response.statusCode}). Please try again later.',
+        );
+      }
+
+      // Check for client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        String message = 'Failed to send verification email';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Success
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Unexpected error occurred');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Verify email with OTP code
+  /// Returns success status and remaining attempts
+  Future<Map<String, dynamic>> verifyEmail({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoints.verifyEmail,
+        data: {'email': email, 'otp': otp},
+      );
+
+      // Check for server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          'Server error (${response.statusCode}). Please try again later.',
+        );
+      }
+
+      // Parse response data
+      if (response.data != null && response.data is Map) {
+        return {
+          'success': response.data['success'] ?? false,
+          'message': response.data['message'] ?? 'Verification failed',
+          'remainingAttempts': response.data['remainingAttempts'],
+        };
+      }
+
+      return {
+        'success': false,
+        'message': 'Unexpected response format',
+        'remainingAttempts': null,
+      };
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  /// Resend email verification OTP
+  Future<void> resendEmailVerification(String email) async {
+    try {
+      final response = await _apiClient.post(
+        ApiEndpoints.resendEmailVerification,
+        data: {'email': email},
+      );
+
+      // Check for server errors (5xx)
+      if (response.statusCode != null && response.statusCode! >= 500) {
+        throw Exception(
+          'Server error (${response.statusCode}). Please try again later.',
+        );
+      }
+
+      // Check for client errors (4xx)
+      if (response.statusCode != null && response.statusCode! >= 400) {
+        String message = 'Failed to resend verification code';
+        if (response.data != null && response.data is Map) {
+          message = response.data['message'] ?? message;
+        }
+        throw Exception(message);
+      }
+
+      // Success
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('Unexpected error occurred');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

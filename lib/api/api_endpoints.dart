@@ -20,6 +20,15 @@ class ApiEndpoints {
   static String get changePassword => '$apiPrefix/auth/change-password';
   static String get googleAuth => '$apiPrefix/auth/google';
 
+  // Email Verification endpoints
+  static String get sendEmailVerification =>
+      '$apiPrefix/auth/send-email-verification';
+  static String get verifyEmail => '$apiPrefix/auth/verify-email';
+  static String get resendEmailVerification =>
+      '$apiPrefix/auth/resend-email-verification';
+  static String get emailVerificationStatus =>
+      '$apiPrefix/auth/email-verification-status';
+
   // User endpoints
   // User endpoints
   static String getUserById(String userId) => '$apiPrefix/users/$userId';

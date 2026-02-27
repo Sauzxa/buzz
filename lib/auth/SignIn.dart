@@ -482,7 +482,7 @@ class _SignInPageState extends State<SignInPage> {
                   onTap: () {
                     Navigator.pushReplacementNamed(
                       context,
-                      RouteNames.mobileNumber,
+                      RouteNames.emailPage,
                     );
                   },
                   child: Text(

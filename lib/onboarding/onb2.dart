@@ -26,10 +26,7 @@ class onb2 extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8.0),
             child: TextButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(
-                  context,
-                  RouteNames.mobileNumber,
-                );
+                Navigator.pushReplacementNamed(context, RouteNames.emailPage);
               },
               child: Text(
                 'Skip',

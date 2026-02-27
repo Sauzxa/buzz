@@ -33,10 +33,7 @@ class onb5 extends StatelessWidget {
 
                 if (!context.mounted) return;
 
-                Navigator.pushReplacementNamed(
-                  context,
-                  RouteNames.mobileNumber,
-                );
+                Navigator.pushReplacementNamed(context, RouteNames.emailPage);
               },
               child: Text(
                 'Skip',
@@ -166,7 +163,7 @@ class onb5 extends StatelessWidget {
 
                                         Navigator.pushReplacementNamed(
                                           context,
-                                          RouteNames.mobileNumber,
+                                          RouteNames.emailPage,
                                         );
                                       },
                                     ),

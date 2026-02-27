@@ -5,7 +5,8 @@ import '../onboarding/onb2.dart';
 import '../onboarding/onb3.dart';
 import '../onboarding/onb4.dart';
 import '../onboarding/onb5.dart';
-import '../auth/mobileNumber.dart';
+import '../auth/email_page.dart';
+import '../auth/verify_email.dart';
 import '../auth/SignUp.dart';
 import '../auth/SignIn.dart';
 import '../auth/forgetPassword.dart';
@@ -48,11 +49,18 @@ class RouteGenerator {
       case RouteNames.onboarding5:
         return MaterialPageRoute(builder: (_) => const onb5());
 
-      case RouteNames.mobileNumber:
-        return MaterialPageRoute(builder: (_) => const MobileNumberPage());
+      case RouteNames.emailPage:
+        return MaterialPageRoute(builder: (_) => const EmailPage());
+
+      case RouteNames.verifyEmail:
+        final String email = settings.arguments as String;
+        return MaterialPageRoute(builder: (_) => VerifyEmailPage(email: email));
 
       case RouteNames.signUp:
-        return MaterialPageRoute(builder: (_) => const SignUpPage());
+        final String verifiedEmail = settings.arguments as String;
+        return MaterialPageRoute(
+          builder: (_) => SignUpPage(verifiedEmail: verifiedEmail),
+        );
 
       case RouteNames.signIn:
         return MaterialPageRoute(builder: (_) => const SignInPage());

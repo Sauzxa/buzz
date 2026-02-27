@@ -9,8 +9,8 @@ class AppRoutes {
     return RouteGenerator.generateRoute(settings);
   }
 
-  // Helper method to navigate to mobile number page with replacement
-  static void navigateToMobileNumber(BuildContext context) {
-    Navigator.pushReplacementNamed(context, RouteNames.mobileNumber);
+  // Helper method to navigate to email page with replacement
+  static void navigateToEmailPage(BuildContext context) {
+    Navigator.pushReplacementNamed(context, RouteNames.emailPage);
   }
 }

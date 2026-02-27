@@ -467,6 +467,72 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  /// Send email verification OTP
+  /// Sends a 5-digit code to the provided email address
+  Future<bool> sendEmailVerification(String email) async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      await _authService.sendEmailVerification(email);
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      _error = errorMessage;
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  /// Verify email with OTP code
+  /// Returns success status and remaining attempts
+  Future<Map<String, dynamic>> verifyEmail({
+    required String email,
+    required String otp,
+  }) async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      final result = await _authService.verifyEmail(email: email, otp: otp);
+      _setLoading(false);
+      return result;
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      _error = errorMessage;
+      _setLoading(false);
+      return {'success': false, 'message': _error, 'remainingAttempts': null};
+    }
+  }
+
+  /// Resend email verification OTP code
+  /// Subject to cooldown and attempt limits
+  Future<bool> resendEmailVerification(String email) async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      await _authService.resendEmailVerification(email);
+      _setLoading(false);
+      return true;
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      _error = errorMessage;
+      _setLoading(false);
+      return false;
+    }
+  }
+
   /// Register FCM token with backend
   Future<void> _registerFcmToken() async {
     try {

@@ -11,7 +11,9 @@ import '../routes/route_names.dart';
 import '../l10n/app_localizations.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  final String verifiedEmail;
+
+  const SignUpPage({super.key, required this.verifiedEmail});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -19,22 +21,32 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _fullNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _postalCodeController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
+  String _selectedCountry = 'Algeria (+213)';
+  String _countryCode = '+213';
   String? _selectedWilaya;
   bool _termsAccepted = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
+  final Map<String, String> _countries = {
+    'Algeria (+213)': '+213',
+    'France (+33)': '+33',
+    'Morocco (+212)': '+212',
+    'Tunisia (+216)': '+216',
+    'USA (+1)': '+1',
+  };
+
   @override
   void dispose() {
     _fullNameController.dispose();
-    _emailController.dispose();
+    _phoneController.dispose();
     _addressController.dispose();
     _postalCodeController.dispose();
     _passwordController.dispose();
@@ -42,9 +54,28 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
+  void _onCountryChanged(String? newValue) {
+    if (newValue != null) {
+      setState(() {
+        _selectedCountry = newValue;
+        _countryCode = _countries[newValue]!;
+        _phoneController.clear();
+      });
+    }
+  }
+
+  String _getCountryFlag(String country) {
+    if (country.contains('Algeria')) return '🇩🇿';
+    if (country.contains('France')) return '🇫🇷';
+    if (country.contains('Morocco')) return '🇲🇦';
+    if (country.contains('Tunisia')) return '🇹🇳';
+    if (country.contains('USA')) return '🇺🇸';
+    return '🌍';
+  }
+
   bool get _isFormValid {
     return _fullNameController.text.isNotEmpty &&
-        _emailController.text.isNotEmpty &&
+        _phoneController.text.isNotEmpty &&
         _addressController.text.isNotEmpty &&
         _postalCodeController.text.isNotEmpty &&
         _selectedWilaya != null &&
@@ -62,10 +93,12 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    if (!_isValidEmail(_emailController.text)) {
+    final phoneNumber = _phoneController.text.trim();
+
+    if (phoneNumber.length != 9) {
       _showError(
-        AppLocalizations.of(context)?.translate('error_invalid_email') ??
-            'Please enter a valid email address',
+        AppLocalizations.of(context)?.translate('error_phone_length') ??
+            'Phone number must be 9 digits',
       );
       return;
     }
@@ -87,15 +120,16 @@ class _SignUpPageState extends State<SignUpPage> {
     }
 
     // Build signup data from form fields
-    // Get phone number from UserProvider (set in previous screen)
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
-    final phoneNumber = userProvider.user.phoneNumber;
+
+    // Local phone number with leading 0 (e.g., 0555123456)
+    final localPhoneNumber = '0$phoneNumber';
 
     final signupData = {
-      'phoneNumber': phoneNumber,
+      'phoneNumber': localPhoneNumber,
       'fullName': _fullNameController.text,
-      'email': _emailController.text,
+      'email': widget.verifiedEmail, // Use verified email from previous step
       'currentAddress': _addressController.text,
       'postalCode': int.tryParse(_postalCodeController.text) ?? 0,
       'wilaya': _selectedWilaya,
@@ -125,12 +159,6 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  bool _isValidEmail(String email) {
-    return RegExp(
-      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-    ).hasMatch(email);
-  }
-
   void _showError(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -154,7 +182,7 @@ class _SignUpPageState extends State<SignUpPage> {
             color: Theme.of(context).iconTheme.color,
           ),
           onPressed: () {
-            Navigator.pushReplacementNamed(context, RouteNames.mobileNumber);
+            Navigator.pop(context);
           },
         ),
         title: Text(
@@ -209,14 +237,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
             const SizedBox(height: 16),
 
-            // Email Address
-            _buildInputField(
-              controller: _emailController,
-              label:
-                  AppLocalizations.of(context)?.translate('email_label') ??
-                  'Email Address',
-              keyboardType: TextInputType.emailAddress,
-            ),
+            // Phone Number with Country Selector
+            _buildPhoneNumberField(),
 
             const SizedBox(height: 16),
 
@@ -484,6 +506,85 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
+  Widget _buildPhoneNumberField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Country Dropdown
+        _CustomCountryDropdown(
+          selectedCountry: _selectedCountry,
+          countries: _countries,
+          onChanged: _onCountryChanged,
+          getFlagEmoji: _getCountryFlag,
+        ),
+        const SizedBox(height: 12),
+        // Phone Number Input
+        Text(
+          AppLocalizations.of(context)?.translate('phone_number_label') ??
+              'Phone Number',
+          style: GoogleFonts.dmSans(
+            fontSize: 12,
+            color: Theme.of(context).inputDecorationTheme.labelStyle!.color,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).inputDecorationTheme.fillColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Theme.of(context).dividerColor, width: 1),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              Text(
+                _countryCode,
+                style: GoogleFonts.dmSans(
+                  fontSize: 14,
+                  color: Theme.of(context).textTheme.bodyLarge!.color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                    LengthLimitingTextInputFormatter(9),
+                  ],
+                  onChanged: (value) => setState(() {}),
+                  style: GoogleFonts.dmSans(
+                    fontSize: 14,
+                    color: Theme.of(context).textTheme.bodyLarge!.color,
+                  ),
+                  decoration: InputDecoration(
+                    hintText:
+                        AppLocalizations.of(
+                          context,
+                        )?.translate('phone_number_hint') ??
+                        'Phone number',
+                    hintStyle: GoogleFonts.dmSans(
+                      fontSize: 14,
+                      color: Theme.of(
+                        context,
+                      ).inputDecorationTheme.hintStyle!.color,
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildWilayaDropdown() {
     return _CustomWilayaDropdown(
       selectedWilaya: _selectedWilaya,
@@ -689,6 +790,222 @@ class _CustomWilayaDropdownState extends State<_CustomWilayaDropdown> {
                         ? Icons.keyboard_arrow_up
                         : Icons.keyboard_arrow_down,
                     color: Colors.grey[400],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Custom Dropdown Field Widget for Country
+class _CustomCountryDropdown extends StatefulWidget {
+  final String selectedCountry;
+  final Map<String, String> countries;
+  final Function(String?) onChanged;
+  final String Function(String) getFlagEmoji;
+
+  const _CustomCountryDropdown({
+    required this.selectedCountry,
+    required this.countries,
+    required this.onChanged,
+    required this.getFlagEmoji,
+  });
+
+  @override
+  State<_CustomCountryDropdown> createState() => _CustomCountryDropdownState();
+}
+
+class _CustomCountryDropdownState extends State<_CustomCountryDropdown> {
+  bool _isOpen = false;
+  final LayerLink _layerLink = LayerLink();
+  OverlayEntry? _overlayEntry;
+
+  @override
+  void deactivate() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    super.deactivate();
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    super.dispose();
+  }
+
+  void _toggleDropdown() {
+    if (_isOpen) {
+      _removeOverlay();
+    } else {
+      _showOverlay();
+    }
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _isOpen = false;
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _showOverlay() {
+    if (!mounted) return;
+    _overlayEntry = _createOverlayEntry();
+    Overlay.of(context, rootOverlay: true).insert(_overlayEntry!);
+    setState(() {
+      _isOpen = true;
+    });
+  }
+
+  OverlayEntry _createOverlayEntry() {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null || !renderBox.hasSize) {
+      return OverlayEntry(builder: (_) => const SizedBox.shrink());
+    }
+
+    final size = renderBox.size;
+
+    return OverlayEntry(
+      builder: (overlayContext) => Positioned(
+        width: size.width,
+        child: CompositedTransformFollower(
+          link: _layerLink,
+          showWhenUnlinked: false,
+          offset: Offset(0, size.height + 4),
+          child: Material(
+            elevation: 4,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              constraints: const BoxConstraints(maxHeight: 250),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Theme.of(context).dividerColor),
+              ),
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                shrinkWrap: true,
+                itemCount: widget.countries.length,
+                itemBuilder: (context, index) {
+                  final country = widget.countries.keys.elementAt(index);
+                  final isSelected = widget.selectedCountry == country;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          _removeOverlay();
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            widget.onChanged(country);
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 12,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                widget.getFlagEmoji(country),
+                                style: const TextStyle(fontSize: 24),
+                              ),
+                              const SizedBox(width: 12),
+                              Text(
+                                country,
+                                style: GoogleFonts.dmSans(
+                                  fontSize: 14,
+                                  color: Theme.of(
+                                    context,
+                                  ).textTheme.bodyLarge!.color,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppLocalizations.of(context)?.translate('country_label') ??
+                'Country',
+            style: GoogleFonts.dmSans(
+              fontSize: 12,
+              color: Theme.of(context).inputDecorationTheme.labelStyle!.color,
+            ),
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: _toggleDropdown,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: Theme.of(context).inputDecorationTheme.fillColor,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: _isOpen
+                      ? AppColors.roseColor
+                      : Theme.of(context).dividerColor,
+                  width: _isOpen ? 2 : 1,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        widget.getFlagEmoji(widget.selectedCountry),
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        widget.selectedCountry,
+                        style: GoogleFonts.dmSans(
+                          fontSize: 14,
+                          color: Theme.of(context).textTheme.bodyLarge!.color,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Icon(
+                    _isOpen
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
+                    color: Colors.grey[600],
                   ),
                 ],
               ),
