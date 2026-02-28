@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import '../../models/service_model.dart';
 import '../../Widgets/button.dart';
 import '../../theme/colors.dart';
@@ -10,6 +11,9 @@ import '../../Widgets/notification_popup.dart';
 import '../../Widgets/notification_badge.dart';
 import '../../routes/route_names.dart';
 import '../../l10n/app_localizations.dart';
+import '../../providers/user_provider.dart';
+import '../../utils/profile_validator.dart';
+import '../settings/profile/edit_profile_settings.dart';
 
 class ServiceChoosingPage extends StatelessWidget {
   final ServiceModel service;
@@ -218,6 +222,7 @@ class ServiceChoosingPage extends StatelessWidget {
                             'Get Started',
                         backgroundColor: themeColor,
                         onPressed: () {
+                          // Check if service has form fields
                           if (service.formFields == null ||
                               service.formFields!.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -234,6 +239,39 @@ class ServiceChoosingPage extends StatelessWidget {
                             return;
                           }
 
+                          // Validate user profile completeness
+                          final userProvider = context.read<UserProvider>();
+                          final validationResult =
+                              ProfileValidator.validateUserProfile(
+                                userProvider.user,
+                              );
+
+                          if (!validationResult['isComplete']) {
+                            // Show snackbar with missing fields message
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  AppLocalizations.of(context)?.translate(
+                                        'complete_profile_before_order',
+                                      ) ??
+                                      'Please fill in all required information before creating an order.',
+                                ),
+                                backgroundColor: Colors.orange,
+                                duration: const Duration(seconds: 3),
+                              ),
+                            );
+
+                            // Navigate to Edit Profile page
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const EditProfileSettings(),
+                              ),
+                            );
+                            return;
+                          }
+
+                          // Profile is complete, proceed to order form
                           Navigator.push(
                             context,
                             MaterialPageRoute(

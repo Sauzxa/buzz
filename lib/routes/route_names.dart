@@ -36,4 +36,7 @@ class RouteNames {
   static const String orderDetails = '/order-details';
   static const String paymentUpload = '/payment-upload';
   static const String paymentInfo = '/payment-info';
+
+  // Coupons route
+  static const String coupons = '/coupons';
 }

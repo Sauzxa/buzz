@@ -27,6 +27,7 @@ import '../pages/orders/payment_info_page.dart';
 import '../pages/services_pages/services_buzz_page.dart';
 import '../pages/notifications/notifications_buzz_page.dart';
 import '../pages/search/search_page.dart';
+import '../pages/coupons_page.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -155,6 +156,9 @@ class RouteGenerator {
 
       case RouteNames.paymentInfo:
         return MaterialPageRoute(builder: (_) => const PaymentInfoPage());
+
+      case RouteNames.coupons:
+        return MaterialPageRoute(builder: (_) => const CouponsPage());
 
       default:
         return _errorRoute();

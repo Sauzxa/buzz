@@ -148,16 +148,7 @@ class _GeneralSettingsPageState extends State<GeneralSettingsPage> {
                           )?.translate('settings_coupons') ??
                           'Coupons',
                       onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              AppLocalizations.of(
-                                    context,
-                                  )?.translate('settings_coupons_soon') ??
-                                  'Coupons page coming soon!',
-                            ),
-                          ),
-                        );
+                        Navigator.pushNamed(context, RouteNames.coupons);
                       },
                     ),
 
