@@ -721,6 +721,12 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
           controller: controller,
           readOnly: readOnly,
           keyboardType: keyboardType,
+          maxLength:
+              label.contains('Zip') ||
+                  label.contains('Code Postal') ||
+                  label.contains('postal')
+              ? 5
+              : null,
           style: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -746,6 +752,7 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
               horizontal: 20,
               vertical: 18,
             ),
+            counterText: '',
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(color: Theme.of(context).dividerColor),
@@ -769,6 +776,25 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
                   )?.translate('please_enter_valid_email') ??
                   'Please enter a valid email';
             }
+            // Postal code validation: max 5 digits
+            if ((label.contains('Zip') ||
+                    label.contains('Code Postal') ||
+                    label.contains('postal')) &&
+                value != null &&
+                value.isNotEmpty) {
+              if (value.length > 5) {
+                return AppLocalizations.of(
+                      context,
+                    )?.translate('postal_code_max_5') ??
+                    'Postal code must be 5 digits or less';
+              }
+              if (!RegExp(r'^\d+$').hasMatch(value)) {
+                return AppLocalizations.of(
+                      context,
+                    )?.translate('postal_code_numbers_only') ??
+                    'Postal code must contain only numbers';
+              }
+            }
             return null;
           },
         ),
@@ -783,6 +809,7 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
         TextFormField(
           controller: _phoneController,
           keyboardType: TextInputType.phone,
+          maxLength: 9,
           style: GoogleFonts.dmSans(
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -796,6 +823,7 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
               color: Theme.of(context).textTheme.bodySmall!.color,
             ),
             floatingLabelBehavior: FloatingLabelBehavior.always,
+            counterText: '',
             prefixIcon: Padding(
               padding: const EdgeInsets.only(left: 16, right: 12),
               child: Row(
@@ -838,6 +866,25 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
               borderSide: const BorderSide(color: AppColors.roseColor),
             ),
           ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return AppLocalizations.of(
+                    context,
+                  )?.translate('please_enter_phone') ??
+                  'Please enter your phone number';
+            }
+            if (value.length > 9) {
+              return AppLocalizations.of(context)?.translate('phone_max_9') ??
+                  'Phone number must be 9 digits or less';
+            }
+            if (!RegExp(r'^\d+$').hasMatch(value)) {
+              return AppLocalizations.of(
+                    context,
+                  )?.translate('phone_numbers_only') ??
+                  'Phone number must contain only numbers';
+            }
+            return null;
+          },
         ),
       ],
     );
