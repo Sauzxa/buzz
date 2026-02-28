@@ -175,7 +175,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                       Text(
                         userProvider.fullPhoneNumber.isNotEmpty
                             ? userProvider.fullPhoneNumber
-                            : '+213 777 58 59 66',
+                            : '+213 xxxxxxxxx',
                         style: GoogleFonts.dmSans(
                           fontSize: 14,
                           color: Colors.white.withOpacity(0.9),
