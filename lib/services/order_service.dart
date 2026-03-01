@@ -3,9 +3,12 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import '../api/api_client.dart';
 import '../api/api_endpoints.dart';
+import 'cache_service.dart';
 
 class OrderService {
   final ApiClient _apiClient = ApiClient();
+  final CacheService _cache = CacheService();
+  static const String _cacheKeyPrefix = 'cache_order_';
 
   Future<int> createOrder({
     required String serviceId,
@@ -361,20 +364,84 @@ class OrderService {
     }
   }
 
-  /// Get order by ID
+  /// Get order by ID with caching and retry logic
   Future<Map<String, dynamic>> getOrderById(String orderId) async {
-    try {
-      final response = await _apiClient.get(ApiEndpoints.getOrderById(orderId));
+    final cacheKey = '$_cacheKeyPrefix$orderId';
 
-      if (response.statusCode == 200) {
-        return response.data as Map<String, dynamic>;
-      } else {
-        throw Exception('Failed to load order details: ${response.statusCode}');
+    // Try to get from cache first
+    try {
+      final cached = await _cache.get(cacheKey);
+      if (cached != null) {
+        print('✅ [ORDER] Loaded order $orderId from cache');
+        // Return cached data immediately, but fetch fresh data in background
+        _fetchAndCacheOrder(orderId, cacheKey);
+        return cached as Map<String, dynamic>;
       }
     } catch (e) {
-      print('Error fetching order details: $e');
-      rethrow;
+      print('⚠️ [ORDER] Cache read error: $e');
     }
+
+    // If not in cache, fetch from API
+    return await _fetchAndCacheOrder(orderId, cacheKey);
+  }
+
+  /// Fetch order from API and cache it
+  Future<Map<String, dynamic>> _fetchAndCacheOrder(
+    String orderId,
+    String cacheKey,
+  ) async {
+    int retryCount = 0;
+    const maxRetries = 3;
+    Duration retryDelay = const Duration(seconds: 1);
+
+    while (retryCount < maxRetries) {
+      try {
+        print('🔍 [ORDER] Fetching order $orderId (attempt ${retryCount + 1})');
+
+        final response = await _apiClient
+            .get(ApiEndpoints.getOrderById(orderId))
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () {
+                throw Exception('Request timed out');
+              },
+            );
+
+        if (response.statusCode == 200) {
+          final data = response.data as Map<String, dynamic>;
+
+          // Cache the response for 5 minutes
+          try {
+            await _cache.set(cacheKey, data, ttl: const Duration(minutes: 5));
+            print('✅ [ORDER] Cached order $orderId');
+          } catch (e) {
+            print('⚠️ [ORDER] Cache write error: $e');
+          }
+
+          return data;
+        } else {
+          throw Exception(
+            'Failed to load order details: ${response.statusCode}',
+          );
+        }
+      } catch (e) {
+        retryCount++;
+        print(
+          '❌ [ORDER] Error fetching order $orderId (attempt $retryCount): $e',
+        );
+
+        if (retryCount >= maxRetries) {
+          print('❌ [ORDER] Max retries reached for order $orderId');
+          rethrow;
+        }
+
+        // Wait before retrying with exponential backoff
+        await Future.delayed(retryDelay);
+        retryDelay *= 2; // Double the delay for next retry
+      }
+    }
+
+    throw Exception('Failed to fetch order after $maxRetries attempts');
   }
 
   /// Cancel an order

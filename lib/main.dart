@@ -19,6 +19,7 @@ import 'providers/chat_provider.dart';
 import 'providers/theme_provider.dart';
 import 'services/fcm_service.dart';
 import 'services/notification_navigation_service.dart';
+import 'services/cache_service.dart';
 import 'theme/colors.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -33,6 +34,9 @@ ChatProvider? _globalChatProvider;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize cache service early to avoid delays
+  await CacheService().init();
 
   // Configure system UI overlay style for edge-to-edge display
   SystemChrome.setSystemUIOverlayStyle(

@@ -31,18 +31,26 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadOrderDetails();
-        _loadInvoice();
+        // Load invoice independently - don't block on it
+        _loadInvoice().catchError((e) {
+          print('⚠️ [ORDER DETAILS] Invoice load failed (non-critical): $e');
+        });
       }
     });
   }
 
   Future<void> _loadInvoice() async {
-    final orderId = widget.order['id'].toString();
-    final invoiceProvider = Provider.of<InvoiceProvider>(
-      context,
-      listen: false,
-    );
-    await invoiceProvider.fetchInvoiceByOrderId(orderId);
+    try {
+      final orderId = widget.order['id'].toString();
+      final invoiceProvider = Provider.of<InvoiceProvider>(
+        context,
+        listen: false,
+      );
+      await invoiceProvider.fetchInvoiceByOrderId(orderId);
+    } catch (e) {
+      // Invoice is optional - don't fail the whole page
+      print('⚠️ [ORDER DETAILS] Could not load invoice: $e');
+    }
   }
 
   Future<void> _loadOrderDetails() async {
@@ -57,7 +65,18 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         listen: false,
       );
       final orderId = widget.order['id'].toString();
-      final details = await ordersProvider.getOrderDetails(orderId);
+
+      // Add timeout to prevent hanging
+      final details = await ordersProvider
+          .getOrderDetails(orderId)
+          .timeout(
+            const Duration(seconds: 15),
+            onTimeout: () {
+              throw Exception(
+                'Request timed out. Please check your connection.',
+              );
+            },
+          );
 
       if (mounted) {
         setState(() {
@@ -71,6 +90,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           _error = 'Failed to load order details: $e';
           _isLoading = false;
         });
+
+        // Log the error for debugging
+        print(
+          '❌ [ORDER DETAILS] Error loading order ${widget.order['id']}: $e',
+        );
       }
     }
   }

@@ -3,16 +3,48 @@ import 'package:dio/dio.dart';
 import '../api/api_client.dart';
 import '../api/api_endpoints.dart';
 import '../models/invoice_model.dart';
+import 'cache_service.dart';
 
 class InvoiceService {
   final ApiClient _apiClient = ApiClient();
+  final CacheService _cache = CacheService();
+  static const String _cacheKeyPrefix = 'cache_invoice_';
 
-  /// Get invoice by order ID
+  /// Get invoice by order ID with caching
   Future<InvoiceModel?> getInvoiceByOrderId(String orderId) async {
+    final cacheKey = '$_cacheKeyPrefix$orderId';
+
+    // Try to get from cache first
     try {
-      final response = await _apiClient.get(
-        ApiEndpoints.getInvoiceByOrderId(orderId),
-      );
+      final cached = await _cache.get(cacheKey);
+      if (cached != null) {
+        print('✅ [INVOICE] Loaded invoice for order $orderId from cache');
+        // Return cached data immediately, fetch fresh in background
+        _fetchAndCacheInvoice(orderId, cacheKey);
+        return InvoiceModel.fromJson(cached as Map<String, dynamic>);
+      }
+    } catch (e) {
+      print('⚠️ [INVOICE] Cache read error: $e');
+    }
+
+    // If not in cache, fetch from API
+    return await _fetchAndCacheInvoice(orderId, cacheKey);
+  }
+
+  /// Fetch invoice from API and cache it
+  Future<InvoiceModel?> _fetchAndCacheInvoice(
+    String orderId,
+    String cacheKey,
+  ) async {
+    try {
+      final response = await _apiClient
+          .get(ApiEndpoints.getInvoiceByOrderId(orderId))
+          .timeout(
+            const Duration(seconds: 10),
+            onTimeout: () {
+              throw Exception('Invoice request timed out');
+            },
+          );
 
       // 404 or any non-200 where data is plaintext — no invoice exists yet
       if (response.statusCode == 404 || response.statusCode == null) {
@@ -27,7 +59,22 @@ class InvoiceService {
           );
           return null;
         }
-        return InvoiceModel.fromJson(response.data as Map<String, dynamic>);
+
+        final invoiceData = response.data as Map<String, dynamic>;
+
+        // Cache the invoice for 5 minutes
+        try {
+          await _cache.set(
+            cacheKey,
+            invoiceData,
+            ttl: const Duration(minutes: 5),
+          );
+          print('✅ [INVOICE] Cached invoice for order $orderId');
+        } catch (e) {
+          print('⚠️ [INVOICE] Cache write error: $e');
+        }
+
+        return InvoiceModel.fromJson(invoiceData);
       }
 
       // Any other non-success status

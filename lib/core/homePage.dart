@@ -705,7 +705,9 @@ class _HomePageState extends State<HomePage> {
                           _buildAdsSection(),
                           const SizedBox(height: 32),
                           _buildServicesSection(),
-                          const SizedBox(height: 100),
+                          const SizedBox(
+                            height: 120,
+                          ), // Increased padding for bottom nav bar
                         ],
                       ),
 

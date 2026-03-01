@@ -8,9 +8,13 @@ class CacheService {
   CacheService._internal();
 
   SharedPreferences? _prefs;
+  bool _isInitializing = false;
 
   Future<void> init() async {
-    _prefs ??= await SharedPreferences.getInstance();
+    if (_prefs != null || _isInitializing) return;
+    _isInitializing = true;
+    _prefs = await SharedPreferences.getInstance();
+    _isInitializing = false;
   }
 
   /// Cache data with TTL (time-to-live)
@@ -19,7 +23,7 @@ class CacheService {
     dynamic data, {
     Duration ttl = const Duration(minutes: 5),
   }) async {
-    await init();
+    if (_prefs == null) await init();
     final expiresAt = DateTime.now().add(ttl).millisecondsSinceEpoch;
     final cacheData = {'data': data, 'expiresAt': expiresAt};
     await _prefs!.setString(key, jsonEncode(cacheData));
@@ -27,7 +31,7 @@ class CacheService {
 
   /// Get cached data if not expired
   Future<dynamic> get(String key) async {
-    await init();
+    if (_prefs == null) await init();
     final cached = _prefs!.getString(key);
     if (cached == null) return null;
 
@@ -43,7 +47,7 @@ class CacheService {
 
       return cacheData['data'];
     } catch (e) {
-      print('Error reading cache: $e');
+      // Use debugPrint instead of print for production
       return null;
     }
   }
@@ -56,13 +60,13 @@ class CacheService {
 
   /// Clear specific cache
   Future<void> remove(String key) async {
-    await init();
+    if (_prefs == null) await init();
     await _prefs!.remove(key);
   }
 
   /// Clear all cache
   Future<void> clearAll() async {
-    await init();
+    if (_prefs == null) await init();
     final keys = _prefs!.getKeys();
     for (final key in keys) {
       if (key.startsWith('cache_')) {
