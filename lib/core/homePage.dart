@@ -302,9 +302,10 @@ class _HomePageState extends State<HomePage> {
               slivers: [
                 // Collapsible Header with Logo, Greeting, and Title
                 SliverAppBar(
-                  expandedHeight: 240,
+                  expandedHeight: 160,
+                  collapsedHeight: 70,
                   floating: false,
-                  pinned: false,
+                  pinned: true,
                   backgroundColor: AppColors.roseColor,
                   leading: Builder(
                     builder: (context) => IconButton(
@@ -326,82 +327,118 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(width: 8),
                   ],
-                  flexibleSpace: FlexibleSpaceBar(
-                    centerTitle: true,
-                    titlePadding: EdgeInsets.zero,
-                    background: SafeArea(
-                      child: Container(
-                        color: AppColors.roseColor,
-                        padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Logo at the top
-                            Image.asset(
-                              'assets/Logos/artifexWhite.png',
-                              height: 55,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Text(
-                                  AppLocalizations.of(
-                                        context,
-                                      )?.translate('app_name') ??
-                                      'BUZZ',
-                                  style: GoogleFonts.dmSans(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 24,
-                                  ),
-                                );
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            // Greeting and Title
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Consumer<UserProvider>(
-                                    builder: (context, userProvider, child) {
-                                      if (userProvider.isLoading) {
-                                        return const SizedBox(
-                                          height: 20,
-                                          width: 20,
-                                          child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: Colors.white,
-                                          ),
-                                        );
-                                      }
+                  flexibleSpace: LayoutBuilder(
+                    builder: (context, constraints) {
+                      // Calculate scroll progress (0.0 = expanded, 1.0 = collapsed)
+                      final scrollProgress =
+                          ((constraints.maxHeight - 160) / (70 - 160)).clamp(
+                            0.0,
+                            1.0,
+                          );
+                      // Fade out as we scroll (1.0 = visible, 0.0 = hidden)
+                      final opacity = 1.0 - scrollProgress;
+
+                      return FlexibleSpaceBar(
+                        centerTitle: true,
+                        titlePadding: EdgeInsets.zero,
+                        background: SafeArea(
+                          child: Container(
+                            color: AppColors.roseColor,
+                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 12),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Logo at the top - hide when collapsed
+                                AnimatedOpacity(
+                                  opacity: opacity,
+                                  duration: const Duration(milliseconds: 100),
+                                  child: Image.asset(
+                                    'assets/Logos/artifexWhite.png',
+                                    height: 40,
+                                    errorBuilder: (context, error, stackTrace) {
                                       return Text(
-                                        '${AppLocalizations.of(context)?.translate('salam') ?? 'Salam'} ${userProvider.fullName}',
+                                        AppLocalizations.of(
+                                              context,
+                                            )?.translate('app_name') ??
+                                            'BUZZ',
                                         style: GoogleFonts.dmSans(
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
                                           color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
                                         ),
                                       );
                                     },
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    AppLocalizations.of(
-                                          context,
-                                        )?.translate('what_looking_for') ??
-                                        'What are you looking for today?',
-                                    style: GoogleFonts.dmSans(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.w900,
-                                      color: Colors.white.withOpacity(0.95),
+                                ),
+                                const SizedBox(height: 12),
+                                // Greeting and Title - fade out when collapsed
+                                AnimatedOpacity(
+                                  opacity: opacity,
+                                  duration: const Duration(milliseconds: 100),
+                                  child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Consumer<UserProvider>(
+                                          builder: (context, userProvider, child) {
+                                            if (userProvider.isLoading) {
+                                              return const SizedBox(
+                                                height: 16,
+                                                width: 16,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      color: Colors.white,
+                                                    ),
+                                              );
+                                            }
+                                            return Text(
+                                              '${AppLocalizations.of(context)?.translate('salam') ?? 'Salam'} ${userProvider.fullName}',
+                                              style: GoogleFonts.dmSans(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        const SizedBox(height: 6),
+                                        SizedBox(
+                                          width:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width *
+                                              0.7,
+                                          child: Text(
+                                            AppLocalizations.of(
+                                                  context,
+                                                )?.translate(
+                                                  'what_looking_for',
+                                                ) ??
+                                                'What are you looking for today?',
+                                            maxLines: 2,
+                                            style: GoogleFonts.dmSans(
+                                              fontSize: 24,
+                                              fontWeight: FontWeight.w900,
+                                              color: Colors.white.withOpacity(
+                                                0.95,
+                                              ),
+                                              height: 1.2,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ),
 
