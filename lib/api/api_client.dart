@@ -9,6 +9,8 @@ class ApiClient {
   late final Dio _dio;
   final StorageService _storageService = StorageService();
   bool _isRefreshing = false;
+  DateTime? _lastTokenCheck;
+  bool _tokenIsValid = false;
 
   // Singleton pattern
   static final ApiClient _instance = ApiClient._internal();
@@ -205,12 +207,22 @@ class ApiClient {
 
   /// Check if token needs refresh and refresh proactively
   /// Returns true if token is valid or successfully refreshed
+  /// Optimized: Only checks once per minute to reduce overhead
   Future<bool> ensureValidToken() async {
     try {
+      // Skip check if we validated within the last minute
+      if (_tokenIsValid && _lastTokenCheck != null) {
+        final timeSinceCheck = DateTime.now().difference(_lastTokenCheck!);
+        if (timeSinceCheck.inSeconds < 60) {
+          return true;
+        }
+      }
+
       final token = await _storageService.getToken();
 
       if (token == null || token.isEmpty) {
         print('⚠️ [API_CLIENT] No token available');
+        _tokenIsValid = false;
         return false;
       }
 
@@ -218,7 +230,9 @@ class ApiClient {
       if (JwtDecoder.isExpired(token)) {
         print('⚠️ [API_CLIENT] Token expired, refreshing proactively...');
         final newToken = await _refreshToken();
-        return newToken != null;
+        _tokenIsValid = newToken != null;
+        _lastTokenCheck = DateTime.now();
+        return _tokenIsValid;
       } else {
         // Check if token expires soon (within 2 minutes)
         final expiresAt = JwtDecoder.getExpirationDate(token);
@@ -231,16 +245,27 @@ class ApiClient {
               '⚠️ [API_CLIENT] Token expires in ${timeUntilExpiry.inMinutes} minutes, refreshing proactively...',
             );
             final newToken = await _refreshToken();
-            return newToken != null;
+            _tokenIsValid = newToken != null;
+            _lastTokenCheck = DateTime.now();
+            return _tokenIsValid;
           }
         }
       }
 
+      _tokenIsValid = true;
+      _lastTokenCheck = DateTime.now();
       return true;
     } catch (e) {
       print('❌ [API_CLIENT] Error checking token validity: $e');
+      _tokenIsValid = false;
       return false;
     }
+  }
+
+  /// Invalidate token cache (call after logout or auth errors)
+  void invalidateTokenCache() {
+    _tokenIsValid = false;
+    _lastTokenCheck = null;
   }
 
   // GET request
@@ -368,6 +393,7 @@ class ApiClient {
   // Clear authorization token
   void clearAuthToken() {
     _dio.options.headers.remove('Authorization');
+    invalidateTokenCache();
   }
 
   // Error handler

@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import '../services/storage_service.dart';
 import '../services/fcm_service.dart';
 import '../services/google_auth_service.dart';
+import '../services/cache_service.dart';
 import '../api/api_client.dart';
 import '../utils/jwt_decoder.dart';
 
@@ -372,6 +373,15 @@ class AuthProvider with ChangeNotifier {
 
       // Clear API client token
       _apiClient.clearAuthToken();
+
+      // Clear all cached data
+      try {
+        final cacheService = CacheService();
+        await cacheService.clearAll();
+        print('✅ [AUTH] Cleared all cache on logout');
+      } catch (cacheError) {
+        print('⚠️ [AUTH] Failed to clear cache: $cacheError');
+      }
 
       // Clear user state
       _user = null;

@@ -3,11 +3,15 @@ import '../models/service_model.dart';
 import '../models/discount_model.dart';
 import '../api/api_client.dart';
 import '../api/api_endpoints.dart';
+import '../services/cache_service.dart';
 
 enum LoadingState { idle, loading, success, error }
 
 class ServicesProvider extends ChangeNotifier {
   final ApiClient _apiClient = ApiClient();
+  final CacheService _cache = CacheService();
+  static const String _cacheKeyServices = 'cache_services';
+  static const String _cacheKeyDiscounts = 'cache_discounts';
 
   LoadingState _state = LoadingState.idle;
   List<ServiceModel> _services = [];
@@ -29,10 +33,30 @@ class ServicesProvider extends ChangeNotifier {
   List<DiscountModel> get discounts => _discounts;
 
   /// Fetch all services from API
-  Future<void> fetchServices() async {
+  /// Uses stale-while-revalidate: shows cached data immediately, fetches fresh in background
+  Future<void> fetchServices({bool forceRefresh = false}) async {
+    // Load from cache first (stale-while-revalidate)
+    if (!forceRefresh) {
+      final cached = await _cache.get(_cacheKeyServices);
+      if (cached != null) {
+        try {
+          final List<dynamic> data = cached as List<dynamic>;
+          _services = data.map((json) => ServiceModel.fromJson(json)).toList();
+          _state = LoadingState.success;
+          notifyListeners();
+          print('✅ [SERVICES] Loaded from cache (${_services.length} items)');
+        } catch (e) {
+          print('❌ [SERVICES] Cache parse error: $e');
+        }
+      }
+    }
+
+    // Fetch fresh data in background
     _state = LoadingState.loading;
     _errorMessage = null;
-    notifyListeners();
+    if (_services.isEmpty) {
+      notifyListeners(); // Only show loading if no cached data
+    }
 
     try {
       print('🔍 [SERVICES] Starting fetch...');
@@ -49,8 +73,10 @@ class ServicesProvider extends ChangeNotifier {
         // Check if response.data is actually a List
         if (response.data is! List) {
           print('❌ [SERVICES] ERROR: Expected List but got: ${response.data}');
-          _state = LoadingState.error;
-          _errorMessage = 'Invalid response format from server';
+          if (_services.isEmpty) {
+            _state = LoadingState.error;
+            _errorMessage = 'Invalid response format from server';
+          }
           notifyListeners();
           return;
         }
@@ -88,17 +114,31 @@ class ServicesProvider extends ChangeNotifier {
 
         _state = LoadingState.success;
         _errorMessage = null;
-        print('✅ [SERVICES] Successfully loaded ${_services.length} services');
+
+        // Cache the response
+        await _cache.set(
+          _cacheKeyServices,
+          data,
+          ttl: const Duration(minutes: 10),
+        );
+        print(
+          '✅ [SERVICES] Successfully loaded and cached ${_services.length} services',
+        );
       } else {
-        _state = LoadingState.error;
-        _errorMessage = 'Failed to load services: ${response.statusCode}';
+        if (_services.isEmpty) {
+          _state = LoadingState.error;
+          _errorMessage = 'Failed to load services: ${response.statusCode}';
+        }
         print('❌ [SERVICES] Error status: ${response.statusCode}');
         print('❌ [SERVICES] Error response: ${response.data}');
         print('❌ [SERVICES] Response headers: ${response.headers}');
       }
     } catch (e, stackTrace) {
-      _state = LoadingState.error;
-      _errorMessage = 'Network error: ${e.toString()}';
+      // Only set error state if we don't have cached data
+      if (_services.isEmpty) {
+        _state = LoadingState.error;
+        _errorMessage = 'Network error: ${e.toString()}';
+      }
       print('❌ [SERVICES] Network error: $e');
       print('❌ [SERVICES] Stack trace: $stackTrace');
     }
@@ -107,7 +147,30 @@ class ServicesProvider extends ChangeNotifier {
   }
 
   /// Fetch active discounts from API
-  Future<void> fetchDiscounts() async {
+  /// Uses stale-while-revalidate: shows cached data immediately, fetches fresh in background
+  Future<void> fetchDiscounts({bool forceRefresh = false}) async {
+    // Load from cache first (stale-while-revalidate)
+    if (!forceRefresh) {
+      final cached = await _cache.get(_cacheKeyDiscounts);
+      if (cached != null) {
+        try {
+          final List<dynamic> data = cached as List<dynamic>;
+          _discounts = data
+              .map((json) => DiscountModel.fromJson(json))
+              .toList();
+          _discountServiceNames = [];
+          for (var discount in _discounts) {
+            _discountServiceNames.addAll(discount.serviceNames);
+          }
+          notifyListeners();
+          print('✅ [DISCOUNTS] Loaded from cache (${_discounts.length} items)');
+        } catch (e) {
+          print('❌ [DISCOUNTS] Cache parse error: $e');
+        }
+      }
+    }
+
+    // Fetch fresh data in background
     try {
       print('🔍 [DISCOUNTS] Starting fetch...');
 
@@ -142,7 +205,13 @@ class ServicesProvider extends ChangeNotifier {
           _discountServiceNames.addAll(discount.serviceNames);
         }
 
-        print('✅ [DISCOUNTS] Parsed ${_discounts.length} discounts');
+        // Cache the response
+        await _cache.set(
+          _cacheKeyDiscounts,
+          data,
+          ttl: const Duration(minutes: 10),
+        );
+        print('✅ [DISCOUNTS] Parsed and cached ${_discounts.length} discounts');
         print(
           '✅ [DISCOUNTS] Service names with discounts: $_discountServiceNames',
         );
@@ -242,6 +311,8 @@ class ServicesProvider extends ChangeNotifier {
     _discountServiceNames = [];
     _state = LoadingState.idle;
     _errorMessage = null;
+    _cache.remove(_cacheKeyServices);
+    _cache.remove(_cacheKeyDiscounts);
     notifyListeners();
   }
 }

@@ -274,6 +274,41 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _refreshData() async {
+    final categoriesProvider = context.read<CategoriesProvider>();
+    final servicesProvider = context.read<ServicesProvider>();
+    final newsProvider = context.read<NewsProvider>();
+    final userProvider = context.read<UserProvider>();
+    final savedServicesProvider = context.read<SavedServicesProvider>();
+
+    // Force refresh - bypass cache
+    final futures = <Future>[
+      categoriesProvider.fetchCategories(forceRefresh: true),
+      servicesProvider.fetchServices(forceRefresh: true),
+      servicesProvider.fetchDiscounts(forceRefresh: true),
+      newsProvider.fetchNews(forceRefresh: true),
+    ];
+
+    if (userProvider.user.id != null) {
+      futures.add(
+        savedServicesProvider.loadSavedServices(userProvider.user.id!),
+      );
+      futures.add(userProvider.fetchUserById(userProvider.user.id!));
+    }
+
+    await Future.wait(futures, eagerError: false);
+
+    if (mounted) {
+      if (categoriesProvider.hasError || servicesProvider.hasError) {
+        SnackBarHelper.showErrorSnackBar(
+          context,
+          AppLocalizations.of(context)?.translate('failed_load_data') ??
+              'Failed to load some data. Pull to refresh.',
+        );
+      }
+    }
+  }
+
   void _showNotificationBottomSheet() {
     showModalBottomSheet(
       context: context,
@@ -296,7 +331,7 @@ class _HomePageState extends State<HomePage> {
       body: Stack(
         children: [
           RefreshIndicator(
-            onRefresh: _fetchData,
+            onRefresh: _refreshData,
             color: AppColors.roseColor,
             child: CustomScrollView(
               slivers: [
