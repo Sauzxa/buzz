@@ -26,8 +26,8 @@ class CouponCard extends StatelessWidget {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
-          child: AspectRatio(
-            aspectRatio: 1, // Square shape
+          child: SizedBox(
+            height: 180, // Fixed height for rectangular shape
             child: Stack(
               children: [
                 // Background Image
@@ -84,112 +84,6 @@ class CouponCard extends StatelessWidget {
                       ),
                     ),
                   ),
-
-                // Gradient overlay
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.black.withValues(alpha: 0.3),
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Content
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Top section
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Service Name
-                          if (discount.serviceNames.isNotEmpty)
-                            Text(
-                              discount.serviceNames.first
-                                  .replaceAll('-', ' ')
-                                  .toUpperCase(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.dmSans(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                          const SizedBox(height: 6),
-                          // Limited Offer Badge
-                          Image.asset(
-                            'assets/Logos/LimitedOffre.png',
-                            height: 18,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 3,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  'LIMITED',
-                                  style: GoogleFonts.dmSans(
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.bold,
-                                    color: AppColors.roseColor,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-
-                      // Bottom section
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Discount Value
-                          Text(
-                            '${discount.discountValue.toInt()}% OFF',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withValues(alpha: 0.5),
-                                  offset: const Offset(0, 2),
-                                  blurRadius: 4,
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          // Usage Limit
-                          Text(
-                            'Only ${discount.usageLimit} uses',
-                            style: GoogleFonts.dmSans(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),

@@ -135,22 +135,19 @@ class _CouponsPageState extends State<CouponsPage> {
                   );
                 }
 
-                return GridView.builder(
+                return ListView.builder(
                   padding: const EdgeInsets.all(20),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 1, // Square cards
-                  ),
                   itemCount: discounts.length,
                   itemBuilder: (context, index) {
                     final discount = discounts[index];
-                    return CouponCard(
-                      discount: discount,
-                      onTap: () {
-                        _showCouponDetails(context, discount);
-                      },
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: CouponCard(
+                        discount: discount,
+                        onTap: () {
+                          _showCouponDetails(context, discount);
+                        },
+                      ),
                     );
                   },
                 );
