@@ -68,3 +68,4 @@ lib/firebase_options.dart
 android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 Uv.json
+firebase.json
