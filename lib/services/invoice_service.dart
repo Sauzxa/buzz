@@ -31,63 +31,96 @@ class InvoiceService {
     return await _fetchAndCacheInvoice(orderId, cacheKey);
   }
 
-  /// Fetch invoice from API and cache it
+  /// Fetch invoice from API and cache it with retry logic
   Future<InvoiceModel?> _fetchAndCacheInvoice(
     String orderId,
     String cacheKey,
   ) async {
-    try {
-      final response = await _apiClient
-          .get(ApiEndpoints.getInvoiceByOrderId(orderId))
-          .timeout(
-            const Duration(seconds: 10),
-            onTimeout: () {
-              throw Exception('Invoice request timed out');
-            },
-          );
+    int retryCount = 0;
+    const maxRetries = 3;
+    const retryDelays = [
+      Duration(seconds: 2),
+      Duration(seconds: 5),
+      Duration(seconds: 10),
+    ];
 
-      // 404 or any non-200 where data is plaintext — no invoice exists yet
-      if (response.statusCode == 404 || response.statusCode == null) {
-        return null;
-      }
-
-      if (response.statusCode == 200) {
-        // Guard: backend may return plain text even on 200 if something is off
-        if (response.data is! Map<String, dynamic>) {
+    while (retryCount <= maxRetries) {
+      try {
+        if (retryCount > 0) {
           print(
-            '⚠️ [INVOICE_SERVICE] Unexpected response type for order $orderId: ${response.data.runtimeType}',
+            '🔄 [INVOICE] Retry attempt $retryCount/$maxRetries for order $orderId...',
           );
+        }
+
+        final response = await _apiClient.get(
+          ApiEndpoints.getInvoiceByOrderId(orderId),
+        );
+
+        // 404 or any non-200 where data is plaintext — no invoice exists yet
+        if (response.statusCode == 404 || response.statusCode == null) {
           return null;
         }
 
-        final invoiceData = response.data as Map<String, dynamic>;
+        if (response.statusCode == 200) {
+          // Guard: backend may return plain text even on 200 if something is off
+          if (response.data is! Map<String, dynamic>) {
+            print(
+              '⚠️ [INVOICE_SERVICE] Unexpected response type for order $orderId: ${response.data.runtimeType}',
+            );
+            return null;
+          }
 
-        // Cache the invoice for 5 minutes
-        try {
-          await _cache.set(
-            cacheKey,
-            invoiceData,
-            ttl: const Duration(minutes: 5),
-          );
-          print('✅ [INVOICE] Cached invoice for order $orderId');
-        } catch (e) {
-          print('⚠️ [INVOICE] Cache write error: $e');
+          final invoiceData = response.data as Map<String, dynamic>;
+
+          // Cache the invoice for 5 minutes
+          try {
+            await _cache.set(
+              cacheKey,
+              invoiceData,
+              ttl: const Duration(minutes: 5),
+            );
+            print('✅ [INVOICE] Cached invoice for order $orderId');
+          } catch (e) {
+            print('⚠️ [INVOICE] Cache write error: $e');
+          }
+
+          return InvoiceModel.fromJson(invoiceData);
         }
 
-        return InvoiceModel.fromJson(invoiceData);
-      }
+        // Any other non-success status
+        final msg = response.data is String
+            ? response.data as String
+            : 'status ${response.statusCode}';
 
-      // Any other non-success status
-      final msg = response.data is String
-          ? response.data as String
-          : 'status ${response.statusCode}';
-      throw Exception('Failed to load invoice: $msg');
-    } catch (e) {
-      print(
-        '⚠️ [INVOICE_SERVICE] Error fetching invoice for order $orderId: $e',
-      );
-      rethrow;
+        // Don't retry on 4xx client errors
+        if (response.statusCode != null &&
+            response.statusCode! >= 400 &&
+            response.statusCode! < 500) {
+          throw Exception('Failed to load invoice: $msg');
+        }
+
+        // Retry on 5xx server errors
+        throw Exception('Server error: $msg');
+      } catch (e) {
+        print(
+          '⚠️ [INVOICE_SERVICE] Error fetching invoice for order $orderId: $e',
+        );
+
+        // Check if we should retry
+        if (retryCount < maxRetries &&
+            !e.toString().contains('Failed to load invoice')) {
+          final delay = retryDelays[retryCount];
+          print('⏳ [INVOICE] Waiting ${delay.inSeconds}s before retry...');
+          await Future.delayed(delay);
+          retryCount++;
+        } else {
+          rethrow;
+        }
+      }
     }
+
+    // If all retries failed
+    throw Exception('Invoice request failed after $maxRetries retries');
   }
 
   /// Upload payment proof for an invoice

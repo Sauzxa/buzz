@@ -20,6 +20,8 @@ class AppConfig {
   static const bool enableLogging = true;
 
   // API configuration
-  static const Duration apiTimeout = Duration(seconds: 30);
+  static const Duration apiTimeout = Duration(
+    seconds: 30,
+  ); // Increased from 30 to 60 seconds
   static const int maxRetryAttempts = 3;
 }

@@ -24,11 +24,36 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
   bool _isLoading = false;
   String? _invoiceId;
   String? _error;
+  Map<String, dynamic>? _invoiceData;
 
   @override
   void initState() {
     super.initState();
     _fetchInvoice();
+  }
+
+  // Determine if this is initial or final payment
+  bool get _isFinalPayment =>
+      widget.order['status']?.toString().toUpperCase() ==
+      'AWAITING_FINAL_PAYMENT';
+
+  bool get _isSplitPayment =>
+      _invoiceData?['paymentMethodType']?.toString().toUpperCase() ==
+      'SPLIT_PAYMENT';
+
+  double? get _paymentAmount {
+    if (_invoiceData == null) return null;
+    if (_isFinalPayment) {
+      return _invoiceData!['finalAmount']?.toDouble();
+    } else {
+      // Initial payment
+      if (_isSplitPayment) {
+        return _invoiceData!['initialAmount']?.toDouble();
+      } else {
+        // Full payment
+        return _invoiceData!['totalAmount']?.toDouble();
+      }
+    }
   }
 
   Future<void> _fetchInvoice() async {
@@ -44,6 +69,7 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
       if (invoice != null) {
         setState(() {
           _invoiceId = invoice.id.toString();
+          _invoiceData = invoice.toJson();
           _isLoading = false;
         });
       } else {
@@ -142,8 +168,15 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          AppLocalizations.of(context)?.translate('upload_payment_title') ??
-              'Upload Payment',
+          _isFinalPayment
+              ? (AppLocalizations.of(
+                      context,
+                    )?.translate('upload_final_payment_title') ??
+                    'Upload Final Payment')
+              : (AppLocalizations.of(
+                      context,
+                    )?.translate('upload_payment_title') ??
+                    'Upload Payment'),
           style: GoogleFonts.dmSans(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -169,6 +202,84 @@ class _PaymentUploadPageState extends State<PaymentUploadPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Payment Type Info
+                  if (_isSplitPayment)
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.blue),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.info_outline, color: Colors.blue),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _isFinalPayment
+                                  ? (AppLocalizations.of(
+                                          context,
+                                        )?.translate('final_payment_info') ??
+                                        'This is your final payment (50%)')
+                                  : (AppLocalizations.of(
+                                          context,
+                                        )?.translate('initial_payment_info') ??
+                                        'This is your initial payment (50%)'),
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14,
+                                color: Colors.blue[900],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_isSplitPayment) const SizedBox(height: 16),
+
+                  // Payment Amount
+                  if (_paymentAmount != null)
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppColors.roseColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _isFinalPayment
+                                ? (AppLocalizations.of(
+                                        context,
+                                      )?.translate('final_amount_label') ??
+                                      'Final Amount:')
+                                : (AppLocalizations.of(context)?.translate(
+                                        _isSplitPayment
+                                            ? 'initial_amount_label'
+                                            : 'total_amount_label',
+                                      ) ??
+                                      (_isSplitPayment
+                                          ? 'Initial Amount:'
+                                          : 'Total Amount:')),
+                            style: GoogleFonts.dmSans(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            '${_paymentAmount!.toStringAsFixed(2)} DH',
+                            style: GoogleFonts.dmSans(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.roseColor,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_paymentAmount != null) const SizedBox(height: 16),
+
                   Text(
                     '${AppLocalizations.of(context)?.translate('upload_receipt_instruction') ?? 'Upload your payment receipt for Order #'} ${widget.order['orderNumber'] ?? widget.order['id']}',
                     style: GoogleFonts.dmSans(fontSize: 16),

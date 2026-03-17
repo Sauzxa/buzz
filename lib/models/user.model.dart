@@ -11,6 +11,7 @@ class UserModel {
   final String? token; // JWT access token field
   final String? refreshToken; // JWT refresh token field
   final String? profilePicture; // Added profile picture field
+  final String? authProvider; // OAuth provider (LOCAL, GOOGLE)
 
   UserModel({
     this.id,
@@ -25,7 +26,11 @@ class UserModel {
     this.token,
     this.refreshToken,
     this.profilePicture,
+    this.authProvider,
   });
+
+  // Helper to check if user signed in with Google
+  bool get isGoogleUser => authProvider == 'GOOGLE';
 
   // Convert to JSON for API requests
   Map<String, dynamic> toJson() {
@@ -42,6 +47,7 @@ class UserModel {
       'token': token,
       'refreshToken': refreshToken,
       'profilePicture': profilePicture,
+      'authProvider': authProvider,
     };
   }
 
@@ -64,6 +70,7 @@ class UserModel {
       profilePicture:
           json['profilePicture']?.toString() ??
           json['image']?.toString(), // Handle both possible keys
+      authProvider: json['authProvider']?.toString(),
     );
   }
 
@@ -81,6 +88,7 @@ class UserModel {
     String? token,
     String? refreshToken,
     String? profilePicture,
+    String? authProvider,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -95,6 +103,7 @@ class UserModel {
       token: token ?? this.token,
       refreshToken: refreshToken ?? this.refreshToken,
       profilePicture: profilePicture ?? this.profilePicture,
+      authProvider: authProvider ?? this.authProvider,
     );
   }
 }

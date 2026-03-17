@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:buzz/models/user.model.dart';
+import 'package:artifex/models/user.model.dart';
 import '../api/api_client.dart';
 import '../api/api_endpoints.dart';
 

@@ -137,6 +137,11 @@ class _BuzzState extends State<Buzz> {
           create: (context) {
             final provider = NotificationProvider();
             _globalNotificationProvider = provider;
+
+            // Connect notification provider to auth provider
+            final authProvider = context.read<AuthProvider>();
+            authProvider.setNotificationProvider(provider);
+
             return provider;
           },
         ),

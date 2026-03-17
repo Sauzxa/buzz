@@ -82,7 +82,9 @@ enum NotificationType {
   ORDER_CANCELED,
   PAYMENT_PROOF_REJECTED,
   ASSIGNE_DESIGNER,
-  INVOICE_UPDATED;
+  INVOICE_UPDATED,
+  ORDER_AWAITING_FINAL_PAYMENT,
+  DESIGNER_WORK_COMPLETED;
 
   static NotificationType fromString(String value) {
     switch (value.toUpperCase()) {
@@ -110,6 +112,10 @@ enum NotificationType {
         return NotificationType.ASSIGNE_DESIGNER;
       case 'INVOICE_UPDATED':
         return NotificationType.INVOICE_UPDATED;
+      case 'ORDER_AWAITING_FINAL_PAYMENT':
+        return NotificationType.ORDER_AWAITING_FINAL_PAYMENT;
+      case 'DESIGNER_WORK_COMPLETED':
+        return NotificationType.DESIGNER_WORK_COMPLETED;
       default:
         return NotificationType.NEWS; // Default fallback
     }
@@ -141,6 +147,10 @@ enum NotificationType {
         return 'Designer Assigned';
       case NotificationType.INVOICE_UPDATED:
         return 'Invoice Updated';
+      case NotificationType.ORDER_AWAITING_FINAL_PAYMENT:
+        return 'Final Payment Required';
+      case NotificationType.DESIGNER_WORK_COMPLETED:
+        return 'Work Completed';
     }
   }
 }

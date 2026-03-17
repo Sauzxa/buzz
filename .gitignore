@@ -69,3 +69,6 @@ android/app/google-services.json
 ios/Runner/GoogleService-Info.plist
 Uv.json
 firebase.json
+Deploy.md
+DeployDefault.md
+OrderCompleteLogique.txt

@@ -506,23 +506,25 @@ class FcmService {
   }
 
   /// Remove all FCM tokens for current user (logout from all devices)
-  Future<void> removeAllTokensFromBackend() async {
-    try {
-      print('📤 Removing all FCM tokens from backend...');
-
-      final apiClient = ApiClient();
-      final response = await apiClient.delete(ApiEndpoints.removeAllFcmTokens);
-
-      if (response.statusCode == 200 || response.statusCode == 204) {
-        print('✅ All FCM tokens removed successfully');
-        _fcmToken = null;
-      } else {
-        print('⚠️ Failed to remove all tokens: ${response.statusCode}');
-      }
-    } catch (e) {
-      print('❌ Error removing all FCM tokens: $e');
-    }
-  }
+  /// NOTE: Backend endpoint not yet implemented
+  /// TODO: Implement backend endpoint: DELETE /api/fcm/tokens/all
+  // Future<void> removeAllTokensFromBackend() async {
+  //   try {
+  //     print('📤 Removing all FCM tokens from backend...');
+  //
+  //     final apiClient = ApiClient();
+  //     final response = await apiClient.delete(ApiEndpoints.removeAllFcmTokens);
+  //
+  //     if (response.statusCode == 200 || response.statusCode == 204) {
+  //       print('✅ All FCM tokens removed successfully');
+  //       _fcmToken = null;
+  //     } else {
+  //       print('⚠️ Failed to remove all tokens: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('❌ Error removing all FCM tokens: $e');
+  //   }
+  // }
 
   /// Delete FCM token locally (Firebase will regenerate on next app start)
   Future<void> deleteToken() async {

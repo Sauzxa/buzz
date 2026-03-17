@@ -188,7 +188,7 @@ class _ContactPageState extends State<ContactPage> {
                         onTap: () async {
                           final Uri launchUri = Uri(
                             scheme: 'tel',
-                            path: '0555496574',
+                            path: '0777585966',
                           );
                           try {
                             if (await canLaunchUrl(launchUri)) {
@@ -208,11 +208,11 @@ class _ContactPageState extends State<ContactPage> {
                               context,
                             )?.translate('email_title') ??
                             'Email',
-                        subtitle: 'artifex@gmail.com',
+                        subtitle: 'buzzbyapex@gmail.com',
                         onTap: () async {
                           final Uri launchUri = Uri(
                             scheme: 'mailto',
-                            path: 'buzz@gmail.com',
+                            path: 'buzzbyapex@gmail.com',
                           );
                           try {
                             if (await canLaunchUrl(launchUri)) {

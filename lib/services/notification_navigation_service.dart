@@ -34,6 +34,8 @@ class NotificationNavigationService {
       case NotificationType.ORDER_COMPLETED:
       case NotificationType.ORDER_CANCELED:
       case NotificationType.ASSIGNE_DESIGNER:
+      case NotificationType.ORDER_AWAITING_FINAL_PAYMENT:
+      case NotificationType.DESIGNER_WORK_COMPLETED:
         _navigateToOrderDetails(context, referenceId);
         break;
 

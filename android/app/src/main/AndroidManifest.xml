@@ -24,7 +24,7 @@
     </queries>
 
     <application
-        android:label="artifex"
+        android:label="Artifex"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
@@ -60,7 +60,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Custom scheme: buzzapp://reset-password?token=xxx -->
+                <!-- Custom scheme: buzz://reset-password?token=xxx -->
                 <data android:scheme="buzzapp" android:host="reset-password" />
             </intent-filter>
         </activity>

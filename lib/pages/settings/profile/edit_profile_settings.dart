@@ -599,76 +599,83 @@ class _EditProfileSettingsState extends State<EditProfileSettings> {
 
                           const SizedBox(height: 20),
 
-                          // Password (Read only / Change button)
-                          _buildLabeledField(
-                            label:
-                                AppLocalizations.of(
-                                  context,
-                                )?.translate('password_label') ??
-                                'Password',
-                            controller: TextEditingController(text: '••••••'),
-                            readOnly: true,
-                          ),
-
-                          const SizedBox(height: 24),
-
-                          // Change Password Button
-                          Container(
-                            width: double.infinity,
-                            height: 56,
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: Theme.of(context).dividerColor,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
+                          // Password (Read only / Change button) - Only for non-Google users
+                          if (!context
+                              .read<UserProvider>()
+                              .user
+                              .isGoogleUser) ...[
+                            _buildLabeledField(
+                              label:
+                                  AppLocalizations.of(
                                     context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const ChangePassSettings(),
-                                    ),
-                                  );
-                                },
+                                  )?.translate('password_label') ??
+                                  'Password',
+                              controller: TextEditingController(text: '••••••'),
+                              readOnly: true,
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // Change Password Button
+                            Container(
+                              width: double.infinity,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Theme.of(context).dividerColor,
+                                ),
                                 borderRadius: BorderRadius.circular(16),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        AppLocalizations.of(
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const ChangePassSettings(),
+                                      ),
+                                    );
+                                  },
+                                  borderRadius: BorderRadius.circular(16),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          AppLocalizations.of(
+                                                context,
+                                              )?.translate(
+                                                'change_pass_title',
+                                              ) ??
+                                              'Change Password',
+                                          style: GoogleFonts.dmSans(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(
                                               context,
-                                            )?.translate('change_pass_title') ??
-                                            'Change Password',
-                                        style: GoogleFonts.dmSans(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
+                                            ).textTheme.titleLarge!.color,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 16,
                                           color: Theme.of(
                                             context,
-                                          ).textTheme.titleLarge!.color,
+                                          ).iconTheme.color,
                                         ),
-                                      ),
-                                      Icon(
-                                        Icons.arrow_forward_ios,
-                                        size: 16,
-                                        color: Theme.of(
-                                          context,
-                                        ).iconTheme.color,
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
+                          ],
 
                           const SizedBox(height: 24),
 

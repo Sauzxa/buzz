@@ -204,9 +204,9 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
 
       print('Order submitted successfully with ID: $orderId');
 
-      // Navigate to success page
+      // Navigate to success page and clear all previous routes
       if (mounted) {
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
             builder: (_) => OrderSuccessPage(
@@ -214,6 +214,7 @@ class _ServiceOrderFormPage2State extends State<ServiceOrderFormPage2> {
               orderId: orderId,
             ),
           ),
+          (route) => false, // Remove all previous routes
         );
       }
     } catch (e) {

@@ -170,58 +170,95 @@ class ServicesProvider extends ChangeNotifier {
       }
     }
 
-    // Fetch fresh data in background
-    try {
-      print('🔍 [DISCOUNTS] Starting fetch...');
+    // Fetch fresh data in background with retry logic
+    int retryCount = 0;
+    const maxRetries = 3;
+    const retryDelays = [
+      Duration(seconds: 2),
+      Duration(seconds: 5),
+      Duration(seconds: 10),
+    ];
 
-      final response = await _apiClient.get(ApiEndpoints.getActiveDiscounts);
+    while (retryCount <= maxRetries) {
+      try {
+        if (retryCount > 0) {
+          print('🔄 [DISCOUNTS] Retry attempt $retryCount/$maxRetries...');
+        } else {
+          print('🔍 [DISCOUNTS] Starting fetch...');
+        }
 
-      print('📡 [DISCOUNTS] Response Status: ${response.statusCode}');
+        final response = await _apiClient.get(ApiEndpoints.getActiveDiscounts);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        if (response.data is! List) {
-          print('❌ [DISCOUNTS] ERROR: Expected List but got: ${response.data}');
+        print('📡 [DISCOUNTS] Response Status: ${response.statusCode}');
+
+        if (response.statusCode == 200 || response.statusCode == 201) {
+          if (response.data is! List) {
+            print(
+              '❌ [DISCOUNTS] ERROR: Expected List but got: ${response.data}',
+            );
+            return;
+          }
+
+          final List<dynamic> data = response.data as List<dynamic>;
+          print('✅ [DISCOUNTS] Discounts count: ${data.length}');
+
+          // Parse discount models
+          _discounts = data.map((json) {
+            try {
+              return DiscountModel.fromJson(json);
+            } catch (e, stackTrace) {
+              print('❌ [DISCOUNTS] Error parsing discount: $json');
+              print('❌ [DISCOUNTS] Parsing error: $e');
+              print('❌ [DISCOUNTS] Stack: $stackTrace');
+              rethrow;
+            }
+          }).toList();
+
+          // Extract service names from discounts for backward compatibility
+          _discountServiceNames = [];
+          for (var discount in _discounts) {
+            _discountServiceNames.addAll(discount.serviceNames);
+          }
+
+          // Cache the response
+          await _cache.set(
+            _cacheKeyDiscounts,
+            data,
+            ttl: const Duration(minutes: 10),
+          );
+          print(
+            '✅ [DISCOUNTS] Parsed and cached ${_discounts.length} discounts',
+          );
+          print(
+            '✅ [DISCOUNTS] Service names with discounts: $_discountServiceNames',
+          );
+          notifyListeners();
+          return; // Success - exit retry loop
+        } else {
+          print('❌ [DISCOUNTS] Error status: ${response.statusCode}');
+          // Don't retry on 4xx errors (client errors)
+          if (response.statusCode != null &&
+              response.statusCode! >= 400 &&
+              response.statusCode! < 500) {
+            print('❌ [DISCOUNTS] Client error - not retrying');
+            return;
+          }
+        }
+      } catch (e, stackTrace) {
+        print('❌ [DISCOUNTS] Network error: $e');
+        print('❌ [DISCOUNTS] Stack trace: $stackTrace');
+
+        // Check if we should retry
+        if (retryCount < maxRetries) {
+          final delay = retryDelays[retryCount];
+          print('⏳ [DISCOUNTS] Waiting ${delay.inSeconds}s before retry...');
+          await Future.delayed(delay);
+          retryCount++;
+        } else {
+          print('❌ [DISCOUNTS] Max retries reached. Giving up.');
           return;
         }
-
-        final List<dynamic> data = response.data as List<dynamic>;
-        print('✅ [DISCOUNTS] Discounts count: ${data.length}');
-
-        // Parse discount models
-        _discounts = data.map((json) {
-          try {
-            return DiscountModel.fromJson(json);
-          } catch (e, stackTrace) {
-            print('❌ [DISCOUNTS] Error parsing discount: $json');
-            print('❌ [DISCOUNTS] Parsing error: $e');
-            print('❌ [DISCOUNTS] Stack: $stackTrace');
-            rethrow;
-          }
-        }).toList();
-
-        // Extract service names from discounts for backward compatibility
-        _discountServiceNames = [];
-        for (var discount in _discounts) {
-          _discountServiceNames.addAll(discount.serviceNames);
-        }
-
-        // Cache the response
-        await _cache.set(
-          _cacheKeyDiscounts,
-          data,
-          ttl: const Duration(minutes: 10),
-        );
-        print('✅ [DISCOUNTS] Parsed and cached ${_discounts.length} discounts');
-        print(
-          '✅ [DISCOUNTS] Service names with discounts: $_discountServiceNames',
-        );
-        notifyListeners();
-      } else {
-        print('❌ [DISCOUNTS] Error status: ${response.statusCode}');
       }
-    } catch (e, stackTrace) {
-      print('❌ [DISCOUNTS] Network error: $e');
-      print('❌ [DISCOUNTS] Stack trace: $stackTrace');
     }
   }
 

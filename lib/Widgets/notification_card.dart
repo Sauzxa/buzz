@@ -260,6 +260,7 @@ class NotificationCard extends StatelessWidget {
       case NotificationType.ORDER_PRICED:
       case NotificationType.ORDER_COMPLETED:
       case NotificationType.ORDER_CANCELED:
+      case NotificationType.ORDER_AWAITING_FINAL_PAYMENT:
         return Icons.shopping_bag_outlined;
       case NotificationType.CHAT:
         return Icons.message_outlined;
@@ -274,6 +275,7 @@ class NotificationCard extends StatelessWidget {
       case NotificationType.INVOICE_UPDATED:
         return Icons.receipt_long_outlined;
       case NotificationType.ASSIGNE_DESIGNER:
+      case NotificationType.DESIGNER_WORK_COMPLETED:
         return Icons.person_add_outlined;
     }
   }
@@ -300,7 +302,10 @@ class NotificationCard extends StatelessWidget {
       case NotificationType.INVOICE_UPDATED:
         return Colors.indigo;
       case NotificationType.ASSIGNE_DESIGNER:
+      case NotificationType.DESIGNER_WORK_COMPLETED:
         return Colors.cyan;
+      case NotificationType.ORDER_AWAITING_FINAL_PAYMENT:
+        return Colors.amber;
     }
   }
 

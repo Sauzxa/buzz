@@ -405,6 +405,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         return Colors.purple;
       case 'IN_PROGRESS':
         return Colors.teal;
+      case 'AWAITING_FINAL_PAYMENT':
+        return Colors.amber;
       case 'COMPLETED':
         return const Color(0xFF4CAF50);
       case 'CANCELLED':
@@ -426,6 +428,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         return Icons.pending_actions;
       case 'IN_PROGRESS':
         return Icons.work_outline;
+      case 'AWAITING_FINAL_PAYMENT':
+        return Icons.payment;
       case 'COMPLETED':
         return Icons.check_circle_outline;
       case 'CANCELLED':
@@ -453,6 +457,11 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       case 'IN_PROGRESS':
         return AppLocalizations.of(context)?.translate('status_in_progress') ??
             'In Progress';
+      case 'AWAITING_FINAL_PAYMENT':
+        return AppLocalizations.of(
+              context,
+            )?.translate('status_awaiting_final_payment') ??
+            'Awaiting Final Payment';
       case 'COMPLETED':
         return AppLocalizations.of(context)?.translate('status_completed') ??
             'Completed';
@@ -492,22 +501,24 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   }
 
   int _getStatusPriority(String status) {
-    // Priority: ready (0) -> treatment (1) -> received (2) -> demande (3)
+    // Priority: ready (0) -> treatment (1) -> awaiting final payment (2) -> received (3) -> demande (4)
     switch (status.toUpperCase()) {
       case 'COMPLETED':
       case 'DELIVERED':
         return 0; // Ready (most completed)
       case 'IN_PROGRESS':
         return 1; // Treatment
+      case 'AWAITING_FINAL_PAYMENT':
+        return 2; // Awaiting final payment (work done, needs payment)
       case 'AWAITING_PAYMENT_VALIDATION':
-        return 2; // Received
+        return 3; // Received
       case 'PENDING':
       case 'PRICED':
-        return 3; // Demande (least completed)
+        return 4; // Demande (least completed)
       case 'CANCELLED':
-        return 4; // Cancelled orders at the end
+        return 5; // Cancelled orders at the end
       default:
-        return 5;
+        return 6;
     }
   }
 
@@ -521,6 +532,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         return 1; // Received (Payment received)
       case 'IN_PROGRESS':
         return 2; // Traitement
+      case 'AWAITING_FINAL_PAYMENT':
+        return 2; // Traitement (work done, awaiting final payment)
       case 'COMPLETED':
       case 'DELIVERED':
         return 3; // Ready

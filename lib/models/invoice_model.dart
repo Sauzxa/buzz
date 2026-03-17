@@ -122,4 +122,22 @@ class InvoiceModel {
   }
 
   bool get isSplitPayment => paymentMethodType == 'SPLIT_PAYMENT';
+
+  bool get isHalfPaid => invoiceStatus == 'HALF_PAID';
+
+  bool get isPaid => invoiceStatus == 'PAID';
+
+  bool get isPaymentSubmitted => invoiceStatus == 'PAYMENT_SUBMITTED';
+
+  bool get isDraft => invoiceStatus == 'DRAFT';
+
+  bool get isRejected => invoiceStatus == 'REJECTED';
+
+  String get paymentProgress {
+    if (isPaid) return '100%';
+    if (isHalfPaid) return '50%';
+    if (isPaymentSubmitted) return 'Pending Validation';
+    if (isDraft) return '0%';
+    return 'Unknown';
+  }
 }

@@ -7,6 +7,7 @@ import '../services/google_auth_service.dart';
 import '../services/cache_service.dart';
 import '../api/api_client.dart';
 import '../utils/jwt_decoder.dart';
+import 'notification_provider.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -14,6 +15,9 @@ class AuthProvider with ChangeNotifier {
   final ApiClient _apiClient = ApiClient();
   final FcmService _fcmService = FcmService();
   final GoogleAuthService _googleAuthService = GoogleAuthService();
+
+  // Reference to notification provider for fetching notifications after login
+  NotificationProvider? _notificationProvider;
 
   UserModel? _user;
   bool _isLoading = false;
@@ -26,6 +30,11 @@ class AuthProvider with ChangeNotifier {
   String? get error => _error;
   bool get isAuthenticated => _isAuthenticated;
   bool get hasSeenOnboarding => _hasSeenOnboarding;
+
+  /// Set notification provider reference for fetching notifications after login
+  void setNotificationProvider(NotificationProvider provider) {
+    _notificationProvider = provider;
+  }
 
   /// Login with email and password
   Future<void> login(String email, String password) async {
@@ -53,6 +62,9 @@ class AuthProvider with ChangeNotifier {
 
         // Register FCM token with backend after successful login
         await _registerFcmToken();
+
+        // Fetch notifications after successful login
+        await _fetchNotifications();
       }
     } catch (e) {
       // Extract clean error message
@@ -119,6 +131,9 @@ class AuthProvider with ChangeNotifier {
 
         // Register FCM token with backend after successful signup
         await _registerFcmToken();
+
+        // Fetch notifications after successful signup
+        await _fetchNotifications();
       }
     } catch (e) {
       _error = 'Signup failed: ${e.toString()}';
@@ -170,6 +185,9 @@ class AuthProvider with ChangeNotifier {
 
         // Register FCM token with backend after successful login
         await _registerFcmToken();
+
+        // Fetch notifications after successful Google sign-in
+        await _fetchNotifications();
 
         print('✅ Google Sign-In successful!');
       }
@@ -255,6 +273,9 @@ class AuthProvider with ChangeNotifier {
               // Register FCM token if not already registered
               await _registerFcmToken();
 
+              // Fetch notifications after successful token refresh
+              await _fetchNotifications();
+
               _setLoading(false);
               print('✅ Token refreshed successfully during auto-login');
               return true;
@@ -292,6 +313,9 @@ class AuthProvider with ChangeNotifier {
 
           // Register FCM token if not already registered
           await _registerFcmToken();
+
+          // Fetch notifications after successful validation
+          await _fetchNotifications();
 
           _setLoading(false);
           return true;
@@ -332,6 +356,10 @@ class AuthProvider with ChangeNotifier {
           _user = cachedUser;
           _apiClient.setAuthToken(token);
           _isAuthenticated = true;
+
+          // Fetch notifications when using cached data
+          await _fetchNotifications();
+
           _setLoading(false);
           return true;
         }
@@ -616,6 +644,20 @@ class AuthProvider with ChangeNotifier {
       _error = errorMessage;
       _setLoading(false);
       return false;
+    }
+  }
+
+  /// Fetch notifications after successful authentication
+  Future<void> _fetchNotifications() async {
+    try {
+      if (_notificationProvider != null) {
+        print('📥 Fetching notifications after authentication...');
+        await _notificationProvider!.fetchNotifications();
+        print('✅ Notifications fetched successfully');
+      }
+    } catch (e) {
+      print('⚠️ Error fetching notifications: $e');
+      // Don't throw - notification fetch failure shouldn't prevent login
     }
   }
 

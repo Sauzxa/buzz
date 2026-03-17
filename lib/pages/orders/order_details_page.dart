@@ -107,7 +107,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
     // Determine status to show appropriate buttons
     final String status = order['status'] ?? 'PENDING';
     final bool canUpload =
-        status == 'PRICED' || status == 'AWAITING_PAYMENT_VALIDATION';
+        status == 'PRICED' ||
+        status == 'AWAITING_PAYMENT_VALIDATION' ||
+        status == 'AWAITING_FINAL_PAYMENT';
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -539,9 +541,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         ],
       ),
       child: PrimaryButton(
-        text:
-            AppLocalizations.of(context)?.translate('upload_receipt_btn') ??
-            'Upload Payment Receipt',
+        text: order['status'] == 'AWAITING_FINAL_PAYMENT'
+            ? (AppLocalizations.of(
+                    context,
+                  )?.translate('upload_final_payment_btn') ??
+                  'Upload Final Payment')
+            : (AppLocalizations.of(context)?.translate('upload_receipt_btn') ??
+                  'Upload Payment Receipt'),
         onPressed: () {
           Navigator.pushNamed(
             context,

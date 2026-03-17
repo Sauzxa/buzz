@@ -227,6 +227,13 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     _recalculateAllComputedFields();
   }
 
+  // Wrapper for onFieldChanged that triggers recalculation
+  void _handleFieldChanged(String fieldId, dynamic value) {
+    widget.onFieldChanged(fieldId, value);
+    // Trigger recalculation of computed fields
+    _recalculateAllComputedFields();
+  }
+
   void _setupComputedFieldListeners() {
     // Find all computed fields
     final computedFields = widget.formFields.where((f) => f.computed == true);
@@ -234,9 +241,29 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     for (var computedField in computedFields) {
       if (computedField.dependsOn == null) continue;
 
+      // Create a mapping for field name variations
+      final fieldNameMap = <String, String>{};
+      widget.formFields.forEach((f) {
+        fieldNameMap[f.id] = f.id;
+        // Add variations
+        if (f.id == 'longeur') {
+          fieldNameMap['largeur'] = f.id;
+        }
+        if (f.id == 'quantity') {
+          fieldNameMap['quantite'] = f.id;
+        }
+        if (f.id == 'profondeur') {
+          fieldNameMap['profondeur'] = f.id;
+        }
+      });
+
       // Add listeners to all dependent fields
       for (var dependentFieldId in computedField.dependsOn!) {
-        final controller = _controllers[dependentFieldId];
+        // Map the dependent ID to actual field ID
+        final actualFieldId =
+            fieldNameMap[dependentFieldId] ?? dependentFieldId;
+
+        final controller = _controllers[actualFieldId];
         if (controller != null) {
           controller.addListener(() {
             _recalculateAllComputedFields();
@@ -272,28 +299,60 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     try {
       // Get values of dependent fields
       final values = <String, dynamic>{};
+
+      // Create a mapping for field name variations
+      final fieldNameMap = <String, String>{};
+      widget.formFields.forEach((f) {
+        fieldNameMap[f.id] = f.id;
+        // Add variations
+        if (f.id == 'longeur') {
+          fieldNameMap['largeur'] = f.id;
+        }
+        if (f.id == 'quantity') {
+          fieldNameMap['quantite'] = f.id;
+        }
+        if (f.id == 'profondeur') {
+          fieldNameMap['profondeur'] = f.id;
+        }
+      });
+
+      print('🔢 Computing field ${field.id}');
+      print('📋 DependsOn: ${field.dependsOn}');
+
       for (var dependentId in field.dependsOn!) {
-        final controller = _controllers[dependentId];
+        // Map the dependent ID to actual field ID
+        final actualFieldId = fieldNameMap[dependentId] ?? dependentId;
+
+        final controller = _controllers[actualFieldId];
         if (controller != null) {
           final text = controller.text;
-          values[dependentId] = double.tryParse(text) ?? 0.0;
+          final numValue = double.tryParse(text) ?? 0.0;
+          values[actualFieldId] = numValue;
+          print('📝 Field $actualFieldId (from $dependentId): $numValue');
         } else {
           // For dropdown fields, get from formData
-          values[dependentId] = widget.formData[dependentId];
+          final value = widget.formData[actualFieldId];
+          values[actualFieldId] = value;
+          print('📦 Field $actualFieldId (from $dependentId): $value');
         }
       }
 
+      print('💡 Formula: ${field.formula}');
+      print('📊 Values: $values');
+
       // Evaluate formula
       double baseValue = _evaluateFormula(field.formula!, values);
+      print('🧮 Base value: $baseValue');
 
       // Apply conditional rules
       if (field.rules != null && field.rules!.isNotEmpty) {
         baseValue = _applyRules(baseValue, field.rules!, values);
+        print('✅ Final value after rules: $baseValue');
       }
 
       return baseValue;
     } catch (e) {
-      print('Error calculating computed field ${field.id}: $e');
+      print('❌ Error calculating computed field ${field.id}: $e');
       return null;
     }
   }
@@ -303,21 +362,50 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     // Replace variable names with their values
     String expression = formula;
 
+    print('🔧 Evaluating formula: $formula');
+    print('📦 Input values: $values');
+
+    // Create a mapping for common field name variations
+    final fieldMappings = <String, String>{};
     values.forEach((key, value) {
-      final numValue = value is double
-          ? value
-          : (double.tryParse(value.toString()) ?? 0.0);
-      expression = expression.replaceAll(key, numValue.toString());
+      fieldMappings[key] = key;
+      // Add common variations
+      if (key == 'longeur') {
+        fieldMappings['largeur'] = key; // Map largeur to longeur
+      }
+      if (key == 'quantity') {
+        fieldMappings['quantite'] = key; // Map quantite to quantity
+      }
+      if (key == 'profondeur') {
+        fieldMappings['profondeur'] = key;
+      }
     });
+
+    print('🗺️ Field mappings: $fieldMappings');
+
+    // Replace variable names with their values
+    fieldMappings.forEach((formulaKey, actualKey) {
+      if (values.containsKey(actualKey)) {
+        final numValue = values[actualKey] is double
+            ? values[actualKey]
+            : (double.tryParse(values[actualKey].toString()) ?? 0.0);
+        print('🔄 Replacing $formulaKey with $numValue (from $actualKey)');
+        expression = expression.replaceAll(formulaKey, numValue.toString());
+      }
+    });
+
+    print('📝 Expression after replacement: $expression');
 
     // Remove spaces and parentheses for simple evaluation
     expression = expression.replaceAll(' ', '');
 
     // Simple arithmetic evaluation (supports *, /, +, -)
     try {
-      return _evaluateExpression(expression);
+      final result = _evaluateExpression(expression);
+      print('✅ Formula result: $result');
+      return result;
     } catch (e) {
-      print('Error evaluating formula: $expression, error: $e');
+      print('❌ Error evaluating formula: $expression, error: $e');
       return 0.0;
     }
   }
@@ -423,9 +511,12 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    // Check if we have H and L fields (for printing services)
+    // Check if we have H, L, and P fields (for printing services)
     final hField = widget.formFields.firstWhere(
-      (f) => f.id.toLowerCase() == 'h' || f.label.toLowerCase() == 'h',
+      (f) =>
+          f.id.toLowerCase() == 'h' ||
+          f.id.toLowerCase() == 'hauteur' ||
+          f.label.toLowerCase() == 'h',
       orElse: () => FormFieldModel(
         id: '',
         label: '',
@@ -435,7 +526,24 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
       ),
     );
     final lField = widget.formFields.firstWhere(
-      (f) => f.id.toLowerCase() == 'l' || f.label.toLowerCase() == 'l',
+      (f) =>
+          f.id.toLowerCase() == 'l' ||
+          f.id.toLowerCase() == 'longeur' ||
+          f.id.toLowerCase() == 'largeur' ||
+          f.label.toLowerCase() == 'l',
+      orElse: () => FormFieldModel(
+        id: '',
+        label: '',
+        type: '',
+        required: false,
+        order: 0,
+      ),
+    );
+    final pField = widget.formFields.firstWhere(
+      (f) =>
+          f.id.toLowerCase() == 'p' ||
+          f.id.toLowerCase() == 'profondeur' ||
+          f.label.toLowerCase() == 'p',
       orElse: () => FormFieldModel(
         id: '',
         label: '',
@@ -446,6 +554,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     );
 
     final hasHAndL = hField.id.isNotEmpty && lField.id.isNotEmpty;
+    final hasP = pField.id.isNotEmpty;
     // Check if we have Quantity and Type fields
     final quantityField = widget.formFields.firstWhere(
       (f) =>
@@ -476,6 +585,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
         .where(
           (f) =>
               (hasHAndL ? (f.id != hField.id && f.id != lField.id) : true) &&
+              (hasP ? f.id != pField.id : true) &&
               (quantityField.id.isNotEmpty ? f.id != quantityField.id : true) &&
               (typeField.id.isNotEmpty ? f.id != typeField.id : true),
         )
@@ -484,8 +594,11 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Render H and L fields together if they exist
-        if (hasHAndL) ...[
+        // Render H, L, and P fields together if they exist
+        if (hasHAndL && hasP) ...[
+          _buildHLPFields(hField, lField, pField),
+          const SizedBox(height: 16),
+        ] else if (hasHAndL) ...[
           _buildHLFields(hField, lField),
           const SizedBox(height: 16),
         ],
@@ -510,6 +623,41 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
             child: _buildField(field),
           );
         }).toList(),
+      ],
+    );
+  }
+
+  // Build H, L, and P fields side by side with "Size" label on left
+  Widget _buildHLPFields(
+    FormFieldModel hField,
+    FormFieldModel lField,
+    FormFieldModel pField,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        // "Size" label
+        Text(
+          'Size',
+          style: GoogleFonts.dmSans(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.white,
+          ),
+        ),
+
+        // H, L, and P inputs
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildSmallInput(hField, 'H'),
+            const SizedBox(width: 12),
+            _buildSmallInput(lField, 'L'),
+            const SizedBox(width: 12),
+            _buildSmallInput(pField, 'P'),
+          ],
+        ),
       ],
     );
   }
@@ -569,7 +717,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
             focusNode: _focusNodes[field.id],
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
-            onChanged: (value) => widget.onFieldChanged(field.id, value),
+            onChanged: (value) => _handleFieldChanged(field.id, value),
             decoration: InputDecoration(
               filled: true,
               fillColor:
@@ -686,7 +834,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
           ? TextInputType.number
           : TextInputType.text,
       textAlign: TextAlign.start,
-      onChanged: (value) => widget.onFieldChanged(field.id, value),
+      onChanged: (value) => _handleFieldChanged(field.id, value),
       decoration: InputDecoration(
         filled: true,
         fillColor:
@@ -724,7 +872,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
     return _SideBySideDropdown(
       field: field,
       selectedValue: selectedValue,
-      onChanged: (value) => widget.onFieldChanged(field.id, value),
+      onChanged: (value) => _handleFieldChanged(field.id, value),
       focusColor: widget.focusColor,
     );
   }
@@ -773,7 +921,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
               : field.type == 'email'
               ? TextInputType.emailAddress
               : TextInputType.text,
-          onChanged: (value) => widget.onFieldChanged(field.id, value),
+          onChanged: (value) => _handleFieldChanged(field.id, value),
           decoration: InputDecoration(
             hintText: field.placeholder ?? 'Enter ${field.label.toLowerCase()}',
             hintStyle: GoogleFonts.dmSans(
@@ -822,7 +970,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
           controller: _controllers[field.id],
           focusNode: _focusNodes[field.id],
           maxLines: 5,
-          onChanged: (value) => widget.onFieldChanged(field.id, value),
+          onChanged: (value) => _handleFieldChanged(field.id, value),
           decoration: InputDecoration(
             hintText: field.placeholder ?? 'Enter ${field.label.toLowerCase()}',
             hintStyle: GoogleFonts.dmSans(
@@ -870,7 +1018,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
         ...field.options!.map((option) {
           final isSelected = widget.formData[field.id] == option.value;
           return GestureDetector(
-            onTap: () => widget.onFieldChanged(field.id, option.value),
+            onTap: () => _handleFieldChanged(field.id, option.value),
             child: Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
@@ -955,7 +1103,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
               } else {
                 newValues.add(option.value);
               }
-              widget.onFieldChanged(field.id, newValues);
+              _handleFieldChanged(field.id, newValues);
             },
             child: Container(
               margin: const EdgeInsets.only(bottom: 12),
@@ -1027,7 +1175,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
       field: field,
       selectedValue: selectedValue,
       selectedLabel: selectedValue != null ? selectedOption?.label : null,
-      onChanged: (value) => widget.onFieldChanged(field.id, value),
+      onChanged: (value) => _handleFieldChanged(field.id, value),
       focusColor: widget.focusColor,
     );
   }
@@ -1064,7 +1212,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
               },
             );
             if (date != null) {
-              widget.onFieldChanged(field.id, date);
+              _handleFieldChanged(field.id, date);
             }
           },
           child: Container(
@@ -1131,7 +1279,7 @@ class _DynamicFormBuilderState extends State<DynamicFormBuilder> {
             final isSelected = selectedValue == option.value;
 
             return GestureDetector(
-              onTap: () => widget.onFieldChanged(field.id, option.value),
+              onTap: () => _handleFieldChanged(field.id, option.value),
               child: Container(
                 decoration: BoxDecoration(
                   color: isSelected

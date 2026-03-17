@@ -73,8 +73,8 @@ class ApiEndpoints {
 
   // FCM (Firebase Cloud Messaging) endpoints
   static String get registerFcmToken => '$apiPrefix/fcm/register';
-  static String removeFcmToken(String token) => '$apiPrefix/fcm/token/$token';
-  static String get removeAllFcmTokens => '$apiPrefix/fcm/tokens/all';
+  static String removeFcmToken(String token) =>
+      '$apiPrefix/fcm/remove?token=$token';
 
   // Notification endpoints
   static String getUserNotifications({

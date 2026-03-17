@@ -18,104 +18,183 @@ class OrderSuccessPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: _categoryTheme.color,
-        elevation: 0,
-        leading: const SizedBox(), // Remove back button
-        title: Text(
-          AppLocalizations.of(context)?.translate('order_placed_title') ??
-              'Order Placed',
-          style: GoogleFonts.dmSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    return PopScope(
+      canPop: false, // Prevent back navigation
+      child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: _categoryTheme.color,
+          elevation: 0,
+          leading: const SizedBox(), // Remove back button
+          title: Text(
+            AppLocalizations.of(context)?.translate('order_placed_title') ??
+                'Order Placed',
+            style: GoogleFonts.dmSans(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Category Logo (replaces check icon)
+                      Image.asset(
+                        _categoryTheme.logoPath,
+                        width: 180,
+                        height: 180,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback if logo not found - show check icon
+                          return Container(
+                            width: 120,
+                            height: 120,
+                            decoration: BoxDecoration(
+                              color: _categoryTheme.color.withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.check_circle,
+                              size: 80,
+                              color: _categoryTheme.color,
+                            ),
+                          );
+                        },
+                      ),
+
+                      const SizedBox(height: 32),
+
+                      // Success Message
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Column(
+                          children: [
+                            Text(
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('procedure_completed') ??
+                                  'Procedure Completed',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.titleLarge!.color,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('successfully') ??
+                                  'Successfully',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.titleLarge!.color,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Text(
+                              AppLocalizations.of(
+                                    context,
+                                  )?.translate('order_placed_success_msg') ??
+                                  'Your order has been placed successfully. We will contact you soon with further details.',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.dmSans(
+                                fontSize: 14,
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodySmall!.color,
+                                height: 1.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Go to Homepage Button
+              Padding(
+                padding: const EdgeInsets.all(20),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Category Logo (replaces check icon)
-                    Image.asset(
-                      _categoryTheme.logoPath,
-                      width: 180,
-                      height: 180,
-                      errorBuilder: (context, error, stackTrace) {
-                        // Fallback if logo not found - show check icon
-                        return Container(
-                          width: 120,
-                          height: 120,
-                          decoration: BoxDecoration(
-                            color: _categoryTheme.color.withOpacity(0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.check_circle,
-                            size: 80,
-                            color: _categoryTheme.color,
-                          ),
+                    PrimaryButton(
+                      text:
+                          AppLocalizations.of(
+                            context,
+                          )?.translate('go_home_btn') ??
+                          'Go to Homepage',
+                      onPressed: () {
+                        // Navigate to home and remove all previous routes
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          RouteNames.home,
+                          (route) => false,
                         );
                       },
                     ),
-
-                    const SizedBox(height: 32),
-
-                    // Success Message
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: Column(
+                    const SizedBox(height: 12),
+                    TextButton(
+                      onPressed: () {
+                        if (orderId != null) {
+                          // Navigate to order details page with minimal order data
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => OrderDetailsPage(
+                                order: {
+                                  'id': orderId,
+                                  // The page will fetch full details using orderId
+                                },
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                AppLocalizations.of(context)?.translate(
+                                      'order_details_not_available',
+                                    ) ??
+                                    'Order details not available',
+                              ),
+                              backgroundColor: _categoryTheme.color,
+                            ),
+                          );
+                        }
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
                             AppLocalizations.of(
                                   context,
-                                )?.translate('procedure_completed') ??
-                                'Procedure Completed',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.titleLarge!.color,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            AppLocalizations.of(
-                                  context,
-                                )?.translate('successfully') ??
-                                'Successfully',
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.dmSans(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.titleLarge!.color,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            AppLocalizations.of(
-                                  context,
-                                )?.translate('order_placed_success_msg') ??
-                                'Your order has been placed successfully. We will contact you soon with further details.',
-                            textAlign: TextAlign.center,
+                                )?.translate('view_order_details') ??
+                                'View Order Details',
                             style: GoogleFonts.dmSans(
                               fontSize: 14,
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodySmall!.color,
-                              height: 1.5,
+                              fontWeight: FontWeight.w600,
+                              color: _categoryTheme.color,
                             ),
+                          ),
+                          const SizedBox(width: 4),
+                          Icon(
+                            Icons.arrow_forward,
+                            size: 16,
+                            color: _categoryTheme.color,
                           ),
                         ],
                       ),
@@ -123,84 +202,8 @@ class OrderSuccessPage extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-
-            // Go to Homepage Button
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  PrimaryButton(
-                    text:
-                        AppLocalizations.of(
-                          context,
-                        )?.translate('go_home_btn') ??
-                        'Go to Homepage',
-                    onPressed: () {
-                      // Navigate to home and remove all previous routes
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        RouteNames.home,
-                        (route) => false,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton(
-                    onPressed: () {
-                      if (orderId != null) {
-                        // Navigate to order details page with minimal order data
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => OrderDetailsPage(
-                              order: {
-                                'id': orderId,
-                                // The page will fetch full details using orderId
-                              },
-                            ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              AppLocalizations.of(
-                                    context,
-                                  )?.translate('order_details_not_available') ??
-                                  'Order details not available',
-                            ),
-                            backgroundColor: _categoryTheme.color,
-                          ),
-                        );
-                      }
-                    },
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          AppLocalizations.of(
-                                context,
-                              )?.translate('view_order_details') ??
-                              'View Order Details',
-                          style: GoogleFonts.dmSans(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: _categoryTheme.color,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        Icon(
-                          Icons.arrow_forward,
-                          size: 16,
-                          color: _categoryTheme.color,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
